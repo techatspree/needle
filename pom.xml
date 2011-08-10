@@ -48,11 +48,10 @@
 	</scm>
 
 	<developers>
-
 		<developer>
 			<id>mdahm</id>
 			<name>Markus Dahm</name>
-			<email>alphonse (dot) bendt (at) akquinet.de</email>
+			<email>markus (dot) dahm (at) akquinet.de</email>
 			<organization>akquinet AG</organization>
 		</developer>
 
