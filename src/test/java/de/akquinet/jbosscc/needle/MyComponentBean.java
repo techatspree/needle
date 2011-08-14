@@ -35,4 +35,10 @@ public class MyComponentBean implements MyComponent {
     }
 
 
+	@Override
+	public String testMock(){
+		return myEjbComponent.doSomething();
+	}
+
+
 }

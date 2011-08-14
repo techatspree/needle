@@ -1,0 +1,96 @@
+package de.akquinet.jbosscc.needle.db;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import junit.framework.Assert;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
+import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfiguration;
+import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
+import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
+
+public class DatabaseTestcaseConfiguration {
+
+	private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcaseConfiguration.class);
+
+	private final DBDialect dialect;
+
+	private PersistenceConfiguration persistenceConfiguration;
+
+	private DatabaseTestcaseConfiguration() {
+		super();
+		dialect = createDBDialect();
+	}
+
+	public DatabaseTestcaseConfiguration(final Class<?>[] clazzes) {
+		this();
+		Assert.assertNotNull(clazzes);
+		persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(clazzes);
+
+	}
+
+	public DatabaseTestcaseConfiguration(final String persistenceUnitName) {
+		this();
+		Assert.assertNotNull(persistenceUnitName);
+		persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(persistenceUnitName);
+	}
+
+	public EntityManager getEntityManager() {
+		return createProxy(persistenceConfiguration.getEntityManager());
+	}
+
+	public DBDialect getDBDialect(){
+		return dialect;
+	}
+
+	@SuppressWarnings("unchecked")
+    private <T extends DBDialect> T createDBDialect() {
+		final Class<? extends DBDialect> dialectClass = NeedleConfiguration.getDBDialectClass();
+
+		if (dialectClass != null) {
+			try {
+				return (T) dialectClass.newInstance();
+			} catch (Exception e) {
+				LOG.warn("could not create a new instance of db dialect {}, {}", dialectClass, e.getMessage());
+			}
+		} else {
+			LOG.info("no db dialect configured");
+		}
+
+		return null;
+	}
+
+
+	public EntityManagerFactory getEntityManagerFactory() {
+	    return persistenceConfiguration.getEntityManagerFactory();
+    }
+
+	static EntityManager createProxy(final EntityManager real) {
+		return (EntityManager) Proxy.newProxyInstance(
+				DatabaseTestcaseConfiguration.class.getClassLoader(),
+				new Class[] { EntityManager.class }, new InvocationHandler() {
+					public Object invoke(Object proxy, Method method,
+							Object[] args) throws Throwable {
+						if (method.getName().equals("close")) {
+							throw new RuntimeException(
+									"you are not allowed to explicitely close this EntityManager");
+						}
+
+						try {
+							return method.invoke(real, args);
+						} catch (InvocationTargetException e) {
+							throw e.getCause();
+						}
+					}
+				});
+	}
+}

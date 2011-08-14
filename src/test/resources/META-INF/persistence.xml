@@ -6,6 +6,7 @@
   <persistence-unit name="TestDataModel" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
 
+	<class>de.akquinet.jbosscc.needle.db.MyEntity</class>
 
     <properties>
       <property name="hibernate.hbm2ddl.auto" value="create-drop" />

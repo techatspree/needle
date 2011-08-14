@@ -40,4 +40,9 @@ public class EJB3Configuration implements PersistenceConfiguration {
 
         return buildEntityManagerFactory;
     }
+
+	@Override
+    public EntityManagerFactory getEntityManagerFactory() {
+	    return factory;
+    }
 }

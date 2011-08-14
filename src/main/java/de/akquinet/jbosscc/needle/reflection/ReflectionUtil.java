@@ -9,7 +9,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ReflectionUtil {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
 	private ReflectionUtil() {
 		super();
@@ -42,7 +47,6 @@ public class ReflectionUtil {
 
 		return result;
 	}
-
 
 	public static List<Field> getAllFieldsWithAnnotation(final Object instance,
 	        final Class<? extends Annotation> annotation) {
@@ -130,12 +134,12 @@ public class ReflectionUtil {
 	 *         are wrapped in an appropriate object before being returned
 	 */
 	public static Object getFieldValue(final Object object, final Class<?> clazz, final String fieldName) {
-            try {
-	            Field field = clazz.getDeclaredField(fieldName);
-	            return getFieldValue(object, field);
-            } catch (Exception e) {
-            	throw new IllegalArgumentException("Could not get field value: " + fieldName, e);
-            }
+		try {
+			Field field = clazz.getDeclaredField(fieldName);
+			return getFieldValue(object, field);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Could not get field value: " + fieldName, e);
+		}
 	}
 
 	/**
@@ -188,9 +192,11 @@ public class ReflectionUtil {
 	 * @param arguments
 	 *            -- arguments for method invocation
 	 * @return -- method object to which invocation is actually dispatched
+	 * @throws Exception
+	 *             - operation exception
 	 */
 	public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName,
-	        final Object... arguments) {
+	        final Object... arguments) throws Exception {
 		for (final Method declaredMethod : clazz.getDeclaredMethods()) {
 			if (declaredMethod.getName().equals(methodName)) {
 				final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
@@ -206,7 +212,12 @@ public class ReflectionUtil {
 
 							return declaredMethod.invoke(object, arguments);
 						} catch (final Exception exc) {
-							throw new IllegalArgumentException("Error invoking method: " + methodName, exc);
+							LOG.warn("Error invoking method: " + methodName, exc);
+							Throwable cause = exc.getCause();
+							if (cause instanceof Exception) {
+								throw (Exception) cause;
+							}
+							throw exc;
 						}
 					}
 				}
@@ -247,8 +258,10 @@ public class ReflectionUtil {
 	 * @param arguments
 	 *            -- arguments for method invocation
 	 * @return -- method object to which invocation is actually dispatched
+	 * @throws Exception
 	 */
-	public static Object invokeMethod(final Object object, final String methodName, final Object... arguments) {
+	public static Object invokeMethod(final Object object, final String methodName, final Object... arguments)
+	        throws Exception {
 		return invokeMethod(object, object.getClass(), methodName, arguments);
 	}
 
@@ -269,6 +282,19 @@ public class ReflectionUtil {
 	}
 
 	public static void setField(Field field, Object target, Object value) throws Exception {
+		if (!field.isAccessible()) {
+			field.setAccessible(true);
+		}
+
+		field.set(target, value);
+
+	}
+
+
+	public static void setField(String fieldName, Object target, Object value) throws Exception {
+
+		final Field field = ReflectionUtil.getField(target.getClass(), fieldName);
+
 		if (!field.isAccessible()) {
 			field.setAccessible(true);
 		}

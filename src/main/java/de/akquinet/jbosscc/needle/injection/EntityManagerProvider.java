@@ -1,28 +1,53 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import java.lang.reflect.Field;
+
 import javax.persistence.EntityManager;
 
-import de.akquinet.jbosscc.needle.db.DatabaseRule;
+import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 
-public class EntityManagerProvider implements InjectionProvider<EntityManager> {
+public class EntityManagerProvider implements InjectionProvider {
 
-	private final DatabaseRule databaseRule;
+	private final DatabaseTestcase databaseTestcase;
 
+	private final InjectionVerifier verifyer;
 
-
-	public EntityManagerProvider(final DatabaseRule databaseRule) {
+	public EntityManagerProvider(final DatabaseTestcase databaseTestcase) {
 		super();
-		this.databaseRule = databaseRule;
+		this.databaseTestcase = databaseTestcase;
+		verifyer = new InjectionVerifier() {
+
+			@Override
+			public boolean verify(Field field) {
+				if (field.getType() == EntityManager.class) {
+					return true;
+				}
+				return false;
+			}
+		};
+
+	}
+
+	public EntityManagerProvider(final InjectionVerifier verifyer, final DatabaseTestcase databaseRule) {
+		super();
+		this.databaseTestcase = databaseRule;
+		this.verifyer = verifyer;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T get(Class<T> type) {
+		return (T) databaseTestcase.getEntityManager();
 	}
 
 	@Override
-	public EntityManager get() {
-		return databaseRule.getEntityManager();
+	public boolean verify(Field field) {
+		return verifyer.verify(field);
 	}
 
 	@Override
-	public Class<EntityManager> getType() {
-		return EntityManager.class;
-	}
+    public Object getKey(final Field field) {
+	    return EntityManager.class;
+    }
 
 }

@@ -9,17 +9,16 @@ import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
-import de.akquinet.jbosscc.needle.db.DatabaseRule;
+import de.akquinet.jbosscc.needle.junit.DatabaseRule;
+import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class NeedleTest {
-
 
 	@Rule
 	public DatabaseRule databaseRule = new DatabaseRule();
 
 	@Rule
 	public NeedleRule needle = new NeedleRule(databaseRule);
-
 
 	@ObjectUnderTest
 	private MyComponentBean componentBean;
@@ -28,35 +27,39 @@ public class NeedleTest {
 	@ObjectUnderTest(implementation = MyEjbComponentBean.class)
 	private MyEjbComponent ejbComponent;
 
+	private MyComponentBean componentBean1 = new MyComponentBean();
 
+	@ObjectUnderTest
+	private MyComponentBean componentBean2 = componentBean1;
 
 	@Test
-	public void testname() throws Exception {
+	public void testBasicInjection() throws Exception {
 		Assert.assertNotNull(componentBean);
 		Assert.assertNotNull(componentBean.getEntityManager());
 		Assert.assertNotNull(componentBean.getMyEjbComponent());
 
-		MyEjbComponent mock = needle.getMock(MyEjbComponent.class);
+		MyEjbComponent mock = (MyEjbComponent) needle.getInjectedObject(MyEjbComponent.class);
 
 		Assert.assertNotNull(mock);
-
-
 	}
-
 
 	@Test
 	public void testResourceMock() throws Exception {
-		SessionContext sessionContextMock = needle.getMock(SessionContext.class);
+		SessionContext sessionContextMock = (SessionContext) needle.getInjectedObject(SessionContext.class);
 		Assert.assertNotNull(sessionContextMock);
 
-		Assert.assertNotNull(needle.getMock("queue1"));
-		Assert.assertNotNull(needle.getMock("queue2"));
-    }
+		Assert.assertNotNull(needle.getInjectedObject("queue1"));
+		Assert.assertNotNull(needle.getInjectedObject("queue2"));
+	}
 
 	@Test
 	public void testInjectInto() throws Exception {
 		Assert.assertNotNull(ejbComponent);
 		Assert.assertEquals(ejbComponent, componentBean.getMyEjbComponent());
-    }
+	}
 
+	@Test
+	public void testInitInstance() throws Exception{
+		Assert.assertEquals(componentBean1, componentBean2);
+	}
 }

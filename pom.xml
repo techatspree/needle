@@ -48,12 +48,22 @@
 	</scm>
 
 	<developers>
+
 		<developer>
+			<id>abendt</id>
+			<name>Alphonse Bendt</name>
+			<email>alphonse (dot) bendt (at) akquinet.de</email>
+			<organization>akquinet AG</organization>
+		</developer>
+		
+				<developer>
 			<id>mdahm</id>
 			<name>Markus Dahm</name>
 			<email>markus (dot) dahm (at) akquinet.de</email>
 			<organization>akquinet AG</organization>
 		</developer>
+
+		
 
 		<developer>
 			<id>hwilming</id>
@@ -116,6 +126,22 @@
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
 			<version>3.0</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.0</version>
+			<optional>true</optional>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.9.0-rc1</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -130,6 +156,11 @@
 			<version>1.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>hsqldb</groupId>

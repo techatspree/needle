@@ -6,17 +6,21 @@ import javax.persistence.Persistence;
 
 public class PersistenceUnitConfiguration implements PersistenceConfiguration {
 
-    private final EntityManagerFactory factory;
-    private final EntityManager entityManager;
+	private final EntityManagerFactory factory;
+	private final EntityManager entityManager;
 
-    public PersistenceUnitConfiguration(String puName) {
-        factory = Persistence
-            .createEntityManagerFactory(puName);
-        entityManager = factory.createEntityManager();
-    }
+	public PersistenceUnitConfiguration(String puName) {
+		factory = Persistence.createEntityManagerFactory(puName);
+		entityManager = factory.createEntityManager();
+	}
 
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
+	public EntityManager getEntityManager() {
+		return entityManager;
+	}
+
+	@Override
+	public EntityManagerFactory getEntityManagerFactory() {
+		return factory;
+	}
 
 }
