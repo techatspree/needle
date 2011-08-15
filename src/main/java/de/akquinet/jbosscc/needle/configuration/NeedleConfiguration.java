@@ -1,6 +1,9 @@
 package de.akquinet.jbosscc.needle.configuration;
 
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -13,7 +16,7 @@ public class NeedleConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
 
-	private static final ResourceBundle bundle = loadResourceOrDefault("needle");
+	private static final Map<String, String> CONFIG_PROPERTIES = loadResourceAndDefault("needle");
 
 	static final String JDBC_URL_KEY = "jdbc.url";
 
@@ -24,36 +27,53 @@ public class NeedleConfiguration {
 
 	static final String HIBERNATE_CFG_FILENAME_KEY = "hibernate.cfg.filename";
 
-	private static final String JDBC_URL = bundle.getString(JDBC_URL_KEY);
+	private static final String JDBC_URL = CONFIG_PROPERTIES.get(JDBC_URL_KEY);
 
 	private static final String DEFAULT_CONFIGURATION_FILENAME = "needle-defaults";
 
-	private static final String PERSISTENCEUNIT_NAME = bundle.getString(PERSISTENCEUNIT_NAME_KEY);
+	private static final String PERSISTENCEUNIT_NAME = CONFIG_PROPERTIES.get(PERSISTENCEUNIT_NAME_KEY);
 
-	private static final String HIBERNATE_CFG_FILENAME = bundle.getString(HIBERNATE_CFG_FILENAME_KEY);
+	private static final String HIBERNATE_CFG_FILENAME = CONFIG_PROPERTIES.get(HIBERNATE_CFG_FILENAME_KEY);
 
 	private static final Class<? extends DBDialect> DB_DIALECT_CLASS = lookupDBDialectClass();
 
 	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass();
 
-	final static ResourceBundle loadResourceOrDefault(String name) {
-		ResourceBundle result;
+	final static Map<String, String> loadResourceAndDefault(String name) {
+		final Map<String, String> result = new HashMap<String, String>();
 
 		try {
-			result = loadResourceBundle(name);
+			ResourceBundle customBundle = loadResourceBundle(name);
+
+			for (Enumeration<String> keys = customBundle.getKeys(); keys.hasMoreElements();) {
+				String key = keys.nextElement();
+				result.put(key, customBundle.getString(key));
+			}
+
 			URL url = NeedleConfiguration.class.getResource("/" + name + ".properties");
 			LOG.debug("loaded Needle config named {} from {}", name, url);
 		} catch (Exception e) {
-			try {
+			LOG.debug("found no custom configuration");
+		}
 
-				result = loadResourceBundle(DEFAULT_CONFIGURATION_FILENAME);
-				URL url = NeedleConfiguration.class.getResource("/" + DEFAULT_CONFIGURATION_FILENAME + ".properties");
-				LOG.debug("loaded default Needle config from: {}", url);
-			} catch (Exception e1) {
-				LOG.error("should never happen", e1);
+		try {
 
-				throw new AssertionError("should never happen");
+			ResourceBundle defaultResourceBundle = loadResourceBundle(DEFAULT_CONFIGURATION_FILENAME);
+
+			for (Enumeration<String> keys = defaultResourceBundle.getKeys(); keys.hasMoreElements();) {
+				String key = keys.nextElement();
+				if (!result.containsKey(key)) {
+					result.put(key, defaultResourceBundle.getString(key));
+				}
+
 			}
+
+			URL url = NeedleConfiguration.class.getResource("/" + DEFAULT_CONFIGURATION_FILENAME + ".properties");
+			LOG.debug("loaded default Needle config from: {}", url);
+		} catch (Exception e1) {
+			LOG.error("should never happen", e1);
+
+			throw new AssertionError("should never happen");
 		}
 
 		return result;
@@ -64,6 +84,8 @@ public class NeedleConfiguration {
 		builder.append("\nJDBC_URL=").append(getJdbcUrl());
 		builder.append("\nPU_NAME=").append(getPersistenceunitName());
 		builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
+		builder.append("\nDB_DIALECT=").append(getDBDialectClass());
+		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
 
 		LOG.info("Needle Configuration: {}", builder.toString());
 	}
@@ -94,7 +116,8 @@ public class NeedleConfiguration {
 
 	@SuppressWarnings("unchecked")
 	private static Class<? extends DBDialect> lookupDBDialectClass() {
-		final String dbDialect = bundle.containsKey(DB_DIALECT_KEY) ? bundle.getString(DB_DIALECT_KEY) : null;
+		final String dbDialect = CONFIG_PROPERTIES.containsKey(DB_DIALECT_KEY) ? CONFIG_PROPERTIES
+		        .get(DB_DIALECT_KEY) : null;
 
 		try {
 			if (dbDialect != null) {
@@ -109,10 +132,10 @@ public class NeedleConfiguration {
 		return null;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private static Class<? extends MockProvider> lookupMockProviderClass() {
-		final String mockProvider = bundle.containsKey(MOCK_PROVIDER_KEY) ? bundle.getString(MOCK_PROVIDER_KEY) : null;
+		final String mockProvider = CONFIG_PROPERTIES.containsKey(MOCK_PROVIDER_KEY) ? CONFIG_PROPERTIES
+		        .get(MOCK_PROVIDER_KEY) : null;
 
 		try {
 			if (mockProvider != null) {

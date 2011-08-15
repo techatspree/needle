@@ -19,7 +19,14 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	@Override
 	public <T> T createMockComponent(final Class<T> type) {
 
+
+
 		if (mocks.containsKey(type)) {
+
+			for (Object iterable_element : mocks.values()) {
+	            System.out.println(iterable_element);
+            }
+
 			Object mock = mocks.get(type);
 			resetToNice(mock);
 			return (T) mock;
@@ -39,15 +46,15 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	public void resetToNice(final Object mock) {
-		EasyMock.resetToNice(mocks);
+		EasyMock.resetToNice(mock);
 	}
 
 	public void resetToStrict(final Object mock) {
-		EasyMock.resetToStrict(mocks);
+		EasyMock.resetToStrict(mock);
 	}
 
 	public void resetToDefault(final Object mock) {
-		EasyMock.resetToDefault(mocks);
+		EasyMock.resetToDefault(mock);
 	}
 
 }
