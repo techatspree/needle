@@ -35,7 +35,7 @@ public class DefaultMockInjectionProvider implements InjectionProvider {
 
 	@Override
 	public <T> T get(Class<T> type) {
-		return (T) mockProvider.createMock(type);
+		return (T) mockProvider.createMockComponent(type);
 	}
 
 	@Override

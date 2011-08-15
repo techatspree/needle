@@ -24,14 +24,12 @@ public class NeedleTestcase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
-	private final InjectionIntoAnnotationProcessor injectionIntoAnnotationPrcessor = new InjectionIntoAnnotationProcessor();
-
-	private final InjectionConfiguration configuration = new InjectionConfiguration();
-
-	private Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
-
+	private final static InjectionIntoAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionIntoAnnotationProcessor();
 
 	private Set<InjectionProvider> injectionProviderSet = new HashSet<InjectionProvider>();
+
+	private InjectionConfiguration configuration = new InjectionConfiguration();
+	private Map<Object, Object> injectedObjectMap;
 
 	public NeedleTestcase(final InjectionProvider... injectionProvider) {
 		super();
@@ -62,7 +60,10 @@ public class NeedleTestcase {
 	}
 
 	protected final void initTestcase(Object test) throws Exception {
-		LOG.info("assign object under tests");
+
+		LOG.info("init testcase");
+
+		injectedObjectMap = new HashMap<Object, Object>();
 
 		final List<Field> fields = ReflectionUtil.getAllFieldsWithAnnotation(test, ObjectUnderTest.class);
 
@@ -85,7 +86,7 @@ public class NeedleTestcase {
 	}
 
 	private void handleInjectInto(Object test) {
-		injectionIntoAnnotationPrcessor.process(test);
+		INJECTION_INTO_ANNOTATION_PROCESSOR.process(test);
 	}
 
 	private void initInstance(Object instance) {
@@ -169,7 +170,7 @@ public class NeedleTestcase {
 		return injectedObjectMap.get(key);
 	}
 
-	public MockProvider getMockProvider(){
+	public MockProvider getMockProvider() {
 		return configuration.getMockProvider();
 	}
 }

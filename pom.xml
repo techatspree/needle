@@ -55,15 +55,15 @@
 			<email>alphonse (dot) bendt (at) akquinet.de</email>
 			<organization>akquinet AG</organization>
 		</developer>
-		
-				<developer>
+
+		<developer>
 			<id>mdahm</id>
 			<name>Markus Dahm</name>
 			<email>markus (dot) dahm (at) akquinet.de</email>
 			<organization>akquinet AG</organization>
 		</developer>
 
-		
+
 
 		<developer>
 			<id>hwilming</id>
@@ -107,6 +107,7 @@
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.0.Final</version>
+			<optional>true</optional>
 		</dependency>
 
 
@@ -114,18 +115,20 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.1.1</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>3.6.0.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>3.0</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -148,18 +151,21 @@
 			<groupId>javax.ejb</groupId>
 			<artifactId>ejb-api</artifactId>
 			<version>3.0</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
 			<version>1.1</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -170,12 +176,12 @@
 		</dependency>
 
 
+
 		<dependency>
 			<groupId>org.jboss.spec.javax.xml.rpc</groupId>
 			<artifactId>jboss-jaxrpc-api_1.1_spec</artifactId>
 			<version>1.0.0.Final</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 
@@ -244,6 +250,14 @@
 						<forkMode>once</forkMode>
 						<argLine>-enableassertions</argLine>
 					</configuration>
+
+					<dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.9</version>
+                    </dependency>
+                    </dependencies>
 				</plugin>
 
 				<plugin>

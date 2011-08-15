@@ -18,7 +18,9 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
     }
 
 	public NeedleRule(InjectionProvider... injectionProvider) {
-	    super(injectionProvider);
+		super(injectionProvider);
+
+		System.out.println("new Needle Rule");
     }
 
 	@Override

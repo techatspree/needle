@@ -37,6 +37,7 @@ public class MyComponentBean implements MyComponent {
 
 	@Override
 	public String testMock(){
+		queue2.clear();
 		return myEjbComponent.doSomething();
 	}
 

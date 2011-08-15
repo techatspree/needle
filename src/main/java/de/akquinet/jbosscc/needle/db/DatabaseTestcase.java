@@ -33,7 +33,6 @@ public class DatabaseTestcase  {
 
 	protected void after() {
 		DBDialect dialect = configuration.getDBDialect();
-
 		if (dialect != null) {
 			deleteAll(dialect);
 		}

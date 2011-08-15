@@ -197,6 +197,7 @@ public class ReflectionUtil {
 	 */
 	public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName,
 	        final Object... arguments) throws Exception {
+
 		for (final Method declaredMethod : clazz.getDeclaredMethods()) {
 			if (declaredMethod.getName().equals(methodName)) {
 				final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
@@ -205,26 +206,53 @@ public class ReflectionUtil {
 					final boolean match = checkArguments(parameterTypes, arguments);
 
 					if (match) {
-						try {
-							if (!declaredMethod.isAccessible()) {
-								declaredMethod.setAccessible(true);
-							}
-
-							return declaredMethod.invoke(object, arguments);
-						} catch (final Exception exc) {
-							LOG.warn("Error invoking method: " + methodName, exc);
-							Throwable cause = exc.getCause();
-							if (cause instanceof Exception) {
-								throw (Exception) cause;
-							}
-							throw exc;
-						}
+						return invokeMethod(declaredMethod, object, arguments);
 					}
 				}
 			}
 		}
 
 		throw new IllegalArgumentException("Method " + methodName + ":" + Arrays.toString(arguments) + " not found");
+	}
+
+	public static Object invokeMethod(final Method  method, final Object instance, Object... arguments) throws Exception{
+		try {
+			if (!method.isAccessible()) {
+				method.setAccessible(true);
+			}
+
+			return method.invoke(instance, arguments);
+		} catch (final Exception exc) {
+			LOG.warn("Error invoking method: " + method.getName(), exc);
+			Throwable cause = exc.getCause();
+			if (cause instanceof Exception) {
+				throw (Exception) cause;
+			}
+			throw exc;
+		}
+	}
+
+	public static Method getMethod(final Class<?> clazz,
+			final String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+
+		Class<?> superClazz = null;
+		try {
+			return clazz.getDeclaredMethod(methodName, parameterTypes);
+
+		} catch (Exception e) {
+			superClazz = clazz.getSuperclass();
+		}
+
+		while (superClazz != null) {
+			try {
+				return superClazz.getDeclaredMethod(methodName, parameterTypes);
+			} catch (Exception e) {
+				superClazz = superClazz.getSuperclass();
+			}
+		}
+
+		throw new NoSuchMethodException(methodName);
+
 	}
 
 	private static boolean checkArguments(final Class<?>[] parameterTypes, final Object[] arguments) {
