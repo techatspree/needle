@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 
-public class NeedleConfiguration {
+public final class NeedleConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
 

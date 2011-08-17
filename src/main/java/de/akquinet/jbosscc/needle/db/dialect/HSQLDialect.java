@@ -54,38 +54,44 @@ public class HSQLDialect extends AbstractDBDialect implements DBDialect {
 
 	@Override
 	public void deleteContent(final Set<String> tables) throws SQLException {
-		final Statement statement = getConnection().createStatement();
+		Statement statement = null;
 
-		final ArrayList<String> tempTables = new ArrayList<String>(tables);
+		try {
+			statement = getConnection().createStatement();
 
-		final String hibernateTable = "hibernate_unique_key";
-		boolean hibernateTableSkipped = tempTables.remove(hibernateTable);
-		hibernateTableSkipped = hibernateTableSkipped || tempTables.remove(hibernateTable.toUpperCase());
+			final ArrayList<String> tempTables = new ArrayList<String>(tables);
 
-		if (hibernateTableSkipped) {
-			LOG.debug("skipped deletion of hiberate_unique_key");
-		}
+			final String hibernateTable = "hibernate_unique_key";
+			boolean hibernateTableSkipped = tempTables.remove(hibernateTable);
+			hibernateTableSkipped = hibernateTableSkipped || tempTables.remove(hibernateTable.toUpperCase());
 
-		// Loop until all data is deleted: we don't know the correct DROP order,
-		// so we have to retry upon failure
-		while (!tempTables.isEmpty()) {
-			int sizeBefore = tempTables.size();
-			for (final ListIterator<String> iterator = tempTables.listIterator(); iterator.hasNext();) {
-				final String table = iterator.next();
+			if (hibernateTableSkipped) {
+				LOG.debug("skipped deletion of hiberate_unique_key");
+			}
 
-				try {
-					statement.executeUpdate("DELETE FROM " + table);
-					iterator.remove();
-				} catch (final SQLException exc) {
-					LOG.debug("Ignored exception: " + exc.getMessage() + ". WILL RETRY.");
+			// Loop until all data is deleted: we don't know the correct DROP
+			// order,
+			// so we have to retry upon failure
+			while (!tempTables.isEmpty()) {
+				int sizeBefore = tempTables.size();
+				for (final ListIterator<String> iterator = tempTables.listIterator(); iterator.hasNext();) {
+					final String table = iterator.next();
+
+					try {
+						statement.executeUpdate("DELETE FROM " + table);
+						iterator.remove();
+					} catch (final SQLException exc) {
+						LOG.debug("Ignored exception: " + exc.getMessage() + ". WILL RETRY.");
+					}
+				}
+				if (tempTables.size() == sizeBefore) {
+					throw new AssertionError("unable to clean tables " + tempTables);
 				}
 			}
-			if (tempTables.size() == sizeBefore) {
-				throw new AssertionError("unable to clean tables " + tempTables);
+		} finally {
+			if (statement != null) {
+				statement.close();
 			}
 		}
-
-		statement.close();
 	}
-
 }

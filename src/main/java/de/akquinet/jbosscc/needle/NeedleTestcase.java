@@ -28,7 +28,7 @@ public class NeedleTestcase {
 	private List<InjectionProvider> injectionProviderList = new ArrayList<InjectionProvider>();
 
 	private InjectionConfiguration configuration = new InjectionConfiguration();
-	private Map<Object, Object> injectedObjectMap;
+	private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
 	public NeedleTestcase(final InjectionProvider... injectionProvider) {
 		super();
@@ -60,7 +60,7 @@ public class NeedleTestcase {
 
 		LOG.info("init testcase");
 
-		injectedObjectMap = new HashMap<Object, Object>();
+		injectedObjectMap.clear();
 
 		final List<Field> fields = ReflectionUtil.getAllFieldsWithAnnotation(test, ObjectUnderTest.class);
 
@@ -147,7 +147,7 @@ public class NeedleTestcase {
 				implementation.getConstructor();
 			} catch (NoSuchMethodException e) {
 				throw new ObjectUnderTestInstantiationException("could not create an instance of object under test "
-				        + implementation + ",implementation has no public no-arguments constructor");
+				        + implementation + ",implementation has no public no-arguments constructor", e);
 			}
 
 			instance = implementation.newInstance();

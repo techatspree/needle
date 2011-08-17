@@ -6,7 +6,7 @@ import de.akquinet.jbosscc.needle.db.configuration.PersistenceUnitConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PersistenceConfigurationFactory {
+public final class PersistenceConfigurationFactory {
 
 	private static final Map<String, PersistenceConfiguration> PERSISTENCE_PU_CONFIG_MAP = new HashMap<String, PersistenceConfiguration>();
 	private static final Map<Class<?>[], PersistenceConfiguration> PERSISTENCE_CLASS_CONFIG_MAP = new HashMap<Class<?>[], PersistenceConfiguration>();
