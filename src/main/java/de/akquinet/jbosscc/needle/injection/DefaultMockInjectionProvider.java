@@ -2,6 +2,7 @@ package de.akquinet.jbosscc.needle.injection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 

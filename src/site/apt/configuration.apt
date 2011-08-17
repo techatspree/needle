@@ -1,0 +1,61 @@
+  ---
+  Needle
+  ---
+  akquinet Tech@Spree GmbH (http://www.akquinet.de)
+  ---
+  2010
+
+
+Maven Dependencies
+
+	If you are using Maven 2 to build your application maven will manage all your download for you. 
+
++--
+    ...
+    <dependencies>
+        ...
+
+        <dependency>
+            <groupId>de.akquinet.jbosscc</groupId>
+            <artifactId>jbosscc-needle</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>2.5.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymockclassextension</artifactId>
+            <version>2.5.2</version>
+            <scope>test</scope>
+        </dependency>
+		
+		...
+    <dependencies>
+    ...
++--
+
+Needle configuration
+
+	Configuration of the jdbc url
+	
+	If you use the in memory database util and you will not use the default configured jdbc url jdbc:hsqldb:., than place a file named needle.properties in the root directory of the classpath. 
+	
+	For example: needle.properties:
+	
++--
+jdbc.url=jdbc:hsqldb:mem:memoryDB
++--	

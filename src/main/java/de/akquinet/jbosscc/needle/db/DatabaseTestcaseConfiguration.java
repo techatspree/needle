@@ -26,6 +26,10 @@ public class DatabaseTestcaseConfiguration {
 
 	private PersistenceConfiguration persistenceConfiguration;
 
+	private Class<?>[] entityClazzes;
+
+	private String persistenceUnitName;
+
 	private DatabaseTestcaseConfiguration() {
 		super();
 		dialect = createDBDialect();
@@ -34,26 +38,40 @@ public class DatabaseTestcaseConfiguration {
 	public DatabaseTestcaseConfiguration(final Class<?>[] clazzes) {
 		this();
 		Assert.assertNotNull(clazzes);
-		persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(clazzes);
+		this.entityClazzes = clazzes;
 
 	}
 
 	public DatabaseTestcaseConfiguration(final String persistenceUnitName) {
 		this();
 		Assert.assertNotNull(persistenceUnitName);
-		persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(persistenceUnitName);
+		this.persistenceUnitName = persistenceUnitName;
 	}
 
 	public EntityManager getEntityManager() {
-		return createProxy(persistenceConfiguration.getEntityManager());
+		return createProxy(getPersistenceConfiguration().getEntityManager());
 	}
 
-	public DBDialect getDBDialect(){
+	private PersistenceConfiguration getPersistenceConfiguration() {
+		if (persistenceConfiguration == null) {
+			if (persistenceUnitName != null) {
+				persistenceConfiguration = PersistenceConfigurationFactory
+				        .getPersistenceConfiguration(persistenceUnitName);
+			} else {
+				persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(entityClazzes);
+			}
+
+		}
+
+		return persistenceConfiguration;
+	}
+
+	public DBDialect getDBDialect() {
 		return dialect;
 	}
 
 	@SuppressWarnings("unchecked")
-    private <T extends DBDialect> T createDBDialect() {
+	private <T extends DBDialect> T createDBDialect() {
 		final Class<? extends DBDialect> dialectClass = NeedleConfiguration.getDBDialectClass();
 
 		if (dialectClass != null) {
@@ -69,28 +87,24 @@ public class DatabaseTestcaseConfiguration {
 		return null;
 	}
 
-
 	public EntityManagerFactory getEntityManagerFactory() {
-	    return persistenceConfiguration.getEntityManagerFactory();
-    }
+		return getPersistenceConfiguration().getEntityManagerFactory();
+	}
 
 	static EntityManager createProxy(final EntityManager real) {
-		return (EntityManager) Proxy.newProxyInstance(
-				DatabaseTestcaseConfiguration.class.getClassLoader(),
-				new Class[] { EntityManager.class }, new InvocationHandler() {
-					public Object invoke(Object proxy, Method method,
-							Object[] args) throws Throwable {
-						if (method.getName().equals("close")) {
-							throw new RuntimeException(
-									"you are not allowed to explicitely close this EntityManager");
-						}
+		return (EntityManager) Proxy.newProxyInstance(DatabaseTestcaseConfiguration.class.getClassLoader(),
+		        new Class[] { EntityManager.class }, new InvocationHandler() {
+			        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				        if (method.getName().equals("close")) {
+					        throw new RuntimeException("you are not allowed to explicitely close this EntityManager");
+				        }
 
-						try {
-							return method.invoke(real, args);
-						} catch (InvocationTargetException e) {
-							throw e.getCause();
-						}
-					}
-				});
+				        try {
+					        return method.invoke(real, args);
+				        } catch (InvocationTargetException e) {
+					        throw e.getCause();
+				        }
+			        }
+		        });
 	}
 }

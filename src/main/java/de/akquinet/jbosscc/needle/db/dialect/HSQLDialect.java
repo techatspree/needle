@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class HSQLDialect extends AbstractDBDialect implements DBDialect {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(HSQLDialect.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HSQLDialect.class);
 
 	@Override
 	public void disableReferentialIntegrity() throws SQLException {
@@ -29,23 +28,28 @@ public class HSQLDialect extends AbstractDBDialect implements DBDialect {
 	private void setReferentialIntegrity(final boolean enable) throws SQLException {
 		String referentialIntegrity = enable ? "TRUE" : "FALSE";
 
-		getConnection().prepareStatement(
-				"set referential_integrity " + referentialIntegrity).execute();
+		getConnection().prepareStatement("set referential_integrity " + referentialIntegrity).execute();
 	}
 
 	@Override
 	public Set<String> getTableNames() throws SQLException {
-		final HashSet<String> tables = new HashSet<String>();
+		ResultSet resultSet = null;
 
-		final ResultSet resultSet = getConnection().getMetaData().getTables(
-				null, null, "%", new String[] { "TABLE" });
+		try {
+			final HashSet<String> tables = new HashSet<String>();
 
-		while (resultSet.next()) {
-			tables.add(resultSet.getString("TABLE_NAME"));
+			resultSet = getConnection().getMetaData().getTables(null, null, "%", new String[] { "TABLE" });
+
+			while (resultSet.next()) {
+				tables.add(resultSet.getString("TABLE_NAME"));
+			}
+			return tables;
+		} finally {
+			if (resultSet != null) {
+				resultSet.close();
+			}
 		}
 
-		resultSet.close();
-		return tables;
 	}
 
 	@Override
@@ -56,8 +60,7 @@ public class HSQLDialect extends AbstractDBDialect implements DBDialect {
 
 		final String hibernateTable = "hibernate_unique_key";
 		boolean hibernateTableSkipped = tempTables.remove(hibernateTable);
-		hibernateTableSkipped = hibernateTableSkipped
-				|| tempTables.remove(hibernateTable.toUpperCase());
+		hibernateTableSkipped = hibernateTableSkipped || tempTables.remove(hibernateTable.toUpperCase());
 
 		if (hibernateTableSkipped) {
 			LOG.debug("skipped deletion of hiberate_unique_key");
@@ -67,16 +70,14 @@ public class HSQLDialect extends AbstractDBDialect implements DBDialect {
 		// so we have to retry upon failure
 		while (!tempTables.isEmpty()) {
 			int sizeBefore = tempTables.size();
-			for (final ListIterator<String> iterator = tempTables
-					.listIterator(); iterator.hasNext();) {
+			for (final ListIterator<String> iterator = tempTables.listIterator(); iterator.hasNext();) {
 				final String table = iterator.next();
 
 				try {
 					statement.executeUpdate("DELETE FROM " + table);
 					iterator.remove();
 				} catch (final SQLException exc) {
-					LOG.debug("Ignored exception: " + exc.getMessage()
-							+ ". WILL RETRY.");
+					LOG.debug("Ignored exception: " + exc.getMessage() + ". WILL RETRY.");
 				}
 			}
 			if (tempTables.size() == sizeBefore) {

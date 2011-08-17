@@ -1,0 +1,25 @@
+<document xmlns="http://maven.apache.org/DOCUMENT/1.0.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DOCUMENT/1.0.1 http://maven.apache.org/xsd/document-1.0.1.xsd"
+	outputName="needle-reference-guide">
+
+	<meta>
+		<title>${project.name} Reference Guide</title>
+		<author>akquinet AG</author>
+	</meta>
+
+	<cover>
+		<coverTitle>${project.name}</coverTitle>
+	    <coverType>Reference Guide</coverType>
+		<coverVersion>${project.version}</coverVersion>
+		<companyLogo>./akquinet.png</companyLogo>
+		<companyName>akquinet AG</companyName>
+		<projectLogo>./jboss_aid_were_open.png</projectLogo>
+	</cover>
+
+	<toc name="Table of Contents" depth="1">
+		<item name="Overview" collapse="true" ref="index.apt"></item>
+		<item name="Database utility" collapse="true" ref="db-util.apt"></item>
+		<item name="Configuration" collapse="true" ref="configuration.apt"></item>
+	</toc>
+</document>

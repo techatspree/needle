@@ -1,0 +1,119 @@
+  ---
+ Akquinet Needle - Using the injector
+  ---
+  akquinet Tech@Spree GmbH (http://www.akquinet.de)
+  ---
+  2010
+
+
+Using the injector
+
+	Example Seam component to test:
+	
++--
+@Stateless
+@Name("personListService")
+public class PersonListServiceBean implements PersonListService {
+
+    @In
+    private EntityManager entityManager;
+
+    @Logger
+    private Log log;
+
+    @In
+    private PersonService personService;
+
+    @SuppressWarnings("unchecked")
+    public List<Person> selectAllPerson() {
+        log.info("select all person");
+
+        final Query query = entityManager.createQuery("from Person person");
+        final List<Person> resultList = query.getResultList();
+
+        for (Person person : resultList) {
+
+            // do something here
+            personService.saveOrUpdate(person);
+        }
+
+        return resultList;
+
+    }
+
+}
++--
+
+	JUnit Test:
+	
++--
+public class PersonListServiceBeanTest {
+
+    private final PersonListServiceBean objectUnderTest = new PersonListServiceBean();
+    private Injector injector;
+    private PersonService personServiceMock;
+    private InMemoryDatabaseUtil inMemoryDatabaseUtil;
+
+    @Before
+    public void setUp() {
+
+        injector = new Injector();
+        inMemoryDatabaseUtil = new InMemoryDatabaseUtil();
+
+        // inject seam logger
+        injector.injectSeamLogger(objectUnderTest);
+
+        // create personService mock
+        personServiceMock = EasyMock.createNiceMock(PersonService.class);
+        // inject personService mock
+        injector.injectSeamIn(objectUnderTest, "personService", personServiceMock);
+
+        // inject entity manager
+        injector.injectSeamIn(objectUnderTest, "entityManager", inMemoryDatabaseUtil.getEntityManager());
+
+    }
+
+    @Test
+    public void testSelectAllPerson() throws Exception {
+        createPersons();
+
+        // train the personServiceMock object
+        EasyMock.expect(personServiceMock.saveOrUpdate((Person)EasyMock.anyObject())).andReturn("success").anyTimes();
+
+        replayAll();
+        List<Person> all = objectUnderTest.selectAllPerson();
+        verifyAll();
+
+        Assert.assertEquals(5, all.size());
+
+    }
+
+    private void createPersons() throws Exception {
+        for (int i = 0; i < 5; i++) {
+            Person person = new Person();
+            person.setFirstname("firstname" + i);
+            person.setLastname("lastname" + i);
+            inMemoryDatabaseUtil.saveObject(person);
+        }
+    }
+
+    @After
+    public void tearDown() {
+        inMemoryDatabaseUtil.deleteAll();
+    }
+
+    private void verifyAll() {
+        EasyMock.verify(personServiceMock);
+    }
+
+    private void replayAll() {
+        EasyMock.replay(personServiceMock);
+    }
+
+}
+
++--	
+
+	
+
+

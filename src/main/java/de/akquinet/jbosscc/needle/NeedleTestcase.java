@@ -1,11 +1,10 @@
 package de.akquinet.jbosscc.needle;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,9 @@ public class NeedleTestcase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
-	private final static InjectionIntoAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionIntoAnnotationProcessor();
+	private static final InjectionIntoAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionIntoAnnotationProcessor();
 
-	private Set<InjectionProvider> injectionProviderSet = new HashSet<InjectionProvider>();
+	private List<InjectionProvider> injectionProviderList = new ArrayList<InjectionProvider>();
 
 	private InjectionConfiguration configuration = new InjectionConfiguration();
 	private Map<Object, Object> injectedObjectMap;
@@ -44,18 +43,16 @@ public class NeedleTestcase {
 	}
 
 	private void addEntityManagerProvider(final DatabaseTestcase databaseTestcase) {
-
 		final InjectionProvider entityManagerProvider = new EntityManagerProvider(databaseTestcase);
-		injectionProviderSet.add(entityManagerProvider);
-
 		final InjectionProvider entityManagerFactoryProvider = new EntityManagerFactoryProvider(databaseTestcase);
-		injectionProviderSet.add(entityManagerFactoryProvider);
+
+		assignInejctionProvider(entityManagerProvider, entityManagerFactoryProvider);
 
 	}
 
-	private void assignInejctionProvider(final InjectionProvider... injectionProvider) {
+	protected final void assignInejctionProvider(final InjectionProvider... injectionProvider) {
 		for (InjectionProvider provider : injectionProvider) {
-			injectionProviderSet.add(provider);
+			injectionProviderList.add(0, provider);
 		}
 	}
 
@@ -89,13 +86,13 @@ public class NeedleTestcase {
 		INJECTION_INTO_ANNOTATION_PROCESSOR.process(test);
 	}
 
-	private void initInstance(Object instance) {
+	protected final void initInstance(Object instance) {
 
 		final List<Field> fields = ReflectionUtil.getAllFields(instance.getClass());
 		fieldIteration: for (Field field : fields) {
 
 			// Custom provider
-			for (InjectionProvider provider : injectionProviderSet) {
+			for (InjectionProvider provider : injectionProviderList) {
 				if (handleInjection(instance, field, provider)) {
 					continue fieldIteration;
 				}
@@ -166,11 +163,13 @@ public class NeedleTestcase {
 
 	}
 
-	public Object getInjectedObject(final Object key) {
-		return injectedObjectMap.get(key);
+	@SuppressWarnings("unchecked")
+	public <X> X getInjectedObject(final Object key) {
+		return (X) injectedObjectMap.get(key);
 	}
 
-	public MockProvider getMockProvider() {
+	public <X extends MockProvider> X getMockProvider() {
 		return configuration.getMockProvider();
 	}
+
 }

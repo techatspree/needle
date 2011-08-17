@@ -12,7 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReflectionUtil {
+public final class ReflectionUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
@@ -93,7 +93,7 @@ public class ReflectionUtil {
 		try {
 			setField(field, object, value);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class ReflectionUtil {
 		throw new IllegalArgumentException("Method " + methodName + ":" + Arrays.toString(arguments) + " not found");
 	}
 
-	public static Object invokeMethod(final Method  method, final Object instance, Object... arguments) throws Exception{
+	public static Object invokeMethod(final Method method, final Object instance, Object... arguments) throws Exception {
 		try {
 			if (!method.isAccessible()) {
 				method.setAccessible(true);
@@ -232,8 +232,8 @@ public class ReflectionUtil {
 		}
 	}
 
-	public static Method getMethod(final Class<?> clazz,
-			final String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+	public static Method getMethod(final Class<?> clazz, final String methodName, Class<?>... parameterTypes)
+	        throws NoSuchMethodException {
 
 		Class<?> superClazz = null;
 		try {
@@ -317,7 +317,6 @@ public class ReflectionUtil {
 		field.set(target, value);
 
 	}
-
 
 	public static void setField(String fieldName, Object target, Object value) throws Exception {
 

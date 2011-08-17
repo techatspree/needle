@@ -39,7 +39,22 @@ public class NeedleConfiguration {
 
 	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass();
 
-	final static Map<String, String> loadResourceAndDefault(String name) {
+	static {
+		StringBuilder builder = new StringBuilder();
+		builder.append("\nJDBC_URL=").append(getJdbcUrl());
+		builder.append("\nPU_NAME=").append(getPersistenceunitName());
+		builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
+		builder.append("\nDB_DIALECT=").append(getDBDialectClass());
+		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
+
+		LOG.info("Needle Configuration: {}", builder.toString());
+	}
+
+	private NeedleConfiguration() {
+		super();
+	}
+
+	static final Map<String, String> loadResourceAndDefault(String name) {
 		final Map<String, String> result = new HashMap<String, String>();
 
 		try {
@@ -79,17 +94,6 @@ public class NeedleConfiguration {
 		return result;
 	}
 
-	static {
-		StringBuilder builder = new StringBuilder();
-		builder.append("\nJDBC_URL=").append(getJdbcUrl());
-		builder.append("\nPU_NAME=").append(getPersistenceunitName());
-		builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
-		builder.append("\nDB_DIALECT=").append(getDBDialectClass());
-		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
-
-		LOG.info("Needle Configuration: {}", builder.toString());
-	}
-
 	private static ResourceBundle loadResourceBundle(String name) {
 		return ResourceBundle.getBundle(name);
 	}
@@ -116,8 +120,8 @@ public class NeedleConfiguration {
 
 	@SuppressWarnings("unchecked")
 	private static Class<? extends DBDialect> lookupDBDialectClass() {
-		final String dbDialect = CONFIG_PROPERTIES.containsKey(DB_DIALECT_KEY) ? CONFIG_PROPERTIES
-		        .get(DB_DIALECT_KEY) : null;
+		final String dbDialect = CONFIG_PROPERTIES.containsKey(DB_DIALECT_KEY) ? CONFIG_PROPERTIES.get(DB_DIALECT_KEY)
+		        : null;
 
 		try {
 			if (dbDialect != null) {

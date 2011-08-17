@@ -19,13 +19,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	@Override
 	public <T> T createMockComponent(final Class<T> type) {
 
-
-
 		if (mocks.containsKey(type)) {
-
-			for (Object iterable_element : mocks.values()) {
-	            System.out.println(iterable_element);
-            }
 
 			Object mock = mocks.get(type);
 			resetToNice(mock);
