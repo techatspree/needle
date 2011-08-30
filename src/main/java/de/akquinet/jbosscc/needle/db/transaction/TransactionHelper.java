@@ -29,8 +29,7 @@ public class TransactionHelper {
     return executeInTransaction(new Runnable<T>() {
       @Override
       public T run(final EntityManager entityManager) {
-        entityManager.persist(obj);
-        return obj;
+        return persist(obj, entityManager);
       }
     });
   }
@@ -52,7 +51,7 @@ public class TransactionHelper {
     return executeInTransaction(new Runnable<T>() {
       @Override
       public T run(final EntityManager entityManager) {
-        return entityManager.find(clazz, id);
+        return loadObject(entityManager, clazz, id);
       }
     });
   }
@@ -129,5 +128,14 @@ public class TransactionHelper {
 
   public final EntityManager getEntityManager() {
     return entityManager;
+  }
+
+  public <T> T persist(final T obj, final EntityManager entityManager) {
+    entityManager.persist(obj);
+    return obj;
+  }
+
+  public <T> T loadObject(final EntityManager entityManager, final Class<T> clazz, final Object id) {
+    return entityManager.find(clazz, id);
   }
 }
