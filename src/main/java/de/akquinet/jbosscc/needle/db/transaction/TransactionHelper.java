@@ -135,6 +135,10 @@ public class TransactionHelper {
     return obj;
   }
 
+  public <T> T persist(final T obj) {
+    return persist(obj, entityManager);
+  }
+
   public <T> T loadObject(final EntityManager entityManager, final Class<T> clazz, final Object id) {
     return entityManager.find(clazz, id);
   }
