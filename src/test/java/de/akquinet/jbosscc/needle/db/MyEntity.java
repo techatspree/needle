@@ -2,6 +2,8 @@ package de.akquinet.jbosscc.needle.db;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -10,26 +12,27 @@ import javax.persistence.Id;
 @Entity
 public class MyEntity {
 
-    @Column(nullable = false)
-    private String myName;
+  @Column(nullable = false)
+  private String myName;
 
-    @Id
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-    public String getMyName() {
-        return myName;
-    }
+  public String getMyName() {
+    return myName;
+  }
 
-    public void setMyName(String myName) {
-        this.myName = myName;
-    }
+  public void setMyName(final String myName) {
+    this.myName = myName;
+  }
 
-    public long getId() {
-        return id;
-    }
+  public long getId() {
+    return id;
+  }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+  public void setId(final long id) {
+    this.id = id;
+  }
 
 }

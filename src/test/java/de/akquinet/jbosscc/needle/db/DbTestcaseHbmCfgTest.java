@@ -13,26 +13,28 @@ import de.akquinet.jbosscc.needle.junit.DatabaseRule;
 
 public class DbTestcaseHbmCfgTest {
 
-	private final static Class<?>[] entityClasses = { MyEntity.class };
+  private final static Class<?>[] entityClasses = { MyEntity.class };
 
-	@Rule
-	public DatabaseRule db = new DatabaseRule(entityClasses);
+  @Rule
+  public DatabaseRule db = new DatabaseRule(entityClasses);
 
-	@Test
-	public void testPersist() throws Exception {
-		final MyEntity myEntity = new MyEntity();
-		final EntityManager entityManager = db.getEntityManager();
+  @Test
+  public void testPersist() throws Exception {
+    final MyEntity myEntity = new MyEntity();
+    final EntityManager entityManager = db.getEntityManager();
 
-		myEntity.setMyName("My Name");
+    myEntity.setMyName("My Name");
 
-		assertNotNull(db);
-		assertNotNull(entityManager);
+    assertNotNull(db);
+    assertNotNull(entityManager);
 
-		entityManager.persist(myEntity);
+    entityManager.getTransaction().begin();
+    entityManager.persist(myEntity);
 
-		MyEntity fromDB = entityManager.find(MyEntity.class, myEntity.getId());
+    final MyEntity fromDB = entityManager.find(MyEntity.class, myEntity.getId());
 
-		assertThat(fromDB.getMyName(), equalTo(myEntity.getMyName()));
-	}
+    assertThat(fromDB.getMyName(), equalTo(myEntity.getMyName()));
+    entityManager.getTransaction().commit();
+  }
 
 }
