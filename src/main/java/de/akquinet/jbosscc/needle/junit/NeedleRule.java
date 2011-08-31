@@ -24,6 +24,7 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
       @Override
       public void evaluate() throws Throwable {
         initTestcase(target);
+        base.evaluate();
       }
     };
   }
