@@ -12,40 +12,39 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class InjectionQualifierTest {
 
-	private final User currentUser = new User();
+  private final User currentUser = new User();
 
-	private InjectionProvider currentUserprovider = new InjectionProvider() {
+  private final InjectionProvider<User> currentUserprovider = new InjectionProvider<User>() {
+    @Override
+    public boolean verify(final Field field) {
+      return field.getAnnotation(CurrentUser.class) != null;
+    }
 
-		@Override
-		public boolean verify(Field field) {
-			return field.getAnnotation(CurrentUser.class) != null;
-		}
+    @Override
+    public Object getKey(final Field field) {
+      return CurrentUser.class;
+    }
 
-		@Override
-		public Object getKey(Field field) {
-			return CurrentUser.class;
-		}
+    @Override
+    public User getInjectedObject(final Class<?> type) {
+      return currentUser;
+    }
+  };
 
-		@Override
-		public <T> T get(Class<T> type) {
-			return (T) currentUser;
-		}
-	};
+  @Rule
+  public NeedleRule needleRule = new NeedleRule(currentUserprovider);
 
-	@Rule
-	public NeedleRule needleRule = new NeedleRule(currentUserprovider);
+  @ObjectUnderTest
+  private UserDao userDao;
 
-	@ObjectUnderTest
-	private UserDao userDao;
+  @Test
+  public void testInject() throws Exception {
+    Assert.assertNotNull(userDao);
+    Assert.assertEquals(currentUser, userDao.getCurrentUser());
+    Assert.assertNotNull(userDao.getUser());
+    Assert.assertNotSame(currentUser, userDao.getUser());
 
-	@Test
-	public void testInject() throws Exception {
-		Assert.assertNotNull(userDao);
-		Assert.assertEquals(currentUser, userDao.getCurrentUser());
-		Assert.assertNotNull(userDao.getUser());
-		Assert.assertNotSame(currentUser, userDao.getUser());
-
-		Assert.assertEquals(currentUser, needleRule.getInjectedObject(CurrentUser.class));
-	}
+    Assert.assertEquals(currentUser, needleRule.getInjectedObject(CurrentUser.class));
+  }
 
 }

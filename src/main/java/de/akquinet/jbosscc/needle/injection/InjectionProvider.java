@@ -2,13 +2,10 @@ package de.akquinet.jbosscc.needle.injection;
 
 import java.lang.reflect.Field;
 
-public interface InjectionProvider {
+public interface InjectionProvider<T> {
+  T getInjectedObject(final Class<?> injectionPointType);
 
-	<T> T get(final Class<T> type);
+  boolean verify(Field field);
 
-	boolean verify(Field field);
-
-	Object getKey(Field field);
-
-
+  Object getKey(Field field);
 }

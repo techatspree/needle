@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,29 +27,29 @@ public class NeedleTestcase {
 
   private static final InjectionIntoAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionIntoAnnotationProcessor();
 
-  private final List<InjectionProvider> injectionProviderList = new ArrayList<InjectionProvider>();
+  private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
 
   private final InjectionConfiguration configuration = new InjectionConfiguration();
   private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
-  public NeedleTestcase(final InjectionProvider... injectionProvider) {
+  public NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
     addInjectionProvider(injectionProvider);
   }
 
-  public NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider... injectionProvider) {
+  public NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
     this(injectionProvider);
     addEntityManagerProvider(databaseTestcase);
   }
 
   private void addEntityManagerProvider(final DatabaseTestcase databaseTestcase) {
-    final InjectionProvider entityManagerProvider = new EntityManagerProvider(databaseTestcase);
-    final InjectionProvider entityManagerFactoryProvider = new EntityManagerFactoryProvider(databaseTestcase);
+    final InjectionProvider<EntityManager> entityManagerProvider = new EntityManagerProvider(databaseTestcase);
+    final InjectionProvider<EntityManagerFactory> entityManagerFactoryProvider = new EntityManagerFactoryProvider(databaseTestcase);
 
     addInjectionProvider(entityManagerProvider, entityManagerFactoryProvider);
   }
 
-  public final void addInjectionProvider(final InjectionProvider... injectionProvider) {
-    for (final InjectionProvider provider : injectionProvider) {
+  public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
+    for (final InjectionProvider<?> provider : injectionProvider) {
       injectionProviderList.add(0, provider);
     }
   }
@@ -84,14 +87,14 @@ public class NeedleTestcase {
     fieldIteration: for (final Field field : fields) {
 
       // Custom provider
-      for (final InjectionProvider provider : injectionProviderList) {
+      for (final InjectionProvider<?> provider : injectionProviderList) {
         if (handleInjection(instance, field, provider)) {
           continue fieldIteration;
         }
       }
 
       // Default provider from configuration
-      for (final InjectionProvider provider : configuration.getInjectionProvider()) {
+      for (final InjectionProvider<?> provider : configuration.getInjectionProvider()) {
         if (handleInjection(instance, field, provider)) {
           continue fieldIteration;
         }
@@ -99,9 +102,9 @@ public class NeedleTestcase {
     }
   }
 
-  private boolean handleInjection(final Object instance, final Field field, final InjectionProvider provider) {
+  private boolean handleInjection(final Object instance, final Field field, final InjectionProvider<?> provider) {
     if (provider.verify(field)) {
-      final Object object = provider.get(field.getType());
+      final Object object = provider.getInjectedObject(field.getType());
       setFieldValue(instance, field, object);
       injectedObjectMap.put(provider.getKey(field), object);
       return true;

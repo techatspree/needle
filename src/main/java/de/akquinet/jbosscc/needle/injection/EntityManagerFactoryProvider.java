@@ -6,48 +6,46 @@ import javax.persistence.EntityManagerFactory;
 
 import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 
-public class EntityManagerFactoryProvider implements InjectionProvider {
+public class EntityManagerFactoryProvider implements InjectionProvider<EntityManagerFactory> {
 
-	private final DatabaseTestcase databaseTestcase;
+  private final DatabaseTestcase databaseTestcase;
 
-	private final InjectionVerifier verifier;
+  private final InjectionVerifier verifier;
 
-	public EntityManagerFactoryProvider(final DatabaseTestcase databaseTestcase) {
-		super();
-		this.databaseTestcase = databaseTestcase;
-		verifier = new InjectionVerifier() {
+  public EntityManagerFactoryProvider(final DatabaseTestcase databaseTestcase) {
+    super();
+    this.databaseTestcase = databaseTestcase;
+    verifier = new InjectionVerifier() {
 
-			@Override
-			public boolean verify(Field field) {
-				if (field.getType() == EntityManagerFactory.class) {
-					return true;
-				}
-				return false;
-			}
-		};
+      @Override
+      public boolean verify(final Field field) {
+        if (field.getType() == EntityManagerFactory.class) {
+          return true;
+        }
+        return false;
+      }
+    };
 
-	}
+  }
 
-	public EntityManagerFactoryProvider(final InjectionVerifier verifyer, final DatabaseTestcase databaseTestcase) {
-		super();
-		this.databaseTestcase = databaseTestcase;
-		this.verifier = verifyer;
-	}
+  public EntityManagerFactoryProvider(final InjectionVerifier verifyer, final DatabaseTestcase databaseTestcase) {
+    super();
+    this.databaseTestcase = databaseTestcase;
+    this.verifier = verifyer;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T get(Class<T> type) {
-		return (T) databaseTestcase.getEntityManagerFactory();
-	}
+  @Override
+  public EntityManagerFactory getInjectedObject(final Class<?> type) {
+    return databaseTestcase.getEntityManagerFactory();
+  }
 
-	@Override
-	public boolean verify(Field field) {
-		return verifier.verify(field);
-	}
+  @Override
+  public boolean verify(final Field field) {
+    return verifier.verify(field);
+  }
 
-	@Override
-	public Object getKey(final Field field) {
-		return EntityManagerFactory.class;
-	}
-
+  @Override
+  public Object getKey(final Field field) {
+    return EntityManagerFactory.class;
+  }
 }
