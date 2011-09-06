@@ -30,7 +30,7 @@ public class NeedleTestcase {
   private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
   public NeedleTestcase(final InjectionProvider... injectionProvider) {
-    assignInejctionProvider(injectionProvider);
+    addInjectionProvider(injectionProvider);
   }
 
   public NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider... injectionProvider) {
@@ -42,10 +42,10 @@ public class NeedleTestcase {
     final InjectionProvider entityManagerProvider = new EntityManagerProvider(databaseTestcase);
     final InjectionProvider entityManagerFactoryProvider = new EntityManagerFactoryProvider(databaseTestcase);
 
-    assignInejctionProvider(entityManagerProvider, entityManagerFactoryProvider);
+    addInjectionProvider(entityManagerProvider, entityManagerFactoryProvider);
   }
 
-  protected final void assignInejctionProvider(final InjectionProvider... injectionProvider) {
+  public final void addInjectionProvider(final InjectionProvider... injectionProvider) {
     for (final InjectionProvider provider : injectionProvider) {
       injectionProviderList.add(0, provider);
     }
