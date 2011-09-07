@@ -92,7 +92,6 @@ public class InjectionConfiguration {
 		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
 
 		for (Class<? extends Annotation> annotation : customInjectionAnnotations) {
-			System.out.println("**********" + annotation);
 			globalCustomInjectionProviderSet.add(new DefaultMockInjectionProvider(annotation, getMockProvider()));
         }
 	}
