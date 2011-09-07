@@ -2,6 +2,7 @@ package de.akquinet.jbosscc.needle;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,145 +24,153 @@ import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class NeedleTestcase {
-  private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
-  private static final InjectionIntoAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionIntoAnnotationProcessor();
+	private static final InjectionIntoAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionIntoAnnotationProcessor();
 
-  private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
+	private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
 
-  private final InjectionConfiguration configuration = new InjectionConfiguration();
-  private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
+	private final InjectionConfiguration configuration = new InjectionConfiguration();
+	private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
-  public NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
-    addInjectionProvider(injectionProvider);
-  }
+	public NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
+		addInjectionProvider(injectionProvider);
+	}
 
-  public NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
-    this(injectionProvider);
-    addEntityManagerProvider(databaseTestcase);
-  }
+	public NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
+		this(injectionProvider);
+		addEntityManagerProvider(databaseTestcase);
+	}
 
-  private void addEntityManagerProvider(final DatabaseTestcase databaseTestcase) {
-    final InjectionProvider<EntityManager> entityManagerProvider = new EntityManagerProvider(databaseTestcase);
-    final InjectionProvider<EntityManagerFactory> entityManagerFactoryProvider = new EntityManagerFactoryProvider(databaseTestcase);
+	private void addEntityManagerProvider(final DatabaseTestcase databaseTestcase) {
+		final InjectionProvider<EntityManager> entityManagerProvider = new EntityManagerProvider(databaseTestcase);
+		final InjectionProvider<EntityManagerFactory> entityManagerFactoryProvider = new EntityManagerFactoryProvider(
+		        databaseTestcase);
 
-    addInjectionProvider(entityManagerProvider, entityManagerFactoryProvider);
-  }
+		addInjectionProvider(entityManagerProvider, entityManagerFactoryProvider);
+	}
 
-  public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
-    for (final InjectionProvider<?> provider : injectionProvider) {
-      injectionProviderList.add(0, provider);
-    }
-  }
+	public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
+		for (final InjectionProvider<?> provider : injectionProvider) {
+			injectionProviderList.add(0, provider);
+		}
+	}
 
-  protected final void initTestcase(final Object test) throws Exception {
-    LOG.info("init testcase");
+	protected final void initTestcase(final Object test) throws Exception {
+		LOG.info("init testcase");
 
-    injectedObjectMap.clear();
+		injectedObjectMap.clear();
 
-    final List<Field> fields = ReflectionUtil.getAllFieldsWithAnnotation(test, ObjectUnderTest.class);
+		final List<Field> fields = ReflectionUtil.getAllFieldsWithAnnotation(test, ObjectUnderTest.class);
 
-    LOG.debug("found fields {}", fields);
+		LOG.debug("found fields {}", fields);
 
-    for (final Field field : fields) {
-      LOG.info("found field {}", field.getName());
-      try {
-        final Object instance = setInstanceIfNotNull(field, test);
-        initInstance(instance);
-      } catch (final InstantiationException e) {
-        LOG.error(e.getMessage(), e);
-      } catch (final IllegalAccessException e) {
-        LOG.error(e.getMessage(), e);
-      }
-    }
+		for (final Field field : fields) {
+			LOG.info("found field {}", field.getName());
+			try {
+				final Object instance = setInstanceIfNotNull(field, test);
+				initInstance(instance);
+			} catch (final InstantiationException e) {
+				LOG.error(e.getMessage(), e);
+			} catch (final IllegalAccessException e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
 
-    handleInjectInto(test);
-  }
+		handleInjectInto(test);
+	}
 
-  private void handleInjectInto(final Object test) {
-    INJECTION_INTO_ANNOTATION_PROCESSOR.process(test);
-  }
+	private void handleInjectInto(final Object test) {
+		INJECTION_INTO_ANNOTATION_PROCESSOR.process(test);
+	}
 
-  protected final void initInstance(final Object instance) {
-    final List<Field> fields = ReflectionUtil.getAllFields(instance.getClass());
-    fieldIteration: for (final Field field : fields) {
+	protected final void initInstance(final Object instance) {
+		final List<Field> fields = ReflectionUtil.getAllFields(instance.getClass());
 
-      // Custom provider
-      for (final InjectionProvider<?> provider : injectionProviderList) {
-        if (handleInjection(instance, field, provider)) {
-          continue fieldIteration;
-        }
-      }
+		for (final Field field : fields) {
 
-      // Default provider from configuration
-      for (final InjectionProvider<?> provider : configuration.getInjectionProvider()) {
-        if (handleInjection(instance, field, provider)) {
-          continue fieldIteration;
-        }
-      }
-    }
-  }
+			// Custom provider
+			if (handleInjectionProvider(injectionProviderList, instance, field)) {
+				continue;
+			}
 
-  private boolean handleInjection(final Object instance, final Field field, final InjectionProvider<?> provider) {
-    if (provider.verify(field)) {
-      final Object object = provider.getInjectedObject(field.getType());
-      setFieldValue(instance, field, object);
-      injectedObjectMap.put(provider.getKey(field), object);
-      return true;
-    }
+			// Global custom provider
+			if (handleInjectionProvider(configuration.getGlobalCustomInjectionProvider(), instance, field)) {
+				continue;
+			}
 
-    return false;
-  }
+			// Default provider from configuration
+			if (handleInjectionProvider(configuration.getInjectionProvider(), instance, field)) {
+				continue;
+			}
+		}
+	}
 
-  private void setFieldValue(final Object instance, final Field field, final Object fieldValue) {
-    try {
-      ReflectionUtil.setField(field, instance, fieldValue);
-    } catch (final Exception e) {
-      LOG.error(e.getMessage(), e);
-    }
-  }
+	private boolean handleInjectionProvider(final Collection<InjectionProvider<?>> injectionProviders, Object instance,
+	        Field field) {
+		for (final InjectionProvider<?> provider : injectionProviders) {
 
-  private Object setInstanceIfNotNull(final Field field, final Object test) throws Exception {
+			if (provider.verify(field)) {
+				final Object object = provider.getInjectedObject(field.getType());
+				setFieldValue(instance, field, object);
+				injectedObjectMap.put(provider.getKey(field), object);
+				return true;
+			}
 
-    Object instance = ReflectionUtil.getFieldValue(test, field);
+		}
+		return false;
+	}
 
-    if (instance == null) {
-      final ObjectUnderTest annotation = field.getAnnotation(ObjectUnderTest.class);
+	private void setFieldValue(final Object instance, final Field field, final Object fieldValue) {
+		try {
+			ReflectionUtil.setField(field, instance, fieldValue);
+		} catch (final Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
 
-      final Class<?> implementation = annotation.implementation() != Void.class ? annotation.implementation() : field.getType();
+	private Object setInstanceIfNotNull(final Field field, final Object test) throws Exception {
 
-      if (implementation.isInterface()) {
-        throw new ObjectUnderTestInstantiationException("could not create an instance of object under test " + implementation
-            + ", no implementation class configured");
-      }
+		Object instance = ReflectionUtil.getFieldValue(test, field);
 
-      try {
-        implementation.getConstructor();
-      } catch (final NoSuchMethodException e) {
-        throw new ObjectUnderTestInstantiationException("could not create an instance of object under test " + implementation
-            + ",implementation has no public no-arguments constructor", e);
-      }
+		if (instance == null) {
+			final ObjectUnderTest annotation = field.getAnnotation(ObjectUnderTest.class);
 
-      instance = implementation.newInstance();
+			final Class<?> implementation = annotation.implementation() != Void.class ? annotation.implementation()
+			        : field.getType();
 
-      try {
-        ReflectionUtil.setField(field, test, instance);
-      } catch (final Exception e) {
-        throw new ObjectUnderTestInstantiationException(e);
-      }
-    }
+			if (implementation.isInterface()) {
+				throw new ObjectUnderTestInstantiationException("could not create an instance of object under test "
+				        + implementation + ", no implementation class configured");
+			}
 
-    return instance;
+			try {
+				implementation.getConstructor();
+			} catch (final NoSuchMethodException e) {
+				throw new ObjectUnderTestInstantiationException("could not create an instance of object under test "
+				        + implementation + ",implementation has no public no-arguments constructor", e);
+			}
 
-  }
+			instance = implementation.newInstance();
 
-  @SuppressWarnings("unchecked")
-  public <X> X getInjectedObject(final Object key) {
-    return (X) injectedObjectMap.get(key);
-  }
+			try {
+				ReflectionUtil.setField(field, test, instance);
+			} catch (final Exception e) {
+				throw new ObjectUnderTestInstantiationException(e);
+			}
+		}
 
-  public <X extends MockProvider> X getMockProvider() {
-    return configuration.getMockProvider();
-  }
+		return instance;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public <X> X getInjectedObject(final Object key) {
+		return (X) injectedObjectMap.get(key);
+	}
+
+	public <X extends MockProvider> X getMockProvider() {
+		return configuration.getMockProvider();
+	}
 
 }

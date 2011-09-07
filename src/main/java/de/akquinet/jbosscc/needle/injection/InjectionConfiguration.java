@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +20,8 @@ public class InjectionConfiguration {
 	private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
 	private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
-	private final Set<InjectionProvider> injectionProviderSet = new HashSet<InjectionProvider>();
+	private final Set<InjectionProvider<?>> injectionProviderSet = new HashSet<InjectionProvider<?>>();
+	private final Set<InjectionProvider<?>> globalCustomInjectionProviderSet = new HashSet<InjectionProvider<?>>();
 	private final MockProvider mockProvider;
 
 	public InjectionConfiguration() {
@@ -32,6 +34,8 @@ public class InjectionConfiguration {
 		add(PERSISTENCE_CONTEXT_CLASS);
 		add(PERSISTENCE_UNIT_CLASS);
 		addResource();
+
+		initGlobalCustomInjectionAnnotation();
 
 	}
 
@@ -56,8 +60,12 @@ public class InjectionConfiguration {
 		return ReflectionUtil.forName(className);
 	}
 
-	public Set<InjectionProvider> getInjectionProvider() {
+	public Set<InjectionProvider<?>> getInjectionProvider() {
 		return injectionProviderSet;
+	}
+
+	public Set<InjectionProvider<?>> getGlobalCustomInjectionProvider() {
+		return globalCustomInjectionProviderSet;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -77,5 +85,15 @@ public class InjectionConfiguration {
 			}
 		}
 		throw new RuntimeException("no mock provider configured");
+	}
+
+
+	private void initGlobalCustomInjectionAnnotation(){
+		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
+
+		for (Class<? extends Annotation> annotation : customInjectionAnnotations) {
+			System.out.println("**********" + annotation);
+			globalCustomInjectionProviderSet.add(new DefaultMockInjectionProvider(annotation, getMockProvider()));
+        }
 	}
 }

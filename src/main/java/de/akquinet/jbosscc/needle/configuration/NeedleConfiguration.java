@@ -1,16 +1,21 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
+import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public final class NeedleConfiguration {
 
@@ -27,9 +32,14 @@ public final class NeedleConfiguration {
 
 	static final String HIBERNATE_CFG_FILENAME_KEY = "hibernate.cfg.filename";
 
-	private static final String JDBC_URL = CONFIG_PROPERTIES.get(JDBC_URL_KEY);
-
 	private static final String DEFAULT_CONFIGURATION_FILENAME = "needle-defaults";
+
+	private static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
+	private static final Set<Class<? extends Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupCustomInjectionAnnotations();
+
+	private static final String CUSTOM_INJECTION_PROVIDERS_KEY = "custom.injection.providers";
+
+	private static final String JDBC_URL = CONFIG_PROPERTIES.get(JDBC_URL_KEY);
 
 	private static final String PERSISTENCEUNIT_NAME = CONFIG_PROPERTIES.get(PERSISTENCEUNIT_NAME_KEY);
 
@@ -152,5 +162,36 @@ public final class NeedleConfiguration {
 		}
 
 		return null;
+	}
+
+	public static Set<Class<? extends Annotation>> getCustomInjectionAnnotations() {
+		return CUSTOM_INJECTION_ANNOTATIONS;
+	}
+
+	private static Set<Class<? extends Annotation>> lookupCustomInjectionAnnotations() {
+		final String customAnnotationList = CONFIG_PROPERTIES.get(CUSTOM_INJECTION_ANNOTATIONS_KEY) != null ? CONFIG_PROPERTIES.get(CUSTOM_INJECTION_ANNOTATIONS_KEY) : "";
+		final Set<Class<? extends Annotation>> customInjectionAnnotations = new HashSet<Class<? extends Annotation>>();
+		final StringTokenizer tokenizer = new StringTokenizer(customAnnotationList, ",");
+
+		String token = null;
+		while (tokenizer.hasMoreElements()) {
+			try {
+				token = tokenizer.nextToken();
+
+				@SuppressWarnings("unchecked")
+				final Class<? extends Annotation> customAnnotation = (Class<? extends Annotation>) ReflectionUtil
+				        .forName(token);
+
+				if(customAnnotation != null){
+					customInjectionAnnotations.add(customAnnotation);
+				}else{
+					LOG.warn("no annotation class found for {}", token);
+				}
+			} catch (Exception e) {
+				LOG.warn("could not load annotation " + token, e);
+			}
+		}
+
+		return customInjectionAnnotations;
 	}
 }
