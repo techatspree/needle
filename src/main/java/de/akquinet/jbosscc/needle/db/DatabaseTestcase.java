@@ -11,12 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
+import de.akquinet.jbosscc.needle.db.transaction.TransactionHelper;
 
-public class DatabaseTestcase  {
+public class DatabaseTestcase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcase.class);
 
 	private final DatabaseTestcaseConfiguration configuration;
+
+	private TransactionHelper transactionHelper;
 
 	public DatabaseTestcase() {
 		this(NeedleConfiguration.getPersistenceunitName());
@@ -74,7 +77,15 @@ public class DatabaseTestcase  {
 		return configuration.getEntityManager();
 	}
 
-	public EntityManagerFactory getEntityManagerFactory(){
+	public EntityManagerFactory getEntityManagerFactory() {
 		return configuration.getEntityManagerFactory();
+	}
+
+	public TransactionHelper getTransactionHelper() {
+		if (transactionHelper == null) {
+			transactionHelper = new TransactionHelper(getEntityManager());
+		}
+
+		return transactionHelper;
 	}
 }
