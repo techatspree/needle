@@ -13,326 +13,370 @@ import org.slf4j.LoggerFactory;
 
 public final class ReflectionUtil {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
-  private ReflectionUtil() {
-    super();
-  }
+	private ReflectionUtil() {
+		super();
+	}
 
-  public static List<Field> getAllFieldsWithAnnotation(final Class<?> clazz, final Class<? extends Annotation> annotation) {
-    final List<Field> result = new ArrayList<Field>();
-    Class<?> currentClass = clazz;
+	public static List<Field> getAllFieldsWithAnnotation(final Class<?> clazz,
+	        final Class<? extends Annotation> annotation) {
+		final List<Field> result = new ArrayList<Field>();
 
-    while (currentClass != null) {
-      final Field[] fields = currentClass.getDeclaredFields();
+		new DerivedClassInterator(clazz) {
 
-      for (final Field field : fields) {
-        if (field.getAnnotation(annotation) != null) {
-          result.add(field);
-        }
-      }
+			@Override
+			protected void handleClass(Class<?> clazz) {
+				final Field[] fields = clazz.getDeclaredFields();
 
-      currentClass = currentClass.getSuperclass();
-    }
+				for (final Field field : fields) {
+					if (field.getAnnotation(annotation) != null) {
+						result.add(field);
+					}
+				}
 
-    return result;
-  }
+			}
+		}.iterate();
 
-  public static List<Field> getAllFieldsWithAnnotation(final Object instance, final Class<? extends Annotation> annotation) {
-    return getAllFieldsWithAnnotation(instance.getClass(), annotation);
+		return result;
+	}
 
-  }
+	public static List<Field> getAllFieldsAssinableFrom(final Class<?> assinableType, final Class<?> clazz) {
+		final List<Field> result = new ArrayList<Field>();
 
-  public static List<Field> getAllFields(final Class<?> clazz) {
-    final Field[] fields = clazz.getDeclaredFields();
+		new DerivedClassInterator(clazz) {
 
-    final List<Field> result = new ArrayList<Field>();
+			@Override
+			protected void handleClass(Class<?> clazz) {
+				final Field[] fields = clazz.getDeclaredFields();
 
-    Collections.addAll(result, fields);
+				for (final Field field : fields) {
+					if (field.getType().isAssignableFrom(assinableType)) {
+						result.add(field);
+					}
+				}
 
-    Class<?> superClazz = clazz.getSuperclass();
+			}
+		}.iterate();
 
-    while (superClazz != null) {
-      final Field[] extraFields = superClazz.getDeclaredFields();
+		return result;
 
-      Collections.addAll(result, extraFields);
+	}
 
-      superClazz = superClazz.getSuperclass();
-    }
+	public static List<Field> getAllFieldsWithAnnotation(final Object instance,
+	        final Class<? extends Annotation> annotation) {
+		return getAllFieldsWithAnnotation(instance.getClass(), annotation);
 
-    return result;
-  }
+	}
 
-  /**
-   * Changing the value of a given field.
-   * 
-   * @param object
-   *          -- target object of injection
-   * @param clazz
-   *          -- type of argument object
-   * @param fieldName
-   *          -- name of field whose value is to be set
-   * @param value
-   *          -- object that is injected
-   */
-  public static void setFieldValue(final Object object, final Class<?> clazz, final String fieldName, final Object value)
-      throws NoSuchFieldException {
-    final Field field = clazz.getDeclaredField(fieldName);
+	public static List<Field> getAllFields(final Class<?> clazz) {
 
-    try {
-      setField(field, object, value);
-    } catch (final Exception e) {
-      LOG.error(e.getMessage(), e);
-    }
-  }
+		final List<Field> result = new ArrayList<Field>();
 
-  /**
-   * Changing the value of a given field.
-   * 
-   * @param object
-   *          -- target object of injection
-   * @param fieldName
-   *          -- name of field whose value is to be set
-   * @param value
-   *          -- object that is injected
-   */
-  public static void setFieldValue(final Object object, final String fieldName, final Object value) {
-    Class<?> clazz = object.getClass();
+		new DerivedClassInterator(clazz) {
 
-    while (clazz != null) {
-      try {
-        setFieldValue(object, clazz, fieldName, value);
-        return;
-      } catch (final NoSuchFieldException e) {
-      }
+			@Override
+			protected void handleClass(final Class<?> clazz) {
+				final Field[] fields = clazz.getDeclaredFields();
 
-      clazz = clazz.getSuperclass();
-    }
-  }
+				Collections.addAll(result, fields);
 
-  /**
-   * Get the value of a given fields on a given object via reflection.
-   * 
-   * @param object
-   *          -- target object of field access
-   * @param clazz
-   *          -- type of argument object
-   * @param fieldName
-   *          -- name of the field
-   * @return -- the value of the represented field in object; primitive values are wrapped in an appropriate object before being returned
-   */
-  public static Object getFieldValue(final Object object, final Class<?> clazz, final String fieldName) {
-    try {
-      final Field field = clazz.getDeclaredField(fieldName);
-      return getFieldValue(object, field);
-    } catch (final Exception e) {
-      throw new IllegalArgumentException("Could not get field value: " + fieldName, e);
-    }
-  }
+			}
+		}.iterate();
 
-  /**
-   * Get the value of a given fields on a given object via reflection.
-   * 
-   * @param object
-   *          -- target object of field access
-   * @param field
-   *          -- target field
-   * 
-   * @return -- the value of the represented field in object; primitive values are wrapped in an appropriate object before being returned
-   */
-  public static Object getFieldValue(final Object object, final Field field) {
-    try {
-      if (!field.isAccessible()) {
-        field.setAccessible(true);
-      }
+		return result;
+	}
 
-      return field.get(object);
-    } catch (final Exception e) {
-      throw new IllegalArgumentException("Could not get field value: " + field, e);
-    }
-  }
+	public static List<Method> getMethods(final Class<?> clazz) {
+		return Arrays.asList(clazz.getMethods());
+	}
 
-  /**
-   * Get the value of a given fields on a given object via reflection.
-   * 
-   * @param object
-   *          -- target object of field access
-   * @param fieldName
-   *          -- name of the field
-   * @return -- the value of the represented field in object; primitive values are wrapped in an appropriate object before being returned
-   */
-  public static Object getFieldValue(final Object object, final String fieldName) {
-    return getFieldValue(object, object.getClass(), fieldName);
-  }
+	/**
+	 * Changing the value of a given field.
+	 *
+	 * @param object
+	 *            -- target object of injection
+	 * @param clazz
+	 *            -- type of argument object
+	 * @param fieldName
+	 *            -- name of field whose value is to be set
+	 * @param value
+	 *            -- object that is injected
+	 */
+	public static void setFieldValue(final Object object, final Class<?> clazz, final String fieldName,
+	        final Object value) throws NoSuchFieldException {
+		final Field field = clazz.getDeclaredField(fieldName);
 
-  /**
-   * Invoke a given method with given arguments on a given object via reflection.
-   * 
-   * @param object
-   *          -- target object of invocation
-   * @param clazz
-   *          -- type of argument object
-   * @param methodName
-   *          -- name of method to be invoked
-   * @param arguments
-   *          -- arguments for method invocation
-   * @return -- method object to which invocation is actually dispatched
-   * @throws Exception
-   *           - operation exception
-   */
-  public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName, final Object... arguments)
-      throws Exception {
+		try {
+			setField(field, object, value);
+		} catch (final Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
 
-    for (final Method declaredMethod : clazz.getDeclaredMethods()) {
-      if (declaredMethod.getName().equals(methodName)) {
-        final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+	/**
+	 * Changing the value of a given field.
+	 *
+	 * @param object
+	 *            -- target object of injection
+	 * @param fieldName
+	 *            -- name of field whose value is to be set
+	 * @param value
+	 *            -- object that is injected
+	 */
+	public static void setFieldValue(final Object object, final String fieldName, final Object value) {
 
-        if (parameterTypes.length == arguments.length) {
-          final boolean match = checkArguments(parameterTypes, arguments);
+		new DerivedClassInterator(object.getClass()) {
 
-          if (match) {
-            return invokeMethod(declaredMethod, object, arguments);
-          }
-        }
-      }
-    }
+			@Override
+			protected void handleClass(Class<?> clazz) {
+				try {
+					setFieldValue(object, clazz, fieldName, value);
+					return;
+				} catch (final NoSuchFieldException e) {
+					LOG.warn("could not set field " + fieldName + " value " + value, e);
+				}
 
-    throw new IllegalArgumentException("Method " + methodName + ":" + Arrays.toString(arguments) + " not found");
-  }
+			}
+		}.iterate();
 
-  public static Object invokeMethod(final Method method, final Object instance, final Object... arguments) throws Exception {
-    try {
-      if (!method.isAccessible()) {
-        method.setAccessible(true);
-      }
+	}
 
-      return method.invoke(instance, arguments);
-    } catch (final Exception exc) {
-      LOG.warn("Error invoking method: " + method.getName(), exc);
-      final Throwable cause = exc.getCause();
-      if (cause instanceof Exception) {
-        throw (Exception) cause;
-      }
-      throw exc;
-    }
-  }
+	/**
+	 * Get the value of a given fields on a given object via reflection.
+	 *
+	 * @param object
+	 *            -- target object of field access
+	 * @param clazz
+	 *            -- type of argument object
+	 * @param fieldName
+	 *            -- name of the field
+	 * @return -- the value of the represented field in object; primitive values
+	 *         are wrapped in an appropriate object before being returned
+	 */
+	public static Object getFieldValue(final Object object, final Class<?> clazz, final String fieldName) {
+		try {
+			final Field field = clazz.getDeclaredField(fieldName);
+			return getFieldValue(object, field);
+		} catch (final Exception e) {
+			throw new IllegalArgumentException("Could not get field value: " + fieldName, e);
+		}
+	}
 
-  public static Method getMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes)
-      throws NoSuchMethodException {
+	/**
+	 * Get the value of a given fields on a given object via reflection.
+	 *
+	 * @param object
+	 *            -- target object of field access
+	 * @param field
+	 *            -- target field
+	 *
+	 * @return -- the value of the represented field in object; primitive values
+	 *         are wrapped in an appropriate object before being returned
+	 */
+	public static Object getFieldValue(final Object object, final Field field) {
+		try {
+			if (!field.isAccessible()) {
+				field.setAccessible(true);
+			}
 
-    Class<?> superClazz = null;
-    try {
-      return clazz.getDeclaredMethod(methodName, parameterTypes);
+			return field.get(object);
+		} catch (final Exception e) {
+			throw new IllegalArgumentException("Could not get field value: " + field, e);
+		}
+	}
 
-    } catch (final Exception e) {
-      superClazz = clazz.getSuperclass();
-    }
+	/**
+	 * Get the value of a given fields on a given object via reflection.
+	 *
+	 * @param object
+	 *            -- target object of field access
+	 * @param fieldName
+	 *            -- name of the field
+	 * @return -- the value of the represented field in object; primitive values
+	 *         are wrapped in an appropriate object before being returned
+	 */
+	public static Object getFieldValue(final Object object, final String fieldName) {
+		return getFieldValue(object, object.getClass(), fieldName);
+	}
 
-    while (superClazz != null) {
-      try {
-        return superClazz.getDeclaredMethod(methodName, parameterTypes);
-      } catch (final Exception e) {
-        superClazz = superClazz.getSuperclass();
-      }
-    }
+	/**
+	 * Invoke a given method with given arguments on a given object via
+	 * reflection.
+	 *
+	 * @param object
+	 *            -- target object of invocation
+	 * @param clazz
+	 *            -- type of argument object
+	 * @param methodName
+	 *            -- name of method to be invoked
+	 * @param arguments
+	 *            -- arguments for method invocation
+	 * @return -- method object to which invocation is actually dispatched
+	 * @throws Exception
+	 *             - operation exception
+	 */
+	public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName,
+	        final Object... arguments) throws Exception {
 
-    throw new NoSuchMethodException(methodName);
+		for (final Method declaredMethod : clazz.getDeclaredMethods()) {
+			if (declaredMethod.getName().equals(methodName)) {
+				final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
 
-  }
+				if (parameterTypes.length == arguments.length) {
+					final boolean match = checkArguments(parameterTypes, arguments);
 
-  private static boolean checkArguments(final Class<?>[] parameterTypes, final Object[] arguments) {
-    boolean match = true;
+					if (match) {
+						return invokeMethod(declaredMethod, object, arguments);
+					}
+				}
+			}
+		}
 
-    for (int i = 0; i < arguments.length; i++) {
-      final Class<?> parameterClass = parameterTypes[i];
-      final Class<?> argumentClass = arguments[i].getClass();
+		throw new IllegalArgumentException("Method " + methodName + ":" + Arrays.toString(arguments) + " not found");
+	}
 
-      if (!parameterClass.isAssignableFrom(argumentClass)) {
-        final boolean isInt = (parameterClass == int.class) && (argumentClass == Integer.class);
-        final boolean isDouble = (parameterClass == double.class) && (argumentClass == Double.class);
+	public static Object invokeMethod(final Method method, final Object instance, final Object... arguments)
+	        throws Exception {
+		try {
+			if (!method.isAccessible()) {
+				method.setAccessible(true);
+			}
 
-        if (!isInt && !isDouble) {
-          match = false;
-        }
-      }
-    }
+			return method.invoke(instance, arguments);
+		} catch (final Exception exc) {
+			LOG.warn("Error invoking method: " + method.getName(), exc);
+			final Throwable cause = exc.getCause();
+			if (cause instanceof Exception) {
+				throw (Exception) cause;
+			}
+			throw exc;
+		}
+	}
 
-    return match;
-  }
+	public static Method getMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes)
+	        throws NoSuchMethodException {
 
-  /**
-   * Invoke a given method with given arguments on a given object via reflection.
-   * 
-   * @param object
-   *          -- target object of invocation
-   * @param methodName
-   *          -- name of method to be invoked
-   * @param arguments
-   *          -- arguments for method invocation
-   * @return -- method object to which invocation is actually dispatched
-   * @throws Exception
-   */
-  public static Object invokeMethod(final Object object, final String methodName, final Object... arguments) throws Exception {
-    return invokeMethod(object, object.getClass(), methodName, arguments);
-  }
+		final List<Method> result = new ArrayList<Method>();
 
-  /**
-   * Returns the <code>Class</code> object associated with the class or interface with the given string name.
-   * 
-   * @param className
-   *          the fully qualified name of the desired class.
-   * @return <code>Class</code> or null
-   */
-  public static Class<?> forName(final String className) {
-    try {
-      return Class.forName(className);
-    } catch (final ClassNotFoundException e) {
-      return null;
-    }
-  }
+		new DerivedClassInterator(clazz) {
 
-  public static void setField(final Field field, final Object target, final Object value) throws Exception {
-    if (!field.isAccessible()) {
-      field.setAccessible(true);
-    }
+			@Override
+			protected void handleClass(Class<?> clazz) {
+				try {
+					result.add(clazz.getDeclaredMethod(methodName, parameterTypes));
+					return;
+				} catch (Exception e) {
+					// do nothing
+				}
 
-    field.set(target, value);
+			}
+		}.iterate();
 
-  }
 
-  public static void setField(final String fieldName, final Object target, final Object value) throws Exception {
+		if (result.isEmpty()) {
+			throw new NoSuchMethodException(methodName);
+		}
+		return result.get(0);
 
-    final Field field = ReflectionUtil.getField(target.getClass(), fieldName);
+	}
 
-    if (!field.isAccessible()) {
-      field.setAccessible(true);
-    }
+	private static boolean checkArguments(final Class<?>[] parameterTypes, final Object[] arguments) {
+		boolean match = true;
 
-    field.set(target, value);
+		for (int i = 0; i < arguments.length; i++) {
+			final Class<?> parameterClass = parameterTypes[i];
+			final Class<?> argumentClass = arguments[i].getClass();
 
-  }
+			if (!parameterClass.isAssignableFrom(argumentClass)) {
+				final boolean isInt = (parameterClass == int.class) && (argumentClass == Integer.class);
+				final boolean isDouble = (parameterClass == double.class) && (argumentClass == Double.class);
 
-  public static Field getField(final Class<?> clazz, final String fieldName) {
-    Field field = null;
-    field = getFieldByName(clazz, fieldName);
+				if (!isInt && !isDouble) {
+					match = false;
+				}
+			}
+		}
 
-    Class<?> superClazz = clazz.getSuperclass();
+		return match;
+	}
 
-    while (superClazz != null && field == null) {
-      field = getFieldByName(superClazz, fieldName);
-      superClazz = superClazz.getSuperclass();
-    }
+	/**
+	 * Invoke a given method with given arguments on a given object via
+	 * reflection.
+	 *
+	 * @param object
+	 *            -- target object of invocation
+	 * @param methodName
+	 *            -- name of method to be invoked
+	 * @param arguments
+	 *            -- arguments for method invocation
+	 * @return -- method object to which invocation is actually dispatched
+	 * @throws Exception
+	 */
+	public static Object invokeMethod(final Object object, final String methodName, final Object... arguments)
+	        throws Exception {
+		return invokeMethod(object, object.getClass(), methodName, arguments);
+	}
 
-    return field;
+	/**
+	 * Returns the <code>Class</code> object associated with the class or
+	 * interface with the given string name.
+	 *
+	 * @param className
+	 *            the fully qualified name of the desired class.
+	 * @return <code>Class</code> or null
+	 */
+	public static Class<?> forName(final String className) {
+		try {
+			return Class.forName(className);
+		} catch (final ClassNotFoundException e) {
+			return null;
+		}
+	}
 
-  }
+	public static void setField(final Field field, final Object target, final Object value) throws Exception {
+		if (!field.isAccessible()) {
+			field.setAccessible(true);
+		}
 
-  private static Field getFieldByName(final Class<?> clazz, final String fieldName) {
-    try {
-      return clazz.getDeclaredField(fieldName);
-    } catch (final NoSuchFieldException e) {
-      return null;
-    }
-  }
+		field.set(target, value);
+
+	}
+
+	public static void setField(final String fieldName, final Object target, final Object value) throws Exception {
+
+		final Field field = ReflectionUtil.getField(target.getClass(), fieldName);
+
+		if (!field.isAccessible()) {
+			field.setAccessible(true);
+		}
+
+		field.set(target, value);
+
+	}
+
+	public static Field getField(final Class<?> clazz, final String fieldName) {
+		Field field = null;
+		field = getFieldByName(clazz, fieldName);
+
+		Class<?> superClazz = clazz.getSuperclass();
+
+		while (superClazz != null && field == null) {
+			field = getFieldByName(superClazz, fieldName);
+			superClazz = superClazz.getSuperclass();
+		}
+
+		return field;
+
+	}
+
+	private static Field getFieldByName(final Class<?> clazz, final String fieldName) {
+		try {
+			return clazz.getDeclaredField(fieldName);
+		} catch (final NoSuchFieldException e) {
+			return null;
+		}
+	}
 
 }

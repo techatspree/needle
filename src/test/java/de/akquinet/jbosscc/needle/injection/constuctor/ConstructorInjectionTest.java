@@ -1,14 +1,18 @@
-package de.akquinet.jbosscc.needle.injection;
+package de.akquinet.jbosscc.needle.injection.constuctor;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.injection.CurrentUser;
+import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
+import de.akquinet.jbosscc.needle.injection.method.User;
+import de.akquinet.jbosscc.needle.injection.method.UserDao;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
-public class InjectionQualifierTest {
+public class ConstructorInjectionTest {
 
 	private final User currentUser = new User();
 
@@ -36,13 +40,22 @@ public class InjectionQualifierTest {
 	private UserDao userDao;
 
 	@Test
-	public void testInject() throws Exception {
-		Assert.assertNotNull(userDao);
-		Assert.assertEquals(currentUser, userDao.getCurrentUser());
+	public void testSetterInjection() throws Exception {
 		Assert.assertNotNull(userDao.getUser());
-		Assert.assertNotSame(currentUser, userDao.getUser());
+	}
 
-		Assert.assertEquals(currentUser, needleRule.getInjectedObject(CurrentUser.class));
+	@Test
+	public void testSetterInjection_Qualifyer() throws Exception {
+		User currentUser2 = userDao.getCurrentUser();
+
+		Assert.assertSame(currentUser, currentUser2);
+	}
+
+
+	@Test
+	public void testMultipleMethodInjection() throws Exception {
+		Assert.assertNotNull(userDao.getQueue1());
+		Assert.assertNotNull(userDao.getQueue2());
 	}
 
 }

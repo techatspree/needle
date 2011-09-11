@@ -25,12 +25,12 @@ public class DatabaseTestcase {
 		this(NeedleConfiguration.getPersistenceunitName());
 	}
 
-	public DatabaseTestcase(String puName) {
+	public DatabaseTestcase(final String puName) {
 		configuration = new DatabaseTestcaseConfiguration(puName);
 
 	}
 
-	public DatabaseTestcase(Class<?>[] clazzes) {
+	public DatabaseTestcase(final Class<?>[] clazzes) {
 		configuration = new DatabaseTestcaseConfiguration(clazzes);
 	}
 
@@ -45,7 +45,7 @@ public class DatabaseTestcase {
 	 * Delete everything from the DB: This cannot be done with the JPA, because
 	 * the order of deletion matters. Instead we directly use a JDBC connection.
 	 */
-	protected void deleteAll(DBDialect dbDialect) {
+	protected void deleteAll(final DBDialect dbDialect) {
 
 		try {
 			dbDialect.openConnection();

@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.InjectInto;
+import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.DatabaseRule;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
@@ -23,7 +24,7 @@ public class NeedleTest {
 	@ObjectUnderTest
 	private MyComponentBean componentBean;
 
-	@InjectInto(targetComponent = "componentBean", fieldName = "myEjbComponent")
+	@InjectIntoMany
 	@ObjectUnderTest(implementation = MyEjbComponentBean.class)
 	private MyEjbComponent ejbComponent;
 

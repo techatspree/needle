@@ -1,0 +1,79 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1
+	http://maven.apache.org/xsd/assembly-1.1.1.xsd">
+
+	<id>distribution</id>
+
+	<formats>
+		<format>zip</format>
+		<format>tar.gz</format>
+	</formats>
+
+	<fileSets>
+	<!--
+		<fileSet>
+			<directory>${project.build.directory}/pdf</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>*.pdf</include>
+			</includes>
+		</fileSet>
+ -->
+
+		<fileSet>
+			<directory>${project.build.directory}/site/apidocs</directory>
+			<outputDirectory>apidocs</outputDirectory>
+		</fileSet>
+
+		<fileSet>
+			<directory>src/dist</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+
+	<moduleSets>
+		<moduleSet>
+			<binaries>
+				<attachmentClassifier>javadoc</attachmentClassifier>
+				<includeDependencies>false</includeDependencies>
+				<unpack>false</unpack>
+
+				<outputDirectory>artifacts</outputDirectory>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<binaries>
+				<attachmentClassifier>sources</attachmentClassifier>
+				<includeDependencies>false</includeDependencies>
+				<unpack>false</unpack>
+
+				<outputDirectory>artifacts</outputDirectory>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<binaries>
+				<includeDependencies>false</includeDependencies>
+				<unpack>false</unpack>
+
+				<outputDirectory>artifacts</outputDirectory>
+			</binaries>
+		</moduleSet>
+
+		<moduleSet>
+			<binaries>
+				<attachmentClassifier>sources</attachmentClassifier>
+				<includeDependencies>false</includeDependencies>
+				<outputDirectory>src</outputDirectory>
+				<unpack>true</unpack>
+				<unpackOptions>
+					<includes>
+						<include>de/**/*</include>
+					</includes>
+				</unpackOptions>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+</assembly>

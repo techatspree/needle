@@ -22,6 +22,9 @@ public class InjectionConfiguration {
 
 	private final Set<InjectionProvider<?>> injectionProviderSet = new HashSet<InjectionProvider<?>>();
 	private final Set<InjectionProvider<?>> globalCustomInjectionProviderSet = new HashSet<InjectionProvider<?>>();
+
+	private final Set<Class<? extends Annotation>> injectionAnnotationClasses = new HashSet<Class<? extends Annotation>>();
+
 	private final MockProvider mockProvider;
 
 	public InjectionConfiguration() {
@@ -42,6 +45,7 @@ public class InjectionConfiguration {
 	private void addResource() {
 
 		if (RESOURCE_CLASS != null) {
+			addInjectionAnnotation(RESOURCE_CLASS);
 			injectionProviderSet.add(new ResourceMockInjectionProvider(mockProvider));
 		}
 	}
@@ -49,9 +53,9 @@ public class InjectionConfiguration {
 	private void add(final Class<?> clazz) {
 
 		if (clazz != null) {
-			LOG.info("register injection handler for class {}", clazz);
+			LOG.debug("register injection handler for class {}", clazz);
 			injectionProviderSet.add(new DefaultMockInjectionProvider(clazz, mockProvider));
-
+			addInjectionAnnotation(clazz);
 		}
 
 	}
@@ -87,12 +91,24 @@ public class InjectionConfiguration {
 		throw new RuntimeException("no mock provider configured");
 	}
 
-
-	private void initGlobalCustomInjectionAnnotation(){
-		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
+	private void initGlobalCustomInjectionAnnotation() {
+		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration
+		        .getCustomInjectionAnnotations();
 
 		for (Class<? extends Annotation> annotation : customInjectionAnnotations) {
+			addInjectionAnnotation(annotation);
 			globalCustomInjectionProviderSet.add(new DefaultMockInjectionProvider(annotation, getMockProvider()));
-        }
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addInjectionAnnotation(Class<?> clazz) {
+		if (clazz.isAnnotation()) {
+			injectionAnnotationClasses.add((Class<? extends Annotation>) clazz);
+		}
+	}
+
+	public boolean isAnnotationSupported(final Class<? extends Annotation> annotation) {
+		return injectionAnnotationClasses.contains(annotation);
 	}
 }

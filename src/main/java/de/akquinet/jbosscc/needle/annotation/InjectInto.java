@@ -10,13 +10,15 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface InjectInto {
   /**
-   * @return the injection target
+   * (Optional)  id of the  object under test component
+   * <p> Default are all declared  object under test component
    */
-  String targetComponent();
+  String targetComponentId();
 
   /**
-   * 
-   * @return fieldName of the injection target
+   *
+   * (Optional)  fieldName of the injection target
+   * <p> Default is the assignable type
    */
-  String fieldName();
+  String fieldName() default "";
 }

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -34,7 +35,7 @@ public class ReflectionUtilTest {
 	public void testGetAllFields() throws Exception {
 		List<Field> allFields = ReflectionUtil.getAllFields(DerivedClass.class);
 
-		assertThat(allFields.size(), equalTo(2));
+		assertThat(allFields.size(), equalTo(5));
 	}
 
 	@Test
@@ -47,7 +48,25 @@ public class ReflectionUtilTest {
 	@Test(expected = UnsupportedOperationException.class)
 	public void testInvokeMethod_Exception() throws Exception {
 		ReflectionUtil.invokeMethod(this, "testException");
+	}
 
+	@Test
+	public void testGetAllFieldsAssinableFrom() throws Exception {
+		List<Field> allFieldsAssinableFromBoolean = ReflectionUtil.getAllFieldsAssinableFrom(Boolean.class,
+		        DerivedClass.class);
+		Assert.assertEquals(1, allFieldsAssinableFromBoolean.size());
+
+		List<Field> allFieldsAssinableFromList = ReflectionUtil.getAllFieldsAssinableFrom(List.class,
+		        DerivedClass.class);
+		Assert.assertEquals(2, allFieldsAssinableFromList.size());
+
+		List<Field> allFieldsAssinableFromCollection = ReflectionUtil.getAllFieldsAssinableFrom(Collection.class,
+		        DerivedClass.class);
+		Assert.assertEquals(2, allFieldsAssinableFromCollection.size());
+
+		List<Field> allFieldsAssinableFromString = ReflectionUtil.getAllFieldsAssinableFrom(String.class,
+		        DerivedClass.class);
+		Assert.assertEquals(2, allFieldsAssinableFromString.size());
 	}
 
 	@SuppressWarnings("unused")

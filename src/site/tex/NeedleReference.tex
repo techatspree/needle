@@ -1,0 +1,75 @@
+\documentclass[12pt,a4paper,titlepage]{book} 
+
+\setlength{\topmargin}{-1cm} 
+\setlength{\headsep}{1cm} 
+\setlength{\textheight}{24.5cm} 
+\setlength{\textwidth}{17.3cm} 
+\setlength{\evensidemargin}{-0.7cm} 
+\setlength{\oddsidemargin}{-0.7cm}
+\setlength{\parskip}{0.1cm}
+
+\usepackage{courier}
+
+\usepackage{datetime}
+\usepackage{fancyvrb}
+\usepackage{ccaption}
+\usepackage{color}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{url}
+\urlstyle{tt}
+\usepackage{tabularx}
+\usepackage{listings}
+
+\usepackage[colorlinks=true]{hyperref} % should be the last package listed
+
+\definecolor{light-gray}{gray}{0.85}
+
+\lstset{
+language=Java,
+basicstyle=\sffamily\small,
+numbers=none,                   
+backgroundcolor=\color{light-gray},
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+frame=none,
+captionpos=b,
+breaklines=true,
+breakatwhitespace=false
+}
+
+\ifpdf
+\pdfinfo{
+   /Author (Heinz Wilming)
+   /Title  (Needle Reference Manual)
+   /ModDate (D:\pdfdate)
+   /Subject (Needle)
+   /Keywords (Java;Unit testing;Java EE;CDI, Dependency Injection)
+}
+\fi
+
+\urldef{\urlHibersapSite}\url{http://needle.sourceforge.net} 
+
+
+\begin{document} 
+
+\newcommand\HRule{\noindent\rule{\linewidth}{1.5pt}} 
+\newcommand\HibersapVersion{\input{version}}
+
+\include{TitlePage}  
+\pagenumbering{roman} 
+\tableofcontents 
+\newpage 
+\pagenumbering{arabic} 
+%\include{Introduction} 
+\include{QuickStart} 
+%\include{Installation} 
+%\include{Configuration} 
+%\include{Usage} 
+%\include{Testing} 
+\appendix 
+
+\end{document}
