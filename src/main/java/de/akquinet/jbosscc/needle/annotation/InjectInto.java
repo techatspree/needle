@@ -10,15 +10,16 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface InjectInto {
   /**
-   * (Optional)  id of the  object under test component
-   * <p> Default are all declared  object under test component
+   * Id of the object under test. This is the field name of the component, by default. You can specify the id within the @ObjectUnderTest
+   * annotation.
    */
   String targetComponentId();
 
   /**
-   *
-   * (Optional)  fieldName of the injection target
-   * <p> Default is the assignable type
+   * (Optional) fieldName of the injection target
+   * 
+   * <p>
+   * Default is the assignable type
    */
   String fieldName() default "";
 }
