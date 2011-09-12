@@ -64,7 +64,7 @@ public final class NeedleConfiguration {
 		super();
 	}
 
-	static final Map<String, String> loadResourceAndDefault(String name) {
+	static Map<String, String> loadResourceAndDefault(String name) {
 		final Map<String, String> result = new HashMap<String, String>();
 
 		try {

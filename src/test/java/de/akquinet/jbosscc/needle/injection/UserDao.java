@@ -1,5 +1,7 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import java.util.Queue;
+
 import javax.inject.Inject;
 
 public class UserDao {
@@ -11,12 +13,18 @@ public class UserDao {
 	@Inject
 	private User user;
 
+	private Queue<?> queue;
+
 	public User getCurrentUser() {
 		return currentUser;
 	}
 
 	public User getUser() {
 		return user;
+	}
+
+	public Queue<?> getQueue() {
+		return queue;
 	}
 
 }

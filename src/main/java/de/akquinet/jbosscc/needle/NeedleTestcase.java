@@ -233,7 +233,7 @@ public class NeedleTestcase {
 	}
 
 	private Object createInstanceByNoArgConstructor(final Class<?> implementation)
-	        throws ObjectUnderTestInstantiationException, IllegalArgumentException, InvocationTargetException {
+	        throws ObjectUnderTestInstantiationException {
 		try {
 			implementation.getConstructor();
 
@@ -301,10 +301,7 @@ public class NeedleTestcase {
 		return configuration.getMockProvider();
 	}
 
-
 	private interface InjectionTargetInformationFactory {
 		InjectionTargetInformation create(Class<?> parameterType, int parameterIndex);
 	}
 }
-
-

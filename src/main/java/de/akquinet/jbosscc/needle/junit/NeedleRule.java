@@ -10,11 +10,11 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 
 public class NeedleRule extends NeedleTestcase implements MethodRule {
 
-  public NeedleRule(final DatabaseTestcase databaseTestcase, final InjectionProvider... injectionProvider) {
+  public NeedleRule(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
     super(databaseTestcase, injectionProvider);
   }
 
-  public NeedleRule(final InjectionProvider... injectionProvider) {
+  public NeedleRule(final InjectionProvider<?>... injectionProvider) {
     super(injectionProvider);
   }
 

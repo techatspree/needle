@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
+
 /**
  * Is used to specify a object under test. The annotated fields will initialized
  * by the rule {@link NeedleRule}.

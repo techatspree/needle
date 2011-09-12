@@ -73,7 +73,7 @@ public class InjectionConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends MockProvider> T getMockProvider() {
+	public final <T extends MockProvider> T getMockProvider() {
 		return (T) mockProvider;
 	}
 

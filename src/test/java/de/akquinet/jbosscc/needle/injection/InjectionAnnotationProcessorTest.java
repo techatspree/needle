@@ -2,6 +2,10 @@ package de.akquinet.jbosscc.needle.injection;
 
 import static org.junit.Assert.assertSame;
 
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
+
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -30,6 +34,10 @@ public class InjectionAnnotationProcessorTest {
 	@InjectIntoMany
 	private final User _user = new User();
 
+	@InjectIntoMany(value = { @InjectInto(targetComponentId = "testInjectionId", fieldName = "queue"),
+	        @InjectInto(targetComponentId = "_userDao2") })
+	private Queue<?> queue = new LinkedBlockingDeque<Object>();
+
 	@Test
 	public void testInjectMany() throws Exception {
 		assertSame(_user, _userDao1.getCurrentUser());
@@ -37,7 +45,15 @@ public class InjectionAnnotationProcessorTest {
 	}
 
 	@Test
+	public void testInjectManyWithInjectInto() throws Exception {
+		assertSame(queue, _userDao2.getQueue());
+		assertSame(queue, bean.getQueue());
+		
+		Assert.assertNull(_userDao1.getQueue());
+	}
+
+	@Test
 	public void testInjectIntoById() throws Exception {
 		assertSame(test, bean.getTestInjection());
-    }
+	}
 }
