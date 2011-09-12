@@ -3,7 +3,6 @@ package de.akquinet.jbosscc.needle;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -251,8 +250,8 @@ public class NeedleTestcase {
 
 	}
 
-	private Object getInstanceByConstructorInjection(final Class<?> implementation) throws InstantiationException,
-	        IllegalAccessException, InvocationTargetException {
+	private Object getInstanceByConstructorInjection(final Class<?> implementation)
+	        throws ObjectUnderTestInstantiationException {
 		final Constructor<?>[] constructors = implementation.getConstructors();
 
 		for (final Constructor<?> constructor : constructors) {
@@ -275,7 +274,11 @@ public class NeedleTestcase {
 
 			final Object[] arguments = createArguments(parameterTypes, injectionTargetInformationFactory);
 
-			return constructor.newInstance(arguments);
+			try {
+				return constructor.newInstance(arguments);
+			} catch (Exception e) {
+				throw new ObjectUnderTestInstantiationException(e);
+			}
 
 		}
 
