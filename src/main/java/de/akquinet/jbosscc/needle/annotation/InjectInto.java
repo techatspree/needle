@@ -12,6 +12,8 @@ public @interface InjectInto {
   /**
    * Id of the object under test. This is the field name of the component, by default. You can specify the id within the @ObjectUnderTest
    * annotation.
+   * 
+   * @see ObjectUnderTest#id()
    */
   String targetComponentId();
 
