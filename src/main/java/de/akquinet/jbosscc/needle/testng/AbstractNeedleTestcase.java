@@ -12,13 +12,13 @@ public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 
 	private DatabaseTestcase databaseTestcase;
 
-	public AbstractNeedleTestcase(DatabaseTestcase databaseTestcase, InjectionProvider... injectionProvider) {
+	public AbstractNeedleTestcase(DatabaseTestcase databaseTestcase, InjectionProvider<?>... injectionProvider) {
 
 		super(databaseTestcase, injectionProvider);
 		this.databaseTestcase = databaseTestcase;
 	}
 
-	public AbstractNeedleTestcase(InjectionProvider... injectionProvider) {
+	public AbstractNeedleTestcase(InjectionProvider<?>... injectionProvider) {
 		super(injectionProvider);
 	}
 
