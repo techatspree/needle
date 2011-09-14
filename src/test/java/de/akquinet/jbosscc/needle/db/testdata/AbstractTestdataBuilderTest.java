@@ -26,6 +26,14 @@ public class AbstractTestdataBuilderTest {
 		Assert.assertEquals(1, loadAllObjects.size());
 	}
 
+	@Test
+	public void testHasEntityManager() throws Exception {
+
+		Assert.assertFalse(new MyEntityTestDataBuilder().hasEntityManager());
+		Assert.assertTrue(new MyEntityTestDataBuilder(databaseRule.getEntityManager()).hasEntityManager());
+
+	}
+
 	@Test(expected = IllegalStateException.class)
 	public void testSaveOrUpdate_withOutEntityManager() throws Exception {
 		new MyEntityTestDataBuilder().buildAndSave();
@@ -38,19 +46,18 @@ public class AbstractTestdataBuilderTest {
 		Assert.assertEquals(2, new MyEntityTestDataBuilder().getId());
 	}
 
-
 	@Test(expected = RuntimeException.class)
 	public void testBuildAndSave_Unsuccessful() throws Exception {
-		new AbstractTestdataBuilder<MyEntity>(databaseRule.getEntityManager()){
+		new AbstractTestdataBuilder<MyEntity>(databaseRule.getEntityManager()) {
 
 			@Override
-            public MyEntity build() {
+			public MyEntity build() {
 
-	            return null;
-            }
+				return null;
+			}
 
 		}.buildAndSave();
-    }
+	}
 
 	class MyEntityTestDataBuilder extends AbstractTestdataBuilder<MyEntity> {
 
