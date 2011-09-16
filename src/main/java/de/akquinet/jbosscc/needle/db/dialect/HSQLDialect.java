@@ -4,96 +4,112 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HSQLDialect extends AbstractDBDialect implements DBDialect {
 
-  private static final Logger LOG = LoggerFactory.getLogger(HSQLDialect.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HSQLDialect.class);
 
-  @Override
-  public void disableReferentialIntegrity() throws SQLException {
-    setReferentialIntegrity(false);
-  }
+	public HSQLDialect(final DBDialectConfiguration configuration) {
+		super(configuration);
+	}
 
-  @Override
-  public void enableReferentialIntegrity() throws SQLException {
-    setReferentialIntegrity(true);
-  }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void disableReferentialIntegrity() throws SQLException {
+		setReferentialIntegrity(false);
+	}
 
-  private void setReferentialIntegrity(final boolean enable) throws SQLException {
-    final int databaseMajorVersion = getConnection().getMetaData().getDatabaseMajorVersion();
-    final String referentialIntegrity = enable ? "TRUE" : "FALSE";
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void enableReferentialIntegrity() throws SQLException {
+		setReferentialIntegrity(true);
+	}
 
-    final String command = databaseMajorVersion < 2 ? "SET REFERENTIAL_INTEGRITY " : "SET DATABASE REFERENTIAL INTEGRITY ";
-    getConnection().prepareStatement(command + referentialIntegrity).execute();
-  }
+	private void setReferentialIntegrity(final boolean enable) throws SQLException {
+		final int databaseMajorVersion = getConnection().getMetaData().getDatabaseMajorVersion();
+		final String referentialIntegrity = enable ? "TRUE" : "FALSE";
 
-  @Override
-  public Set<String> getTableNames() throws SQLException {
-    ResultSet resultSet = null;
+		final String command = databaseMajorVersion < 2 ? "SET REFERENTIAL_INTEGRITY "
+		        : "SET DATABASE REFERENTIAL INTEGRITY ";
+		getConnection().prepareStatement(command + referentialIntegrity).execute();
+	}
 
-    try {
-      final HashSet<String> tables = new HashSet<String>();
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<String> getTableNames() throws SQLException {
+		ResultSet resultSet = null;
 
-      resultSet = getConnection().getMetaData().getTables(null, null, "%", new String[] { "TABLE" });
+		try {
+			final List<String> tables = new ArrayList<String>();
 
-      while (resultSet.next()) {
-        tables.add(resultSet.getString("TABLE_NAME"));
-      }
-      return tables;
-    } finally {
-      if (resultSet != null) {
-        resultSet.close();
-      }
-    }
+			resultSet = getConnection().getMetaData().getTables(null, null, "%", new String[] { "TABLE" });
 
-  }
+			while (resultSet.next()) {
+				tables.add(resultSet.getString("TABLE_NAME"));
+			}
+			return tables;
+		} finally {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
 
-  @Override
-  public void deleteContent(final Set<String> tables) throws SQLException {
-    Statement statement = null;
+	}
 
-    try {
-      statement = getConnection().createStatement();
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void deleteContent(final List<String> tables) throws SQLException {
+		Statement statement = null;
 
-      final ArrayList<String> tempTables = new ArrayList<String>(tables);
+		try {
+			statement = getConnection().createStatement();
 
-      final String hibernateTable = "hibernate_unique_key";
-      boolean hibernateTableSkipped = tempTables.remove(hibernateTable);
-      hibernateTableSkipped = hibernateTableSkipped || tempTables.remove(hibernateTable.toUpperCase());
+			final ArrayList<String> tempTables = new ArrayList<String>(tables);
 
-      if (hibernateTableSkipped) {
-        LOG.debug("skipped deletion of hiberate_unique_key");
-      }
+			final String hibernateTable = "hibernate_unique_key";
+			boolean hibernateTableSkipped = tempTables.remove(hibernateTable);
+			hibernateTableSkipped = hibernateTableSkipped || tempTables.remove(hibernateTable.toUpperCase());
 
-      // Loop until all data is deleted: we don't know the correct DROP
-      // order,
-      // so we have to retry upon failure
-      while (!tempTables.isEmpty()) {
-        final int sizeBefore = tempTables.size();
-        for (final ListIterator<String> iterator = tempTables.listIterator(); iterator.hasNext();) {
-          final String table = iterator.next();
+			if (hibernateTableSkipped) {
+				LOG.debug("skipped deletion of hiberate_unique_key");
+			}
 
-          try {
-            statement.executeUpdate("DELETE FROM " + table);
-            iterator.remove();
-          } catch (final SQLException exc) {
-            LOG.debug("Ignored exception: " + exc.getMessage() + ". WILL RETRY.");
-          }
-        }
-        if (tempTables.size() == sizeBefore) {
-          throw new AssertionError("unable to clean tables " + tempTables);
-        }
-      }
-    } finally {
-      if (statement != null) {
-        statement.close();
-      }
-    }
-  }
+			// Loop until all data is deleted: we don't know the correct DROP
+			// order,
+			// so we have to retry upon failure
+			while (!tempTables.isEmpty()) {
+				final int sizeBefore = tempTables.size();
+				for (final ListIterator<String> iterator = tempTables.listIterator(); iterator.hasNext();) {
+					final String table = iterator.next();
+
+					try {
+						statement.executeUpdate("DELETE FROM " + table);
+						iterator.remove();
+					} catch (final SQLException exc) {
+						LOG.debug("Ignored exception: " + exc.getMessage() + ". WILL RETRY.");
+					}
+				}
+				if (tempTables.size() == sizeBefore) {
+					throw new AssertionError("unable to clean tables " + tempTables);
+				}
+			}
+		} finally {
+			if (statement != null) {
+				statement.close();
+			}
+		}
+	}
 }

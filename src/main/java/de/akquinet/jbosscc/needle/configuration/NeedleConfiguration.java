@@ -1,19 +1,16 @@
 package de.akquinet.jbosscc.needle.configuration;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
 import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
+import de.akquinet.jbosscc.needle.db.dialect.DBDialectConfiguration;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -21,41 +18,44 @@ public final class NeedleConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
 
-	private static final Map<String, String> CONFIG_PROPERTIES = loadResourceAndDefault("needle");
+	private static final ConfigurationLoader CONFIGURATION_LOADER = new ConfigurationLoader();
 
 	static final String JDBC_URL_KEY = "jdbc.url";
+	static final String JDBC_DRIVER_KEY = "jdbc.driver";
+	static final String JDBC_USER_KEY = "jdbc.user";
+	static final String JDBC_PASSWORD_KEY = "jdbc.password";
+
+	static final String DB_DIALECT_KEY = "db.dialect";
 
 	static final String PERSISTENCEUNIT_NAME_KEY = "persistenceUnit.name";
-	static final String DB_DIALECT_KEY = "db.dialect";
 
 	static final String MOCK_PROVIDER_KEY = "mock.provider";
 
 	static final String HIBERNATE_CFG_FILENAME_KEY = "hibernate.cfg.filename";
 
-	private static final String DEFAULT_CONFIGURATION_FILENAME = "needle-defaults";
+	static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
 
-	private static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
-	private static final Set<Class<? extends Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupCustomInjectionAnnotations();
+	static final Set<Class<? extends Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupCustomInjectionAnnotations();
 
-	private static final String CUSTOM_INJECTION_PROVIDERS_KEY = "custom.injection.providers";
+	static final String CUSTOM_INJECTION_PROVIDERS_KEY = "custom.injection.providers";
 
-	private static final String JDBC_URL = CONFIG_PROPERTIES.get(JDBC_URL_KEY);
+	static final DBDialectConfiguration DB_DIALECT_CONFIGURATION = new DBDialectConfiguration(
+	        CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY), CONFIGURATION_LOADER.getPropertie(JDBC_DRIVER_KEY),
+	        CONFIGURATION_LOADER.getPropertie(JDBC_USER_KEY), CONFIGURATION_LOADER.getPropertie(JDBC_PASSWORD_KEY));
 
-	private static final String PERSISTENCEUNIT_NAME = CONFIG_PROPERTIES.get(PERSISTENCEUNIT_NAME_KEY);
+	static final Class<? extends AbstractDBDialect> DB_DIALECT_CLASS = lookupDBDialectClass(CONFIGURATION_LOADER
+	        .getPropertie(DB_DIALECT_KEY));
 
-	private static final String HIBERNATE_CFG_FILENAME = CONFIG_PROPERTIES.get(HIBERNATE_CFG_FILENAME_KEY);
-
-	private static final Class<? extends DBDialect> DB_DIALECT_CLASS = lookupDBDialectClass();
-
-	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass();
+	static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass();
 
 	static {
 		StringBuilder builder = new StringBuilder();
-		builder.append("\nJDBC_URL=").append(getJdbcUrl());
 		builder.append("\nPU_NAME=").append(getPersistenceunitName());
 		builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
 		builder.append("\nDB_DIALECT=").append(getDBDialectClass());
 		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
+		builder.append("\nJDBC_URL=").append(DB_DIALECT_CONFIGURATION.getJdbcUrl());
+		builder.append("\nJDBC_DRIVER=").append(DB_DIALECT_CONFIGURATION.getJdbcDriver());
 
 		LOG.info("Needle Configuration: {}", builder.toString());
 	}
@@ -64,112 +64,74 @@ public final class NeedleConfiguration {
 		super();
 	}
 
-	static Map<String, String> loadResourceAndDefault(String name) {
-		final Map<String, String> result = new HashMap<String, String>();
-
-		try {
-			ResourceBundle customBundle = loadResourceBundle(name);
-
-			for (Enumeration<String> keys = customBundle.getKeys(); keys.hasMoreElements();) {
-				String key = keys.nextElement();
-				result.put(key, customBundle.getString(key));
-			}
-
-			URL url = NeedleConfiguration.class.getResource("/" + name + ".properties");
-			LOG.debug("loaded Needle config named {} from {}", name, url);
-		} catch (Exception e) {
-			LOG.debug("found no custom configuration");
-		}
-
-		try {
-
-			ResourceBundle defaultResourceBundle = loadResourceBundle(DEFAULT_CONFIGURATION_FILENAME);
-
-			for (Enumeration<String> keys = defaultResourceBundle.getKeys(); keys.hasMoreElements();) {
-				String key = keys.nextElement();
-				if (!result.containsKey(key)) {
-					result.put(key, defaultResourceBundle.getString(key));
-				}
-
-			}
-
-			URL url = NeedleConfiguration.class.getResource("/" + DEFAULT_CONFIGURATION_FILENAME + ".properties");
-			LOG.debug("loaded default Needle config from: {}", url);
-		} catch (Exception e1) {
-			LOG.error("should never happen", e1);
-
-			throw new AssertionError("should never happen");
-		}
-
-		return result;
+	public static DBDialectConfiguration getDBDialectConfiguration() {
+		return DB_DIALECT_CONFIGURATION;
 	}
 
-	private static ResourceBundle loadResourceBundle(String name) {
-		return ResourceBundle.getBundle(name);
-	}
-
-	public static String getJdbcUrl() {
-		return JDBC_URL;
-	}
-
+	/**
+	 * Returns the configured jpa persistence unit name.
+	 *
+	 * @return jpa persistence unit name
+	 */
 	public static String getPersistenceunitName() {
-		return PERSISTENCEUNIT_NAME;
+		return CONFIGURATION_LOADER.getPropertie(PERSISTENCEUNIT_NAME_KEY);
 	}
 
+	/**
+	 * Returns the configured hibernate specific configuration file
+	 *
+	 * @return hibernate cfg file
+	 */
 	public static String getHibernateCfgFilename() {
-		return HIBERNATE_CFG_FILENAME;
+		return CONFIGURATION_LOADER.getPropertie(HIBERNATE_CFG_FILENAME_KEY);
 	}
 
-	public static Class<? extends DBDialect> getDBDialectClass() {
+	/**
+	 * Returns the configured {@link DBDialect}
+	 *
+	 * @return {@link DBDialect}
+	 */
+	public static Class<? extends AbstractDBDialect> getDBDialectClass() {
 		return DB_DIALECT_CLASS;
 	}
 
+	/**
+	 * Returns the configured {@link MockProvider}
+	 *
+	 * @return {@link MockProvider}
+	 */
 	public static Class<? extends MockProvider> getMockProviderClass() {
 		return MOCK_PROVIDER_CLASS;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Class<? extends DBDialect> lookupDBDialectClass() {
-		final String dbDialect = CONFIG_PROPERTIES.containsKey(DB_DIALECT_KEY) ? CONFIG_PROPERTIES.get(DB_DIALECT_KEY)
-		        : null;
-
-		try {
-			if (dbDialect != null) {
-
-				return (Class<? extends DBDialect>) Class.forName(dbDialect);
-			}
-
-		} catch (Exception e) {
-			LOG.warn("could not create db dialect {} {}", dbDialect, e.getMessage());
-		}
-
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Class<? extends MockProvider> lookupMockProviderClass() {
-		final String mockProvider = CONFIG_PROPERTIES.containsKey(MOCK_PROVIDER_KEY) ? CONFIG_PROPERTIES
-		        .get(MOCK_PROVIDER_KEY) : null;
-
-		try {
-			if (mockProvider != null) {
-
-				return (Class<? extends MockProvider>) Class.forName(mockProvider);
-			}
-
-		} catch (Exception e) {
-			LOG.warn("could not create mock provider {} {}", mockProvider, e.getMessage());
-		}
-
-		return null;
-	}
-
+	/**
+	 * Returns the configured custom {@link Annotation} classes for default mock
+	 * injections.
+	 *
+	 * @return a {@link Set} of {@link Annotation} classes
+	 */
 	public static Set<Class<? extends Annotation>> getCustomInjectionAnnotations() {
 		return CUSTOM_INJECTION_ANNOTATIONS;
 	}
 
+	@SuppressWarnings("unchecked")
+	static Class<? extends AbstractDBDialect> lookupDBDialectClass(final String dbDialect) {
+
+		try {
+			if (dbDialect != null) {
+				return (Class<? extends AbstractDBDialect>) Class.forName(dbDialect);
+			}
+
+		} catch (Exception e) {
+			LOG.warn("error while loading db dialect class {}, {}", dbDialect, e.getMessage());
+		}
+
+		return null;
+	}
+
 	private static Set<Class<? extends Annotation>> lookupCustomInjectionAnnotations() {
-		final String customAnnotationList = CONFIG_PROPERTIES.get(CUSTOM_INJECTION_ANNOTATIONS_KEY) != null ? CONFIG_PROPERTIES.get(CUSTOM_INJECTION_ANNOTATIONS_KEY) : "";
+		final String customAnnotationList = CONFIGURATION_LOADER.containsKey(CUSTOM_INJECTION_ANNOTATIONS_KEY) ? CONFIGURATION_LOADER
+		        .getPropertie(CUSTOM_INJECTION_ANNOTATIONS_KEY) : "";
 		final Set<Class<? extends Annotation>> customInjectionAnnotations = new HashSet<Class<? extends Annotation>>();
 		final StringTokenizer tokenizer = new StringTokenizer(customAnnotationList, ",");
 
@@ -182,9 +144,9 @@ public final class NeedleConfiguration {
 				final Class<? extends Annotation> customAnnotation = (Class<? extends Annotation>) ReflectionUtil
 				        .forName(token);
 
-				if(customAnnotation != null){
+				if (customAnnotation != null) {
 					customInjectionAnnotations.add(customAnnotation);
-				}else{
+				} else {
 					LOG.warn("no annotation class found for {}", token);
 				}
 			} catch (Exception e) {
@@ -194,4 +156,22 @@ public final class NeedleConfiguration {
 
 		return customInjectionAnnotations;
 	}
+
+	@SuppressWarnings("unchecked")
+	private static Class<? extends MockProvider> lookupMockProviderClass() {
+		final String mockProvider = CONFIGURATION_LOADER.containsKey(MOCK_PROVIDER_KEY) ? CONFIGURATION_LOADER
+		        .getPropertie(MOCK_PROVIDER_KEY) : null;
+
+		try {
+			if (mockProvider != null) {
+				return (Class<? extends MockProvider>) Class.forName(mockProvider);
+			}
+
+		} catch (Exception e) {
+			LOG.warn("could not create mock provider {} {}", mockProvider, e.getMessage());
+		}
+
+		return null;
+	}
+
 }

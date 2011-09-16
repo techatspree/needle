@@ -27,7 +27,8 @@ public class MockitoProviderTest {
 
 	@Test
 	public void testCreateMockComponent_Final() throws Exception {
-		// TODO
+		Assert.assertNull(mockitoProvider.createMockComponent(String.class));
+		Assert.assertNull(mockitoProvider.createMockComponent(double.class));
 
 	}
 

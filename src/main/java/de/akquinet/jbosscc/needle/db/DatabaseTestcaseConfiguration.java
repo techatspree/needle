@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfiguration;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
+import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
 import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
+import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class DatabaseTestcaseConfiguration {
 
@@ -70,13 +72,12 @@ public class DatabaseTestcaseConfiguration {
 		return dialect;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T extends DBDialect> T createDBDialect() {
-		final Class<? extends DBDialect> dialectClass = NeedleConfiguration.getDBDialectClass();
+	private AbstractDBDialect createDBDialect() {
+		final Class<? extends AbstractDBDialect> dialectClass = NeedleConfiguration.getDBDialectClass();
 
 		if (dialectClass != null) {
 			try {
-				return (T) dialectClass.newInstance();
+				return ReflectionUtil.createInstance(dialectClass, NeedleConfiguration.getDBDialectConfiguration());
 			} catch (Exception e) {
 				LOG.warn("could not create a new instance of db dialect {}, {}", dialectClass, e.getMessage());
 			}

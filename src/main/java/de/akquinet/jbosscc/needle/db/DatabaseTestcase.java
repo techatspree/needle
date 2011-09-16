@@ -1,7 +1,7 @@
 package de.akquinet.jbosscc.needle.db;
 
 import java.sql.SQLException;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -49,7 +49,7 @@ public class DatabaseTestcase {
 
 		try {
 			dbDialect.openConnection();
-			Set<String> tableNames = dbDialect.getTableNames();
+			List<String> tableNames = dbDialect.getTableNames();
 
 			dbDialect.disableReferentialIntegrity();
 

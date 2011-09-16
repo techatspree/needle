@@ -20,27 +20,27 @@ public class DBPersistenceUnitTest {
 
   @Test
   public void testDB_withPersistenceUnit() throws Exception {
-    final MyEntity myEntity = new MyEntity();
+    final Person person = new Person();
     final EntityManager entityManager = db.getEntityManager();
 
-    myEntity.setMyName("My Name");
+    person.setMyName("My Name");
 
     assertNotNull(db);
     assertNotNull(entityManager);
 
     final EntityTransaction tx = entityManager.getTransaction();
     tx.begin();
-    entityManager.persist(myEntity);
+    entityManager.persist(person);
 
-    final MyEntity fromDB = entityManager.find(MyEntity.class, myEntity.getId());
+    final Person fromDB = entityManager.find(Person.class, person.getId());
 
-    assertSame(myEntity, fromDB);
+    assertSame(person, fromDB);
     tx.commit();
   }
 
   @Test
   public void testTransactions() throws Exception {
-    final MyEntity myEntity = new MyEntity();
+    final Person myEntity = new Person();
     final EntityManager entityManager = db.getEntityManager();
 
     myEntity.setMyName("My Name");
@@ -48,7 +48,7 @@ public class DBPersistenceUnitTest {
     final TransactionHelper transactionHelper = new TransactionHelper(entityManager);
 
     transactionHelper.saveObject(myEntity);
-    final MyEntity fromDb = transactionHelper.loadObject(MyEntity.class, myEntity.getId());
+    final Person fromDb = transactionHelper.loadObject(Person.class, myEntity.getId());
 
     assertFalse(myEntity == fromDb);
   }

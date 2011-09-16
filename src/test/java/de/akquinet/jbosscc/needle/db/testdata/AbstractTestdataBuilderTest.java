@@ -9,7 +9,8 @@ import junit.framework.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import de.akquinet.jbosscc.needle.db.MyEntity;
+import de.akquinet.jbosscc.needle.db.Address;
+import de.akquinet.jbosscc.needle.db.Person;
 import de.akquinet.jbosscc.needle.junit.DatabaseRule;
 
 public class AbstractTestdataBuilderTest {
@@ -19,9 +20,9 @@ public class AbstractTestdataBuilderTest {
 
 	@Test
 	public void testSaveOrUpdate() throws Exception {
-		new MyEntityTestDataBuilder(databaseRule.getEntityManager()).buildAndSave();
+		new AddressTestDataBuilder(databaseRule.getEntityManager()).buildAndSave();
 
-		List<MyEntity> loadAllObjects = databaseRule.getTransactionHelper().loadAllObjects(MyEntity.class);
+		List<Address> loadAllObjects = databaseRule.getTransactionHelper().loadAllObjects(Address.class);
 
 		Assert.assertEquals(1, loadAllObjects.size());
 	}
@@ -29,29 +30,29 @@ public class AbstractTestdataBuilderTest {
 	@Test
 	public void testHasEntityManager() throws Exception {
 
-		Assert.assertFalse(new MyEntityTestDataBuilder().hasEntityManager());
-		Assert.assertTrue(new MyEntityTestDataBuilder(databaseRule.getEntityManager()).hasEntityManager());
+		Assert.assertFalse(new AddressTestDataBuilder().hasEntityManager());
+		Assert.assertTrue(new AddressTestDataBuilder(databaseRule.getEntityManager()).hasEntityManager());
 
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testSaveOrUpdate_withOutEntityManager() throws Exception {
-		new MyEntityTestDataBuilder().buildAndSave();
+		new AddressTestDataBuilder().buildAndSave();
 	}
 
 	@Test
 	public void testGetId() throws Exception {
-		Assert.assertEquals(0, new MyEntityTestDataBuilder().getId());
-		Assert.assertEquals(1, new MyEntityTestDataBuilder().getId());
-		Assert.assertEquals(2, new MyEntityTestDataBuilder().getId());
+		Assert.assertEquals(0, new AddressTestDataBuilder().getId());
+		Assert.assertEquals(1, new AddressTestDataBuilder().getId());
+		Assert.assertEquals(2, new AddressTestDataBuilder().getId());
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void testBuildAndSave_Unsuccessful() throws Exception {
-		new AbstractTestdataBuilder<MyEntity>(databaseRule.getEntityManager()) {
+		new AbstractTestdataBuilder<Person>(databaseRule.getEntityManager()) {
 
 			@Override
-			public MyEntity build() {
+			public Person build() {
 
 				return null;
 			}
@@ -59,23 +60,23 @@ public class AbstractTestdataBuilderTest {
 		}.buildAndSave();
 	}
 
-	class MyEntityTestDataBuilder extends AbstractTestdataBuilder<MyEntity> {
+	class AddressTestDataBuilder extends AbstractTestdataBuilder<Address> {
 
-		public MyEntityTestDataBuilder() {
+		public AddressTestDataBuilder() {
 			super();
 		}
 
-		public MyEntityTestDataBuilder(EntityManager entityManager) {
+		public AddressTestDataBuilder(EntityManager entityManager) {
 			super(entityManager);
 		}
 
 		@Override
-		public MyEntity build() {
+		public Address build() {
 
-			MyEntity myEntity = new MyEntity();
+			Address address = new Address();
 
-			myEntity.setMyName("myName");
-			return myEntity;
+			address.setStreet("street");
+			return address;
 		}
 	}
 

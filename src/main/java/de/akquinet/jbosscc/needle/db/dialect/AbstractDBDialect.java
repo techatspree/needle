@@ -4,16 +4,28 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
-
 public abstract class AbstractDBDialect implements DBDialect {
+
+	private final DBDialectConfiguration configuration;
+
+	public AbstractDBDialect(final DBDialectConfiguration configuration) {
+		super();
+		this.configuration = configuration;
+
+	}
 
 	private Connection connection;
 
 	@Override
 	public void openConnection() throws SQLException {
-		connection = DriverManager.getConnection(NeedleConfiguration
-				.getJdbcUrl());
+		try {
+			Class.forName(configuration.getJdbcDriver());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("jdbc driver not found", e);
+		}
+
+		connection = DriverManager.getConnection(configuration.getJdbcUrl(), configuration.getJdbcUser(),
+		        configuration.getJdbcPassword());
 		connection.setAutoCommit(false);
 
 	}

@@ -10,6 +10,10 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.mockito.internal.configuration.InjectingAnnotationEngine;
+
+import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
+import de.akquinet.jbosscc.needle.mock.MockitoProvider;
 
 public class ReflectionUtilTest {
 
@@ -67,6 +71,18 @@ public class ReflectionUtilTest {
 		List<Field> allFieldsAssinableFromString = ReflectionUtil.getAllFieldsAssinableFrom(String.class,
 		        DerivedClass.class);
 		Assert.assertEquals(2, allFieldsAssinableFromString.size());
+	}
+
+	@Test
+	public void testCreateInstance() throws Exception {
+		Assert.assertNotNull(ReflectionUtil.createInstance(MockitoProvider.class));
+
+		Assert.assertEquals("Hello", ReflectionUtil.createInstance(String.class, "Hello"));
+	}
+
+	@Test(expected = Exception.class)
+	public void testCreateInstance_Exception() throws Exception {
+		ReflectionUtil.createInstance(InjectionTargetInformation.class);
 	}
 
 	@SuppressWarnings("unused")

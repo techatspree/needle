@@ -1,28 +1,47 @@
 package de.akquinet.jbosscc.needle.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
-import java.util.Map;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
+import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
+import de.akquinet.jbosscc.needle.db.dialect.HSQLDialect;
+import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation1;
+import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation2;
+import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
+import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public class NeedleConfigurationTest {
 
-    @Test
-    public void defaultResourceBundleIsFetched() throws Exception {
-    	Map<String, String> loadResourceAndDefault = NeedleConfiguration.loadResourceAndDefault("not-existing");
-        assertNotNull(loadResourceAndDefault);
-        assertEquals("needle-hsql-hibernate.cfg.xml", loadResourceAndDefault.get(NeedleConfiguration.HIBERNATE_CFG_FILENAME_KEY));
-    }
+	@Test
+	public void testGetMockProviderClass_Default() throws Exception {
+		Class<? extends MockProvider> mockProviderClass = NeedleConfiguration.getMockProviderClass();
+		Assert.assertEquals(EasyMockProvider.class, mockProviderClass);
+	}
 
-    @Test
-    public void canLoadCustomBundle() throws Exception {
-        Map<String, String> loadResourceAndDefault = NeedleConfiguration.loadResourceAndDefault("needle-custom");
-        assertNotNull(loadResourceAndDefault);
-        assertEquals("jdbc-custom", loadResourceAndDefault.get(NeedleConfiguration.JDBC_URL_KEY));
-        assertEquals("needle-hsql-hibernate.cfg.xml", loadResourceAndDefault.get(NeedleConfiguration.HIBERNATE_CFG_FILENAME_KEY));
-    }
+	@Test
+	public void testGetDBDialectClass_HSQDialect() throws Exception {
+		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass(HSQLDialect.class
+		        .getName());
+		Assert.assertEquals(HSQLDialect.class, dbDialectClass);
+	}
+
+	@Test
+	public void testGetDBDialectClass_UnknownClass() throws Exception {
+		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass("my.class");
+		Assert.assertNull(dbDialectClass);
+	}
+
+	@Test
+	public void testGetCustomInjectionAnnotations() throws Exception {
+		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration
+		        .getCustomInjectionAnnotations();
+		Assert.assertEquals(2, customInjectionAnnotations.size());
+		Assert.assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation1.class));
+		Assert.assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation2.class));
+	}
+
 }
-

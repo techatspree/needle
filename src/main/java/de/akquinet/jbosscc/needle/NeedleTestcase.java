@@ -295,11 +295,27 @@ public class NeedleTestcase {
 		return false;
 	}
 
+	/**
+	 *
+	 * Returns the injected object for the given key, or null if no object was
+	 * injected with the given key.
+	 *
+	 * @param key
+	 *            the key of the injected object, see
+	 *            {@link InjectionProvider#getKey(InjectionTargetInformation)}
+	 *
+	 * @return the injected object or null
+	 */
 	@SuppressWarnings("unchecked")
 	public <X> X getInjectedObject(final Object key) {
 		return (X) injectedObjectMap.get(key);
 	}
 
+	/**
+	 * Returns an instance of the configured {@link MockProvider}
+	 *
+	 * @return the configured {@link MockProvider}
+	 */
 	public <X extends MockProvider> X getMockProvider() {
 		return configuration.getMockProvider();
 	}

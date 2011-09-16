@@ -1,6 +1,7 @@
 package de.akquinet.jbosscc.needle.reflection;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -273,7 +274,6 @@ public final class ReflectionUtil {
 			}
 		}.iterate();
 
-
 		if (result.isEmpty()) {
 			throw new NoSuchMethodException(methodName);
 		}
@@ -377,6 +377,19 @@ public final class ReflectionUtil {
 		} catch (final NoSuchFieldException e) {
 			return null;
 		}
+	}
+
+	public static <T> T createInstance(final Class<T> clazz, Object... parameter) throws Exception {
+
+		final Class<?>[] parameterTypes = new Class<?>[parameter.length];
+
+		for (int i = 0; i < parameter.length; i++) {
+			parameterTypes[i] = parameter[i].getClass();
+		}
+
+		Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+
+		return constructor.newInstance(parameter);
 	}
 
 }

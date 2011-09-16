@@ -26,10 +26,8 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 			return (T) mock;
 		}
 
-		int modifiers = type.getModifiers();
-		if (Modifier.isFinal(modifiers)) {
-			LOG.warn("Skipping creation of a mock : {} as it is final.", type.getSimpleName());
-
+		if (Modifier.isFinal(type.getModifiers()) || type.isPrimitive()) {
+			LOG.warn("Skipping creation of a mock : {} as it is final or primitive type.", type.getSimpleName());
 			return null;
 		}
 		T mock = createNiceMock(type);
