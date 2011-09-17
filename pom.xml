@@ -85,8 +85,18 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-latex-plugin-repo</id>
+			<url>http://akquinet.github.com/maven-latex-plugin/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+
 
 
 	<dependencies>
@@ -287,8 +297,11 @@
 					<version>1.0-beta-2</version>
 				</plugin>
 
-
-
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.6</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -308,80 +321,53 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>bakersoftware</groupId>
-				<artifactId>maven-replacer-plugin</artifactId>
-				<version>0.0.9</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-						<configuration>
-							<file>src/site/tex/version.tex</file>
-							<token>.+</token>
-							<value>${project.version}</value>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+
+
+
 
 			<plugin>
 				<groupId>de.akquinet.maven</groupId>
 				<artifactId>maven-latex-plugin</artifactId>
-				<version>1.0</version>
 				<inherited>false</inherited>
+
+				<configuration>
+					<settings>
+						<texDirectory>${basedir}/src/docs/tex</texDirectory>
+						<tempDirectory>target/m2latex</tempDirectory>
+						<cleanUp>false</cleanUp>
+					</settings>
+				</configuration>
+
 				<executions>
 					<execution>
+						<id>PDF</id>
 						<configuration>
 							<settings>
-								<outputDirectory>reference</outputDirectory>
-								<cleanUp>false</cleanUp>
+								<outputDirectory>docs/reference/pdf</outputDirectory>
 							</settings>
 						</configuration>
-						<phase>site</phase>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>latex</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>HTML multipage</id>
-						<configuration>
-							<settings>
-								<outputDirectory>reference/html_multipage</outputDirectory>
-								<tex4htCommandArgs>
-									<tex4htCommandArg>tex4ht,2</tex4htCommandArg>
-									<tex4htCommandArg />
-									<tex4htCommandArg />
-									<tex4htCommandArg>-interaction=nonstopmode
-										--src-specials</tex4htCommandArg>
-								</tex4htCommandArgs>
-								<cleanUp>false</cleanUp>
-							</settings>
-						</configuration>
-						<phase>site</phase>
-						<goals>
-							<goal>tex4ht</goal>
-						</goals>
-					</execution>
+
 					<execution>
 						<id>HTML singlepage</id>
 						<configuration>
 							<settings>
-								<outputDirectory>reference/html_singlepage</outputDirectory>
+								<outputDirectory>docs/reference/html</outputDirectory>
 								<tex4htCommandArgs>
 									<tex4htCommandArg>tex4ht,1</tex4htCommandArg>
 									<tex4htCommandArg />
 									<tex4htCommandArg />
 									<tex4htCommandArg>-interaction=nonstopmode
-										--src-specials</tex4htCommandArg>
+										--src-specials
+                                    </tex4htCommandArg>
 								</tex4htCommandArgs>
-								<cleanUp>false</cleanUp>
 							</settings>
 						</configuration>
-						<phase>site</phase>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>tex4ht</goal>
 						</goals>
@@ -419,29 +405,13 @@
 			</build>
 		</profile>
 
-		<profile>
-			<id>sources</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-source-plugin</artifactId>
 
-						<executions>
-							<execution>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 
 		<profile>
 			<id>distribution</id>
 			<build>
 				<plugins>
+
 
 					<plugin>
 						<artifactId>maven-source-plugin</artifactId>
@@ -457,6 +427,11 @@
 
 					<plugin>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.8</version>
+						<configuration>
+							<outputDirectory>${project.build.directory}/site/docs/javadocs</outputDirectory>
+
+						</configuration>
 
 						<executions>
 							<execution>
@@ -466,6 +441,8 @@
 							</execution>
 						</executions>
 					</plugin>
+
+
 
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
@@ -487,55 +464,27 @@
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 					</plugin>
+
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-sources</phase>
+								<configuration>
+									<tasks>
+										<echo file="${basedir}/target/m2latex/version.tex">${project.version}</echo>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8</version>
-				<configuration>
-					<aggregate>true</aggregate>
-
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.4</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>cim</report>
-							<report>dependencies</report>
-							<report>dependency-convergence</report>
-							<report>dependency-management</report>
-							<report>index</report>
-							<report>issue-tracking</report>
-							<report>license</report>
-							<report>mailing-list</report>
-							<report>plugin-management</report>
-							<report>plugins</report>
-							<report>project-team</report>
-							<report>scm</report>
-							<report>summary</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-
-		</plugins>
-	</reporting>
 
 </project>

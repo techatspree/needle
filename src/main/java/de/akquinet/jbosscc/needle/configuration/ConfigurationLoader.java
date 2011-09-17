@@ -64,7 +64,7 @@ final class ConfigurationLoader {
 		} catch (Exception e1) {
 			LOG.error("should never happen", e1);
 
-			throw new RuntimeException("should never happen");
+			throw new RuntimeException("should never happen", e1);
 		}
 
 		return result;
