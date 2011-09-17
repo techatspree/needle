@@ -89,7 +89,9 @@ public final class ReflectionUtil {
 	}
 
 	public static List<Method> getMethods(final Class<?> clazz) {
+
 		return Arrays.asList(clazz.getMethods());
+
 	}
 
 	/**
@@ -225,9 +227,8 @@ public final class ReflectionUtil {
 				final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
 
 				if (parameterTypes.length == arguments.length) {
-					final boolean match = checkArguments(parameterTypes, arguments);
 
-					if (match) {
+					if (checkArguments(parameterTypes, arguments)) {
 						return invokeMethod(declaredMethod, object, arguments);
 					}
 				}
@@ -289,16 +290,31 @@ public final class ReflectionUtil {
 			final Class<?> argumentClass = arguments[i].getClass();
 
 			if (!parameterClass.isAssignableFrom(argumentClass)) {
-				final boolean isInt = (parameterClass == int.class) && (argumentClass == Integer.class);
-				final boolean isDouble = (parameterClass == double.class) && (argumentClass == Double.class);
 
-				if (!isInt && !isDouble) {
+				final boolean isInt = checkPrimativeArguments(parameterClass, argumentClass, int.class, Integer.class);
+				final boolean isDouble = checkPrimativeArguments(parameterClass, argumentClass, double.class,
+				        Double.class);
+				final boolean isBoolean = checkPrimativeArguments(parameterClass, argumentClass, boolean.class,
+				        Boolean.class);
+				final boolean isLong = checkPrimativeArguments(parameterClass, argumentClass, long.class, Long.class);
+				final boolean isFloat = checkPrimativeArguments(parameterClass, argumentClass, float.class, Float.class);
+				final boolean isShort = checkPrimativeArguments(parameterClass, argumentClass, short.class, Short.class);
+				final boolean isChar = checkPrimativeArguments(parameterClass, argumentClass, char.class,
+				        Character.class);
+				final boolean isByte = checkPrimativeArguments(parameterClass, argumentClass, byte.class, Byte.class);
+
+				if (!isInt && !isDouble && !isBoolean && !isLong && !isFloat && !isShort && !isChar && !isByte) {
 					match = false;
 				}
 			}
 		}
 
 		return match;
+	}
+
+	private static boolean checkPrimativeArguments(final Class<?> parameterClass, final Class<?> argumentClass,
+	        final Class<?> primative, final Class<?> objectClass) {
+		return (parameterClass == primative) && (argumentClass == objectClass);
 	}
 
 	/**
@@ -375,6 +391,7 @@ public final class ReflectionUtil {
 		try {
 			return clazz.getDeclaredField(fieldName);
 		} catch (final NoSuchFieldException e) {
+			LOG.warn(e.getMessage(), e);
 			return null;
 		}
 	}
