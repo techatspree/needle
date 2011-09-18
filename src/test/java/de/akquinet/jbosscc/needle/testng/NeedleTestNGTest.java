@@ -1,6 +1,7 @@
 package de.akquinet.jbosscc.needle.testng;
 
 import javax.ejb.SessionContext;
+import javax.persistence.EntityManager;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -15,7 +16,7 @@ public class NeedleTestNGTest extends AbstractNeedleTestcase {
 
 
 	public NeedleTestNGTest() {
-		super(new DatabaseTestcase());
+		super(new DatabaseTestcase("TestDataModel"));
 	}
 
 	@ObjectUnderTest
@@ -61,9 +62,14 @@ public class NeedleTestNGTest extends AbstractNeedleTestcase {
 		Assert.assertEquals(componentBean1, componentBean2);
 	}
 
-//	@Test
-//	public void test(){
-//		Assert.assertFalse(true);
-//	}
+	
+	@Test
+	public void testGetEntityManager() throws Exception {
+	    EntityManager entityManager = getEntityManager();
+	    Assert.assertNotNull(entityManager);
+    }
+	
+	
+	
 
 }

@@ -8,7 +8,7 @@ public class DatabaseTestcase extends de.akquinet.jbosscc.needle.db.DatabaseTest
 		super();
 	}
 
-	public DatabaseTestcase(Class<?>[] clazzes) {
+	public DatabaseTestcase(Class<?>... clazzes) {
 		super(clazzes);
 	}
 
@@ -21,5 +21,8 @@ public class DatabaseTestcase extends de.akquinet.jbosscc.needle.db.DatabaseTest
 	public void after() {
 		super.after();
 	}
+	
+	
+	
 
 }

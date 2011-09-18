@@ -30,7 +30,7 @@ public class DatabaseTestcase {
 
 	}
 
-	public DatabaseTestcase(final Class<?>[] clazzes) {
+	public DatabaseTestcase(final Class<?>... clazzes) {
 		configuration = new DatabaseTestcaseConfiguration(clazzes);
 	}
 

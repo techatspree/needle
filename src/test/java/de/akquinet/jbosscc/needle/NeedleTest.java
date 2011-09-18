@@ -1,13 +1,13 @@
 package de.akquinet.jbosscc.needle;
 
 import javax.ejb.SessionContext;
+import javax.persistence.EntityManagerFactory;
 
 import junit.framework.Assert;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.DatabaseRule;
@@ -63,4 +63,13 @@ public class NeedleTest {
 	public void testInitInstance() throws Exception{
 		Assert.assertEquals(componentBean1, componentBean2);
 	}
+
+	@Test
+	public void testEntityManagerFactoryInjection() throws Exception {
+		EntityManagerFactory entityManagerFactory = componentBean2.getEntityManagerFactory();
+		Assert.assertNotNull(entityManagerFactory);
+
+		Assert.assertNotNull(needle.getInjectedObject(EntityManagerFactory.class));
+
+    }
 }

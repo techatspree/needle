@@ -37,7 +37,7 @@ public class DatabaseTestcaseConfiguration {
 		dialect = createDBDialect();
 	}
 
-	public DatabaseTestcaseConfiguration(final Class<?>[] clazzes) {
+	public DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
 		this();
 		Assert.assertNotNull(clazzes);
 		this.entityClazzes = clazzes;

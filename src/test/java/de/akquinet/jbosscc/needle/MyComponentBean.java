@@ -5,7 +5,9 @@ import java.util.Queue;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 
 public class MyComponentBean implements MyComponent {
@@ -13,12 +15,14 @@ public class MyComponentBean implements MyComponent {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Inject
+	private EntityManagerFactory entityManagerFactory;
+
 	@EJB
 	private MyEjbComponent myEjbComponent;
 
 	@Resource
 	private SessionContext sessionContext;
-
 
 	@Resource(mappedName = "queue1")
 	private Queue queue1;
@@ -27,19 +31,21 @@ public class MyComponentBean implements MyComponent {
 	private Queue queue2;
 
 	public EntityManager getEntityManager() {
-    	return entityManager;
-    }
+		return entityManager;
+	}
 
 	public MyEjbComponent getMyEjbComponent() {
-    	return myEjbComponent;
-    }
-
+		return myEjbComponent;
+	}
 
 	@Override
-	public String testMock(){
+	public String testMock() {
 		queue2.clear();
 		return myEjbComponent.doSomething();
 	}
 
+	public EntityManagerFactory getEntityManagerFactory() {
+		return entityManagerFactory;
+	}
 
 }
