@@ -1,5 +1,13 @@
 package de.akquinet.jbosscc.needle;
 
+import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+
+/**
+ * Thrown when a {@link ObjectUnderTest} instantiation fails, e.g. if the
+ * associated class object has no corresponding constructor or the class is
+ * abstract, a primitive type or an interface.
+ *
+ */
 public class ObjectUnderTestInstantiationException extends Exception {
 
 	private static final long serialVersionUID = 1L;

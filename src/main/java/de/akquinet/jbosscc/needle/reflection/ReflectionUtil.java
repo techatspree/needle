@@ -222,17 +222,20 @@ public final class ReflectionUtil {
 	public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName,
 	        final Object... arguments) throws Exception {
 
-		for (final Method declaredMethod : clazz.getDeclaredMethods()) {
-			if (declaredMethod.getName().equals(methodName)) {
-				final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+		Class<?> superClazz = clazz;
 
-				if (parameterTypes.length == arguments.length) {
+		while (superClazz != null) {
+			for (final Method declaredMethod : superClazz.getDeclaredMethods()) {
+				if (declaredMethod.getName().equals(methodName)) {
+					final Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
 
-					if (checkArguments(parameterTypes, arguments)) {
+					if (parameterTypes.length == arguments.length && checkArguments(parameterTypes, arguments)) {
 						return invokeMethod(declaredMethod, object, arguments);
 					}
 				}
 			}
+
+			superClazz = superClazz.getSuperclass();
 		}
 
 		throw new IllegalArgumentException("Method " + methodName + ":" + Arrays.toString(arguments) + " not found");

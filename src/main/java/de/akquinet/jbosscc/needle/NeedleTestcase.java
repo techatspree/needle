@@ -18,6 +18,8 @@ import javax.persistence.EntityManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.akquinet.jbosscc.needle.annotation.InjectInto;
+import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 import de.akquinet.jbosscc.needle.injection.EntityManagerFactoryProvider;
@@ -29,7 +31,23 @@ import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-public class NeedleTestcase {
+/**
+ * Abstract test case to process and initialize all fields annotated with
+ * {@link ObjectUnderTest}. After initialization, {@link InjectIntoMany} and
+ * {@link InjectInto} annotations are processed for optional additional
+ * injections.
+ * 
+ * <p>
+ * Supported injections are:
+ * </p>
+ * <ol>
+ * <li>Constructor injection</li>
+ * <li>Field injection</li>
+ * <li>Method injection</li>
+ * </ol>
+ * 
+ */
+public abstract class NeedleTestcase {
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
 	private static final InjectionAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionAnnotationProcessor();
@@ -42,15 +60,32 @@ public class NeedleTestcase {
 
 	private final List<Collection<InjectionProvider<?>>> injectionProviders;
 
+	/**
+	 * Create an instance of {@link NeedleTestcase} with optional additional
+	 * injection provider.
+	 * 
+	 * @param injectionProvider
+	 *            optional additional injection provider
+	 */
 	@SuppressWarnings("unchecked")
-	public NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
+	protected NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
 		addInjectionProvider(injectionProvider);
 
 		injectionProviders = Arrays.asList(injectionProviderList, configuration.getGlobalCustomInjectionProvider(),
 		        configuration.getInjectionProvider());
 	}
 
-	public NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
+	/**
+	 * Create an instance of {@link NeedleTestcase} with database access and
+	 * optional additional injection provider.
+	 * 
+	 * @param databaseTestcase
+	 *            {@link DatabaseTestcase} as injection provider for
+	 *            {@link EntityManager} and {@link EntityManagerFactory}
+	 * @param injectionProvider
+	 *            optional additional injection provider
+	 */
+	protected NeedleTestcase(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
 		this(injectionProvider);
 		addEntityManagerProvider(databaseTestcase);
 	}
@@ -63,12 +98,25 @@ public class NeedleTestcase {
 		addInjectionProvider(entityManagerProvider, entityManagerFactoryProvider);
 	}
 
-	public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
+	protected final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
 		for (final InjectionProvider<?> provider : injectionProvider) {
 			injectionProviderList.add(0, provider);
 		}
 	}
 
+	/**
+	 * Initialize all fields annotated with {@link ObjectUnderTest}. Is an
+	 * object under test annotated field already initialized, only the injection
+	 * of dependencies will executed.
+	 * 
+	 * After initialization, {@link InjectIntoMany} and {@link InjectInto}
+	 * annotations are processed for optional additional injections.
+	 * 
+	 * @param test
+	 *            an instance of the test
+	 * @throws Exception
+	 *             thrown if an initialization error occurs.
+	 */
 	protected final void initTestcase(final Object test) throws Exception {
 		LOG.info("init testcase {}", test);
 
@@ -95,6 +143,15 @@ public class NeedleTestcase {
 
 	}
 
+	/**
+	 * Inject dependencies into the given instance. First all field injection
+	 * are executed, if there exist an {@link InjectionProvider} for the target.
+	 * Then the method injection is executed, if the injection annotation are
+	 * supported.
+	 * 
+	 * @param instance
+	 *            the instance that is to initialize.
+	 */
 	protected final void initInstance(final Object instance) {
 		initFields(instance);
 		initMethodInjection(instance);
@@ -296,14 +353,14 @@ public class NeedleTestcase {
 	}
 
 	/**
-	 *
+	 * 
 	 * Returns the injected object for the given key, or null if no object was
 	 * injected with the given key.
-	 *
+	 * 
 	 * @param key
 	 *            the key of the injected object, see
 	 *            {@link InjectionProvider#getKey(InjectionTargetInformation)}
-	 *
+	 * 
 	 * @return the injected object or null
 	 */
 	@SuppressWarnings("unchecked")
@@ -313,7 +370,7 @@ public class NeedleTestcase {
 
 	/**
 	 * Returns an instance of the configured {@link MockProvider}
-	 *
+	 * 
 	 * @return the configured {@link MockProvider}
 	 */
 	public <X extends MockProvider> X getMockProvider() {

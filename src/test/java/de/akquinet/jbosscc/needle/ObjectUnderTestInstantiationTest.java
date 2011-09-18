@@ -14,17 +14,18 @@ public class ObjectUnderTestInstantiationTest {
 	private MyEjbComponent ejbComponent;
 
 	@SuppressWarnings("unused")
-    @ObjectUnderTest
+	@ObjectUnderTest
 	private PrivateConstructorClass privateConstructorClass;
 
 	@SuppressWarnings("unused")
-    @ObjectUnderTest
+	@ObjectUnderTest
 	private NoArgsConstructorClass noArgsConstructorClass;
 
 	@Test(expected = ObjectUnderTestInstantiationException.class)
 	public void testInterfaceInstantiation() throws Exception {
 
-		NeedleTestcase needleTestcase = new NeedleTestcase();
+		NeedleTestcase needleTestcase = new NeedleTestcase() {
+		};
 
 		Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField("ejbComponent");
 		ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, this);
@@ -32,7 +33,8 @@ public class ObjectUnderTestInstantiationTest {
 
 	@Test(expected = ObjectUnderTestInstantiationException.class)
 	public void testNoArgConstuctorInstantiation() throws Exception {
-		NeedleTestcase needleTestcase = new NeedleTestcase();
+		NeedleTestcase needleTestcase = new NeedleTestcase() {
+		};
 
 		Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField("noArgsConstructorClass");
 		ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, this);
@@ -40,10 +42,10 @@ public class ObjectUnderTestInstantiationTest {
 
 	@Test(expected = ObjectUnderTestInstantiationException.class)
 	public void testNoPublicConstuctorInstantiation() throws Exception {
-		NeedleTestcase needleTestcase = new NeedleTestcase();
+		NeedleTestcase needleTestcase = new NeedleTestcase() {
+		};
 
 		Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField("privateConstructorClass");
 		ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, this);
 	}
-
 }
