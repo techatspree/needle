@@ -76,7 +76,7 @@ public final class InjectionConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T extends MockProvider> T getMockProvider() {
+	public <T extends MockProvider> T getMockProvider() {
 		return (T) mockProvider;
 	}
 
@@ -105,7 +105,8 @@ public final class InjectionConfiguration {
 
 	@SuppressWarnings("rawtypes")
 	private void initGlobalInjectionProvider() {
-		Set<Class<InjectionProvider>> customInjectionProviders = NeedleConfiguration.getCustomInjectionProviderClasses();
+		Set<Class<InjectionProvider>> customInjectionProviders = NeedleConfiguration
+		        .getCustomInjectionProviderClasses();
 
 		for (Class<InjectionProvider> injectionProviderClass : customInjectionProviders) {
 			try {

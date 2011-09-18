@@ -1,21 +1,18 @@
 package de.akquinet.jbosscc.needle.junit;
 
-import javax.persistence.EntityManager;
-
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 
-
 /**
- * The {@link DatabaseRule} Rule create a {@link EntityManager} to access the configured Database.
+ * The {@link DatabaseRule} provides access to the configured Database.
  *
  * <pre>
- *  public class EntityTestcase {
+ * public class EntityTestcase {
  * 	&#064;Rule
- * 	public DatabaseRule databaseRule= new DatabaseRule();
+ * 	public DatabaseRule databaseRule = new DatabaseRule();
  *
  * 	&#064;Test
  * 	public void testPersist() throws Exception {
