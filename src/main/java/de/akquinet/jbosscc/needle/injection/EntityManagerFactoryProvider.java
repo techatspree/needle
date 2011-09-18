@@ -25,12 +25,6 @@ public class EntityManagerFactoryProvider implements InjectionProvider<EntityMan
 
 	}
 
-	public EntityManagerFactoryProvider(final InjectionVerifier verifyer, final DatabaseTestcase databaseTestcase) {
-		super();
-		this.databaseTestcase = databaseTestcase;
-		this.verifier = verifyer;
-	}
-
 	@Override
 	public EntityManagerFactory getInjectedObject(final Class<?> type) {
 		return databaseTestcase.getEntityManagerFactory();

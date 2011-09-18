@@ -26,11 +26,6 @@ public class EntityManagerProvider implements InjectionProvider<EntityManager> {
 
 	}
 
-	public EntityManagerProvider(final InjectionVerifier verifyer, final DatabaseTestcase databaseRule) {
-		super();
-		this.databaseTestcase = databaseRule;
-		this.verifyer = verifyer;
-	}
 
 	@Override
 	public EntityManager getInjectedObject(final Class<?> type) {
