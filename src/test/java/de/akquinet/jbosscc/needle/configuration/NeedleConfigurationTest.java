@@ -37,8 +37,7 @@ public class NeedleConfigurationTest {
 
 	@Test
 	public void testGetCustomInjectionAnnotations() throws Exception {
-		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration
-		        .getCustomInjectionAnnotations();
+		Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
 		Assert.assertEquals(2, customInjectionAnnotations.size());
 		Assert.assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation1.class));
 		Assert.assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation2.class));

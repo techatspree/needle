@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import java.util.Map;
 import java.util.Queue;
 
 public class CustomeInjectionTestComponent {
@@ -10,6 +11,9 @@ public class CustomeInjectionTestComponent {
 	@CustomInjectionAnnotation2
 	private Queue queue2;
 
+	@CustomInjectionAnnotation1
+	private Map map;
+
 	public Queue getQueue1() {
 		return queue1;
 	}
@@ -17,5 +21,11 @@ public class CustomeInjectionTestComponent {
 	public Queue getQueue2() {
 		return queue2;
 	}
+
+	public Map getMap() {
+    	return map;
+    }
+
+
 
 }

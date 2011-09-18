@@ -1,7 +1,9 @@
 package de.akquinet.jbosscc.needle.injection;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -11,7 +13,7 @@ import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-public class InjectionConfiguration {
+public final class InjectionConfiguration {
 	private static final Logger LOG = LoggerFactory.getLogger(InjectionConfiguration.class);
 
 	private static final Class<?> RESOURCE_CLASS = getClass("javax.annotation.Resource");
@@ -21,7 +23,7 @@ public class InjectionConfiguration {
 	private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
 	private final Set<InjectionProvider<?>> injectionProviderSet = new HashSet<InjectionProvider<?>>();
-	private final Set<InjectionProvider<?>> globalCustomInjectionProviderSet = new HashSet<InjectionProvider<?>>();
+	private final List<InjectionProvider<?>> globalInjectionProviderList = new ArrayList<InjectionProvider<?>>();
 
 	private final Set<Class<? extends Annotation>> injectionAnnotationClasses = new HashSet<Class<? extends Annotation>>();
 
@@ -38,7 +40,8 @@ public class InjectionConfiguration {
 		add(PERSISTENCE_UNIT_CLASS);
 		addResource();
 
-		initGlobalCustomInjectionAnnotation();
+		initGlobalInjectionAnnotation();
+		initGlobalInjectionProvider();
 
 	}
 
@@ -68,8 +71,8 @@ public class InjectionConfiguration {
 		return injectionProviderSet;
 	}
 
-	public Set<InjectionProvider<?>> getGlobalCustomInjectionProvider() {
-		return globalCustomInjectionProviderSet;
+	public List<InjectionProvider<?>> getGlobalCustomInjectionProvider() {
+		return globalInjectionProviderList;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -91,14 +94,28 @@ public class InjectionConfiguration {
 		throw new RuntimeException("no mock provider configured");
 	}
 
-	private void initGlobalCustomInjectionAnnotation() {
-		Set<Class<? extends Annotation>> customInjectionAnnotations = NeedleConfiguration
-		        .getCustomInjectionAnnotations();
+	private void initGlobalInjectionAnnotation() {
+		Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
 
 		for (Class<? extends Annotation> annotation : customInjectionAnnotations) {
 			addInjectionAnnotation(annotation);
-			globalCustomInjectionProviderSet.add(new DefaultMockInjectionProvider(annotation, getMockProvider()));
+			globalInjectionProviderList.add(0, new DefaultMockInjectionProvider(annotation, getMockProvider()));
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void initGlobalInjectionProvider() {
+		Set<Class<InjectionProvider>> customInjectionProviders = NeedleConfiguration.getCustomInjectionProviderClasses();
+
+		for (Class<InjectionProvider> injectionProviderClass : customInjectionProviders) {
+			try {
+				InjectionProvider injection = ReflectionUtil.createInstance(injectionProviderClass);
+				globalInjectionProviderList.add(0, injection);
+			} catch (Exception e) {
+				LOG.warn("could not create an instance of injection provider " + injectionProviderClass, e);
+			}
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")

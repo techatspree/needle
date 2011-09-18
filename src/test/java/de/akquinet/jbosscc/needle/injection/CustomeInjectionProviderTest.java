@@ -1,28 +1,23 @@
 package de.akquinet.jbosscc.needle.injection;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
-public class InjectionFinalClassTest {
+public class CustomeInjectionProviderTest {
 
 	@Rule
 	public NeedleRule needleRule = new NeedleRule();
 
 	@ObjectUnderTest
-	private InjectionFinalClass testClass;
-
+	private CustomeInjectionTestComponent component;
 
 	@Test
-	public void testFinal() throws Exception {
-		Assert.assertNull(testClass.getString());
-
-    }
-
-
+	public void testCustomeInjectionProvider() throws Exception {
+		Assert.assertSame(CustomMapInjectionProvider.MAP, component.getMap());
+	}
 
 }

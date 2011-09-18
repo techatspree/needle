@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
 import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
 import de.akquinet.jbosscc.needle.db.dialect.DBDialectConfiguration;
+import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -35,9 +36,14 @@ public final class NeedleConfiguration {
 
 	static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
 
-	static final Set<Class<? extends Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupCustomInjectionAnnotations();
+	static final Set<Class<Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupClasses(Annotation.class,
+	        CUSTOM_INJECTION_ANNOTATIONS_KEY);
 
-	static final String CUSTOM_INJECTION_PROVIDERS_KEY = "custom.injection.providers";
+	static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
+
+	@SuppressWarnings("rawtypes")
+	static final Set<Class<InjectionProvider>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(InjectionProvider.class,
+	        CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
 
 	static final DBDialectConfiguration DB_DIALECT_CONFIGURATION = new DBDialectConfiguration(
 	        CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY), CONFIGURATION_LOADER.getPropertie(JDBC_DRIVER_KEY),
@@ -78,16 +84,16 @@ public final class NeedleConfiguration {
 	}
 
 	/**
-	 * Returns the configured hibernate specific configuration file
+	 * Returns the name of the configured hibernate.cfg file
 	 *
-	 * @return hibernate cfg file
+	 * @return name of hibernate.cfg file
 	 */
 	public static String getHibernateCfgFilename() {
 		return CONFIGURATION_LOADER.getPropertie(HIBERNATE_CFG_FILENAME_KEY);
 	}
 
 	/**
-	 * Returns the configured {@link DBDialect}
+	 * Returns the configured {@link DBDialect} class.
 	 *
 	 * @return {@link DBDialect}
 	 */
@@ -110,8 +116,45 @@ public final class NeedleConfiguration {
 	 *
 	 * @return a {@link Set} of {@link Annotation} classes
 	 */
-	public static Set<Class<? extends Annotation>> getCustomInjectionAnnotations() {
+	public static Set<Class<Annotation>> getCustomInjectionAnnotations() {
 		return CUSTOM_INJECTION_ANNOTATIONS;
+	}
+
+	/**
+	 * Returns the configured custom {@link InjectionProvider} classes.
+	 *
+	 * @return a {@link Set} of {@link InjectionProvider} classes
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Set<Class<InjectionProvider>> getCustomInjectionProviderClasses() {
+		return CUSTOM_INJECTION_PROVIDER_CLASSES;
+	}
+
+	private static <T> Set<Class<T>> lookupClasses(final Class<T> type, final String key) {
+		final String classesList = CONFIGURATION_LOADER.containsKey(key) ? CONFIGURATION_LOADER.getPropertie(key) : "";
+
+		final Set<Class<T>> result = new HashSet<Class<T>>();
+		final StringTokenizer tokenizer = new StringTokenizer(classesList, ",");
+
+		String token = null;
+		while (tokenizer.hasMoreElements()) {
+			try {
+				token = tokenizer.nextToken();
+
+				@SuppressWarnings("unchecked")
+				final Class<T> clazz = (Class<T>) ReflectionUtil.forName(token);
+
+				if (clazz != null) {
+					result.add(clazz);
+				} else {
+					LOG.warn("could not load class {}", token);
+				}
+			} catch (Exception e) {
+				LOG.warn("could not load class " + token, e);
+			}
+		}
+
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,34 +170,6 @@ public final class NeedleConfiguration {
 		}
 
 		return null;
-	}
-
-	private static Set<Class<? extends Annotation>> lookupCustomInjectionAnnotations() {
-		final String customAnnotationList = CONFIGURATION_LOADER.containsKey(CUSTOM_INJECTION_ANNOTATIONS_KEY) ? CONFIGURATION_LOADER
-		        .getPropertie(CUSTOM_INJECTION_ANNOTATIONS_KEY) : "";
-		final Set<Class<? extends Annotation>> customInjectionAnnotations = new HashSet<Class<? extends Annotation>>();
-		final StringTokenizer tokenizer = new StringTokenizer(customAnnotationList, ",");
-
-		String token = null;
-		while (tokenizer.hasMoreElements()) {
-			try {
-				token = tokenizer.nextToken();
-
-				@SuppressWarnings("unchecked")
-				final Class<? extends Annotation> customAnnotation = (Class<? extends Annotation>) ReflectionUtil
-				        .forName(token);
-
-				if (customAnnotation != null) {
-					customInjectionAnnotations.add(customAnnotation);
-				} else {
-					LOG.warn("no annotation class found for {}", token);
-				}
-			} catch (Exception e) {
-				LOG.warn("could not load annotation " + token, e);
-			}
-		}
-
-		return customInjectionAnnotations;
 	}
 
 	@SuppressWarnings("unchecked")

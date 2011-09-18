@@ -8,6 +8,7 @@ import de.akquinet.jbosscc.needle.NeedleTestcase;
  * @param <T>
  *            - The type of the provided object.
  *
+ *
  *            <pre>
  * Example for qualifier:
  *

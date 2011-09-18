@@ -34,6 +34,10 @@ public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 		}
 	}
 
+	/**
+	 * Returns {@link EntityManager}, if the test is constructed with an {@link DatabaseTestcase} instance.
+	 * @return {@link EntityManager} or null
+	 */
 	protected EntityManager getEntityManager() {
 		if (databaseTestcase != null) {
 			return databaseTestcase.getEntityManager();
