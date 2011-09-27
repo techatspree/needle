@@ -3,26 +3,26 @@ package de.akquinet.jbosscc.needle.injection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomMapInjectionProvider implements InjectionProvider<Map> {
+public class CustomMapInjectionProvider implements InjectionProvider<Map<Object, Object>> {
 
-	public static final Map MAP = new HashMap();
+  public static final Map<Object, Object> MAP = new HashMap<Object, Object>();
 
-	@Override
-    public Map getInjectedObject(Class<?> injectionPointType) {
-	    return MAP;
+  @Override
+  public Map<Object, Object> getInjectedObject(final Class<?> injectionPointType) {
+    return MAP;
+  }
+
+  @Override
+  public boolean verify(final InjectionTargetInformation injectionTargetInformation) {
+    if (injectionTargetInformation.getType() == Map.class) {
+      return true;
     }
+    return false;
+  }
 
-	@Override
-    public boolean verify(InjectionTargetInformation injectionTargetInformation) {
-	    if(injectionTargetInformation.getType() == Map.class){
-	    	return true;
-	    }
-	    return false;
-    }
-
-	@Override
-    public Object getKey(InjectionTargetInformation injectionTargetInformation) {
-	    return injectionTargetInformation.getType();
-    }
+  @Override
+  public Object getKey(final InjectionTargetInformation injectionTargetInformation) {
+    return injectionTargetInformation.getType();
+  }
 
 }

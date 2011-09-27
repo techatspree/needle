@@ -7,18 +7,17 @@ import org.junit.Test;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
-public class CustomeInjectionAnnotationTest {
+public class CustomInjectionProviderTest {
 
 	@Rule
 	public NeedleRule needleRule = new NeedleRule();
 
 	@ObjectUnderTest
-	private CustomeInjectionTestComponent component;
+	private CustomInjectionTestComponent component;
 
 	@Test
-	public void testCustomeInjection() throws Exception {
-		Assert.assertNotNull(component.getQueue1());
-		Assert.assertNotNull(component.getQueue2());
+	public void testCustomeInjectionProvider() throws Exception {
+		Assert.assertSame(CustomMapInjectionProvider.MAP, component.getMap());
 	}
 
 }

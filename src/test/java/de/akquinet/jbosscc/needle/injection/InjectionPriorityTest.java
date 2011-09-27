@@ -13,24 +13,24 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class InjectionPriorityTest {
 
-	private Map map = new HashMap();
+  private final Map<Object, Object> map = new HashMap<Object, Object>();
 
-	private InjectionProvider<Map> injectionProvider = new CustomMapInjectionProvider(){
-		public Map getInjectedObject(java.lang.Class<?> injectionPointType) {
-			return map;
-		};
-	};
+  private final InjectionProvider<Map<Object, Object>> injectionProvider = new CustomMapInjectionProvider() {
+    @Override
+    public Map<Object, Object> getInjectedObject(final java.lang.Class<?> injectionPointType) {
+      return map;
+    };
+  };
 
-	@Rule
-	public NeedleRule needleRule = new NeedleRule(injectionProvider);
+  @Rule
+  public NeedleRule needleRule = new NeedleRule(injectionProvider);
 
+  @ObjectUnderTest
+  private CustomInjectionTestComponent component;
 
-	@ObjectUnderTest
-	private CustomeInjectionTestComponent component;
-
-	@Test
-	public void testInjectionProviderPriority() throws Exception {
-		Assert.assertSame(map, component.getMap());
-    }
+  @Test
+  public void testInjectionProviderPriority() throws Exception {
+    Assert.assertSame(map, component.getMap());
+  }
 
 }
