@@ -6,7 +6,6 @@ import org.junit.runners.model.Statement;
 
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
-import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 
 /**
@@ -37,13 +36,6 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
  * @see NeedleTestcase
  */
 public class NeedleRule extends NeedleTestcase implements MethodRule {
-
-	/**
-	 * @see NeedleTestcase#NeedleTestcase(InjectionProvider...)
-	 */
-	public NeedleRule(final DatabaseTestcase databaseTestcase, final InjectionProvider<?>... injectionProvider) {
-		super(databaseTestcase, injectionProvider);
-	}
 
 	/**
 	 * @see NeedleTestcase#NeedleTestcase(InjectionProvider...)

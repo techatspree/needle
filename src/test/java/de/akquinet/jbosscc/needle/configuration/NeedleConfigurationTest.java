@@ -7,8 +7,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
-import de.akquinet.jbosscc.needle.db.dialect.HSQLDialect;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation1;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation2;
 import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
@@ -22,18 +20,18 @@ public class NeedleConfigurationTest {
 		Assert.assertEquals(EasyMockProvider.class, mockProviderClass);
 	}
 
-	@Test
-	public void testGetDBDialectClass_HSQDialect() throws Exception {
-		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass(HSQLDialect.class
-		        .getName());
-		Assert.assertEquals(HSQLDialect.class, dbDialectClass);
-	}
-
-	@Test
-	public void testGetDBDialectClass_UnknownClass() throws Exception {
-		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass("my.class");
-		Assert.assertNull(dbDialectClass);
-	}
+//	@Test
+//	public void testGetDBDialectClass_HSQDialect() throws Exception {
+//		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass(HSQLDialect.class
+//		        .getName());
+//		Assert.assertEquals(HSQLDialect.class, dbDialectClass);
+//	}
+//
+//	@Test
+//	public void testGetDBDialectClass_UnknownClass() throws Exception {
+//		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass("my.class");
+//		Assert.assertNull(dbDialectClass);
+//	}
 
 	@Test
 	public void testGetCustomInjectionAnnotations() throws Exception {

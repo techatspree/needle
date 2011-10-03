@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -16,15 +17,36 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfiguration;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
-import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
-import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
+import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
+import de.akquinet.jbosscc.needle.db.operation.DBOperation;
+import de.akquinet.jbosscc.needle.db.operation.JdbcConfiguration;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-public class DatabaseTestcaseConfiguration {
+class DatabaseTestcaseConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcaseConfiguration.class);
 
-	private final DBDialect dialect;
+	/**
+	 * The name of a JDBC driver key to use to connect to the database.
+	 */
+	private static final String JDBC_DRIVER_KEY = "javax.persistence.jdbc.driver";
+
+	/**
+	 * The JDBC connection url key to use to connect to the database.
+	 */
+	private static final String JDBC_URL_KEY = "javax.persistence.jdbc.url";
+
+	/**
+	 * The JDBC connection user name key.
+	 */
+	private static final String JDBC_USER_KEY = "javax.persistence.jdbc.user";
+
+	/**
+	 * The JDBC connection password key.
+	 */
+	private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
+
+	private final AbstractDBOperation dbOperation;
 
 	private PersistenceConfiguration persistenceConfiguration;
 
@@ -34,23 +56,23 @@ public class DatabaseTestcaseConfiguration {
 
 	private DatabaseTestcaseConfiguration() {
 		super();
-		dialect = createDBDialect();
+		dbOperation = createDBOperation();
 	}
 
-	public DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
+	DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
 		this();
 		Assert.assertNotNull(clazzes);
 		this.entityClazzes = clazzes;
 
 	}
 
-	public DatabaseTestcaseConfiguration(final String persistenceUnitName) {
+	DatabaseTestcaseConfiguration(final String persistenceUnitName) {
 		this();
 		Assert.assertNotNull(persistenceUnitName);
 		this.persistenceUnitName = persistenceUnitName;
 	}
 
-	public EntityManager getEntityManager() {
+	EntityManager getEntityManager() {
 		return createProxy(getPersistenceConfiguration().getEntityManager());
 	}
 
@@ -68,27 +90,49 @@ public class DatabaseTestcaseConfiguration {
 		return persistenceConfiguration;
 	}
 
-	public DBDialect getDBDialect() {
-		return dialect;
+	DBOperation getDBOperation() {
+		return dbOperation;
 	}
 
-	private AbstractDBDialect createDBDialect() {
-		final Class<? extends AbstractDBDialect> dialectClass = NeedleConfiguration.getDBDialectClass();
+	private AbstractDBOperation createDBOperation() {
+		final Class<? extends AbstractDBOperation> dbOperationClass = NeedleConfiguration.getDBOperationClass();
 
-		if (dialectClass != null) {
+		if (dbOperationClass != null) {
 			try {
-				return ReflectionUtil.createInstance(dialectClass, NeedleConfiguration.getDBDialectConfiguration());
+				return ReflectionUtil.createInstance(dbOperationClass, getJdbcComfiguration());
 			} catch (Exception e) {
-				LOG.warn("could not create a new instance of db dialect {}, {}", dialectClass, e.getMessage());
+				LOG.warn("could not create a new instance of db dialect {}, {}", dbOperationClass, e.getMessage());
 			}
 		} else {
-			LOG.info("no db dialect configured");
+			LOG.info("no db operation configured");
 		}
 
 		return null;
 	}
 
-	public EntityManagerFactory getEntityManagerFactory() {
+	private JdbcConfiguration getJdbcComfiguration() throws Exception {
+		if (NeedleConfiguration.getJdbcDriver() != null && NeedleConfiguration.getJdbcUrl() != null) {
+			return new JdbcConfiguration(NeedleConfiguration.getJdbcUrl(), NeedleConfiguration.getJdbcDriver(),
+			        NeedleConfiguration.getJdbcUser(), NeedleConfiguration.getJdbcPassword());
+		}
+
+		return getEntityManagerFactoryProperties();
+
+	}
+
+	private JdbcConfiguration getEntityManagerFactoryProperties() throws Exception {
+		try {
+			final Map<String, Object> properties = getEntityManagerFactory().getProperties();
+
+			return new JdbcConfiguration((String) properties.get(JDBC_URL_KEY),
+			        (String) properties.get(JDBC_DRIVER_KEY), (String) properties.get(JDBC_USER_KEY),
+			        (String) properties.get(JDBC_PASSWORD_KEY));
+		} catch (Exception e) {
+			throw new Exception("error while loading jdbc configuration properties form EntityManagerFactory", e);
+		}
+	}
+
+	EntityManagerFactory getEntityManagerFactory() {
 		return getPersistenceConfiguration().getEntityManagerFactory();
 	}
 

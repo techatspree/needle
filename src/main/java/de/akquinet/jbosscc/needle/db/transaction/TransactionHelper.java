@@ -16,7 +16,7 @@ public class TransactionHelper {
 
   /**
    * Saves the given object in the database.
-   * 
+   *
    * @param <T>
    *          -- type of given object obj
    * @param obj
@@ -36,7 +36,7 @@ public class TransactionHelper {
 
   /**
    * Finds and returns object of the given id in the persistence context.
-   * 
+   *
    * @param <T>
    *          -- type of searched object
    * @param clazz
@@ -58,7 +58,7 @@ public class TransactionHelper {
 
   /**
    * Returns all objects of the given class in persistence context.
-   * 
+   *
    * @param <T>
    *          -- type of searched objects
    * @param clazz
@@ -79,7 +79,7 @@ public class TransactionHelper {
 
   /**
    * Encapsulates execution of runnable.run() in transactions.
-   * 
+   *
    * @param <T>
    *          -- result type of runnable.run()
    * @param runnable
@@ -113,7 +113,7 @@ public class TransactionHelper {
 
   /**
    * see executeInTransaction(runnable, clearAfterCommit) .
-   * 
+   *
    * @param <T>
    *          -- result type of runnable.run()
    * @param runnable

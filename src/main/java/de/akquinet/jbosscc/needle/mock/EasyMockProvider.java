@@ -42,7 +42,8 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 
 	/**
 	 * {@inheritDoc} By default a mock with nice behavior. Skipping creation, if
-	 * the type is final or primitive. For details, see the EasyMock documentation.
+	 * the type is final or primitive. For details, see the EasyMock
+	 * documentation.
 	 *
 	 * @return the mock object or null, if the type is final or primitive.
 	 */
@@ -99,6 +100,20 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 */
 	public void resetToDefault(final Object... mocks) {
 		EasyMock.resetToDefault(mocks);
+	}
+
+	/**
+	 * Reset the given mock object and turn them to a mock with default
+	 * behavior. For details, see the EasyMock documentation.
+	 *
+	 * @param mock
+	 *            the mock object
+	 *
+	 * @return the mock object
+	 */
+	public Object resetToDefault(final Object mock) {
+		EasyMock.resetToDefault(mock);
+		return mock;
 	}
 
 }

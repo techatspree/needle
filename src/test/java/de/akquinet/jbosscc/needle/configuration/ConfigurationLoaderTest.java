@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -12,12 +13,12 @@ public class ConfigurationLoaderTest {
 	@Test
 	public void testContainsKey() throws Exception {
 		Assert.assertFalse(configurationLoader.containsKey("anykey"));
-		Assert.assertTrue(configurationLoader.containsKey(NeedleConfiguration.JDBC_PASSWORD_KEY));
+		Assert.assertTrue(configurationLoader.containsKey(NeedleConfiguration.PERSISTENCEUNIT_NAME_KEY));
 	}
 
 	@Test
 	public void testGetProperty() throws Exception {
-		Assert.assertEquals("sa", configurationLoader.getPropertie(NeedleConfiguration.JDBC_USER_KEY));
+		Assert.assertEquals("TestDataModel", configurationLoader.getPropertie(NeedleConfiguration.PERSISTENCEUNIT_NAME_KEY));
 		Assert.assertNull(configurationLoader.getPropertie("any key"));
 	}
 
@@ -36,6 +37,15 @@ public class ConfigurationLoaderTest {
 		Assert.assertNotNull(loadResourceAndDefault);
 		Assert.assertEquals("needle-hsql-hibernate.cfg.xml",
 		        loadResourceAndDefault.get(NeedleConfiguration.HIBERNATE_CFG_FILENAME_KEY));
+	}
+
+	@Test
+	public void testLoadResource() throws Exception {
+		InputStream loadResource = ConfigurationLoader.loadResource("needle.properties");
+		Assert.assertNotNull(loadResource);
+
+		InputStream loadResourceWithLeadingSlash = ConfigurationLoader.loadResource("/needle.properties");
+		Assert.assertNotNull(loadResourceWithLeadingSlash);
 	}
 
 }

@@ -62,14 +62,14 @@ public class NeedleTestNGTest extends AbstractNeedleTestcase {
 		Assert.assertEquals(componentBean1, componentBean2);
 	}
 
-	
+
 	@Test
 	public void testGetEntityManager() throws Exception {
 	    EntityManager entityManager = getEntityManager();
 	    Assert.assertNotNull(entityManager);
     }
-	
-	
-	
+
+
+
 
 }

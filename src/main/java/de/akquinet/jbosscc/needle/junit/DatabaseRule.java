@@ -5,9 +5,11 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
+import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 
 /**
- * The {@link DatabaseRule} provides access to the configured Database.
+ * The {@link DatabaseRule} provides access to the configured Database and
+ * execute optional configured {@link DBOperation} before and after a test.
  *
  * <pre>
  * public class EntityTestcase {
@@ -30,11 +32,23 @@ public class DatabaseRule extends DatabaseTestcase implements MethodRule {
 		super();
 	}
 
-	public DatabaseRule(Class<?>[] clazzes) {
+	public DatabaseRule(final Class<?>... clazzes) {
 		super(clazzes);
 	}
 
-	public DatabaseRule(String puName) {
+	public DatabaseRule(final DBOperation dbOperation, final Class<?>... clazzes) {
+		super(dbOperation, clazzes);
+	}
+
+	public DatabaseRule(final DBOperation dbOperation) {
+		super(dbOperation);
+	}
+
+	public DatabaseRule(final String puName, final DBOperation dbOperation) {
+		super(puName, dbOperation);
+	}
+
+	public DatabaseRule(final String puName) {
 		super(puName);
 	}
 
@@ -44,6 +58,7 @@ public class DatabaseRule extends DatabaseTestcase implements MethodRule {
 			@Override
 			public void evaluate() throws Throwable {
 				try {
+					before();
 					base.evaluate();
 				} finally {
 					after();
@@ -51,5 +66,4 @@ public class DatabaseRule extends DatabaseTestcase implements MethodRule {
 			}
 		};
 	}
-
 }

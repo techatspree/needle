@@ -16,7 +16,7 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 public class NeedleTest {
 
 	@Rule
-	public DatabaseRule databaseRule = new DatabaseRule();
+	public static DatabaseRule databaseRule = new DatabaseRule();
 
 	@Rule
 	public NeedleRule needle = new NeedleRule(databaseRule);
@@ -60,7 +60,7 @@ public class NeedleTest {
 	}
 
 	@Test
-	public void testInitInstance() throws Exception{
+	public void testInitInstance() throws Exception {
 		Assert.assertEquals(componentBean1, componentBean2);
 	}
 
@@ -71,5 +71,6 @@ public class NeedleTest {
 
 		Assert.assertNotNull(needle.getInjectedObject(EntityManagerFactory.class));
 
-    }
+	}
+
 }

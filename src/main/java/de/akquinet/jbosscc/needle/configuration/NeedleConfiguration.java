@@ -8,9 +8,8 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.akquinet.jbosscc.needle.db.dialect.AbstractDBDialect;
-import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
-import de.akquinet.jbosscc.needle.db.dialect.DBDialectConfiguration;
+import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
+import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
@@ -25,6 +24,9 @@ public final class NeedleConfiguration {
 	static final String JDBC_DRIVER_KEY = "jdbc.driver";
 	static final String JDBC_USER_KEY = "jdbc.user";
 	static final String JDBC_PASSWORD_KEY = "jdbc.password";
+
+
+	static final String DB_OPERATION_KEY = "db.operation";
 
 	static final String DB_DIALECT_KEY = "db.dialect";
 
@@ -42,15 +44,18 @@ public final class NeedleConfiguration {
 	static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
 
 	@SuppressWarnings("rawtypes")
-	static final Set<Class<InjectionProvider>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(InjectionProvider.class,
-	        CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+	static final Set<Class<InjectionProvider>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(
+	        InjectionProvider.class, CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
 
-	static final DBDialectConfiguration DB_DIALECT_CONFIGURATION = new DBDialectConfiguration(
-	        CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY), CONFIGURATION_LOADER.getPropertie(JDBC_DRIVER_KEY),
-	        CONFIGURATION_LOADER.getPropertie(JDBC_USER_KEY), CONFIGURATION_LOADER.getPropertie(JDBC_PASSWORD_KEY));
+	static final String JDBC_URL = CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY);
 
-	static final Class<? extends AbstractDBDialect> DB_DIALECT_CLASS = lookupDBDialectClass(CONFIGURATION_LOADER
-	        .getPropertie(DB_DIALECT_KEY));
+	static final String JDBC_DRIVER = CONFIGURATION_LOADER.getPropertie(JDBC_DRIVER_KEY);
+
+	static final String JDBC_USER = CONFIGURATION_LOADER.getPropertie(JDBC_USER_KEY);
+
+	static final String JDBC_PASSWORD = CONFIGURATION_LOADER.getPropertie(JDBC_PASSWORD_KEY);
+
+	static final Class<? extends AbstractDBOperation> DB_OPERATION_CLASS = lookupDBOperationClass(CONFIGURATION_LOADER.containsKey(DB_OPERATION_KEY) ? CONFIGURATION_LOADER.getPropertie(DB_OPERATION_KEY) : CONFIGURATION_LOADER.getPropertie(DB_DIALECT_KEY));
 
 	static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass();
 
@@ -58,20 +63,14 @@ public final class NeedleConfiguration {
 		StringBuilder builder = new StringBuilder();
 		builder.append("\nPU_NAME=").append(getPersistenceunitName());
 		builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
-		builder.append("\nDB_DIALECT=").append(getDBDialectClass());
+		builder.append("\nDB_OPERATION=").append(getDBOperationClass());
 		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
-		builder.append("\nJDBC_URL=").append(DB_DIALECT_CONFIGURATION.getJdbcUrl());
-		builder.append("\nJDBC_DRIVER=").append(DB_DIALECT_CONFIGURATION.getJdbcDriver());
 
 		LOG.info("Needle Configuration: {}", builder.toString());
 	}
 
 	private NeedleConfiguration() {
 		super();
-	}
-
-	public static DBDialectConfiguration getDBDialectConfiguration() {
-		return DB_DIALECT_CONFIGURATION;
 	}
 
 	/**
@@ -95,16 +94,34 @@ public final class NeedleConfiguration {
 	/**
 	 * Returns the configured {@link DBDialect} class.
 	 *
-	 * @return {@link DBDialect}
+	 * @return {@link DBOperation} or null
 	 */
-	public static Class<? extends AbstractDBDialect> getDBDialectClass() {
-		return DB_DIALECT_CLASS;
+	public static Class<? extends AbstractDBOperation> getDBOperationClass() {
+		return DB_OPERATION_CLASS;
 	}
+
+	public static String getJdbcUrl() {
+		return JDBC_URL;
+	}
+
+	public static String getJdbcDriver() {
+		return JDBC_DRIVER;
+	}
+
+	public static String getJdbcUser() {
+		return JDBC_USER;
+	}
+
+	public static String getJdbcPassword() {
+		return JDBC_PASSWORD;
+	}
+
+
 
 	/**
 	 * Returns the configured {@link MockProvider}
 	 *
-	 * @return {@link MockProvider}
+	 * @return {@link MockProvider} or null
 	 */
 	public static Class<? extends MockProvider> getMockProviderClass() {
 		return MOCK_PROVIDER_CLASS;
@@ -158,15 +175,15 @@ public final class NeedleConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	static Class<? extends AbstractDBDialect> lookupDBDialectClass(final String dbDialect) {
+	static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
 
 		try {
-			if (dbDialect != null) {
-				return (Class<? extends AbstractDBDialect>) Class.forName(dbDialect);
+			if (dbOperation != null) {
+				return (Class<? extends AbstractDBOperation>) Class.forName(dbOperation);
 			}
 
 		} catch (Exception e) {
-			LOG.warn("error while loading db dialect class {}, {}", dbDialect, e.getMessage());
+			LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
 		}
 
 		return null;

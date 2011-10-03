@@ -10,7 +10,7 @@ import de.akquinet.jbosscc.needle.NeedleTestcase;
  *
  *
  *            <pre>
- * Example for qualifier:
+ * Example for javax.inject.Qualifier:
  *
  * public class InjectionProvider<User>() {
  * 	&#064;Override

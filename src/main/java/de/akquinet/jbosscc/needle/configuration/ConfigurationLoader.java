@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -9,7 +10,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class ConfigurationLoader {
+public final class ConfigurationLoader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationLoader.class);
 
@@ -72,5 +73,22 @@ final class ConfigurationLoader {
 
 	private ResourceBundle loadResourceBundle(String name) {
 		return ResourceBundle.getBundle(name);
+	}
+
+	public static InputStream loadResource(final String resource) {
+		boolean hasLeadingSlash = resource.startsWith("/");
+		String stripped = hasLeadingSlash ? resource.substring(1) : resource;
+
+		InputStream stream = null;
+
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		if (classLoader != null) {
+			stream = classLoader.getResourceAsStream(resource);
+			if (stream == null && hasLeadingSlash) {
+				stream = classLoader.getResourceAsStream(stripped);
+			}
+		}
+
+		return stream;
 	}
 }

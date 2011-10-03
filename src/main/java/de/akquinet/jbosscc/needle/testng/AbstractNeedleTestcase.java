@@ -12,19 +12,23 @@ public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 
 	private DatabaseTestcase databaseTestcase;
 
-	public AbstractNeedleTestcase(DatabaseTestcase databaseTestcase, InjectionProvider<?>... injectionProvider) {
-
-		super(databaseTestcase, injectionProvider);
-		this.databaseTestcase = databaseTestcase;
-	}
-
 	public AbstractNeedleTestcase(InjectionProvider<?>... injectionProvider) {
 		super(injectionProvider);
+
+		for (InjectionProvider<?> provider : injectionProvider) {
+			if (provider instanceof DatabaseTestcase) {
+				databaseTestcase = (DatabaseTestcase) provider;
+			}
+		}
 	}
 
 	@BeforeMethod
 	public final void beforeNeedleTestcase() throws Exception {
 		initTestcase(this);
+
+		if (databaseTestcase != null) {
+			databaseTestcase.before();
+		}
 	}
 
 	@AfterMethod
@@ -35,7 +39,9 @@ public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 	}
 
 	/**
-	 * Returns {@link EntityManager}, if the test is constructed with an {@link DatabaseTestcase} instance.
+	 * Returns {@link EntityManager}, if the test is constructed with a
+	 * {@link DatabaseTestcase} instance.
+	 *
 	 * @return {@link EntityManager} or null
 	 */
 	protected EntityManager getEntityManager() {

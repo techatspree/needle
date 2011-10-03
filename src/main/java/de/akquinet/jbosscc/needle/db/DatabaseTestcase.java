@@ -1,28 +1,35 @@
 package de.akquinet.jbosscc.needle.db;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
-import de.akquinet.jbosscc.needle.db.dialect.DBDialect;
+import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.db.transaction.TransactionHelper;
+import de.akquinet.jbosscc.needle.injection.EntityManagerFactoryProvider;
+import de.akquinet.jbosscc.needle.injection.EntityManagerProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 
-public class DatabaseTestcase {
-
-	private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcase.class);
+public class DatabaseTestcase implements InjectionProvider<Object> {
 
 	private final DatabaseTestcaseConfiguration configuration;
 
 	private TransactionHelper transactionHelper;
 
+	private DBOperation dbOperation;
+
+	private EntityManagerProvider entityManagerProvider = new EntityManagerProvider(this);
+	private EntityManagerFactoryProvider entityManagerFactoryProvider = new EntityManagerFactoryProvider(this);
+
 	public DatabaseTestcase() {
 		this(NeedleConfiguration.getPersistenceunitName());
+
+	}
+
+	public DatabaseTestcase(final DBOperation dbOperation) {
+		this(NeedleConfiguration.getPersistenceunitName());
+		this.dbOperation = dbOperation;
 	}
 
 	public DatabaseTestcase(final String puName) {
@@ -30,47 +37,38 @@ public class DatabaseTestcase {
 
 	}
 
+	public DatabaseTestcase(final String puName, final DBOperation dbOperation) {
+		this(puName);
+		this.dbOperation = dbOperation;
+	}
+
 	public DatabaseTestcase(final Class<?>... clazzes) {
 		configuration = new DatabaseTestcaseConfiguration(clazzes);
 	}
 
-	protected void after() {
-		DBDialect dialect = configuration.getDBDialect();
-		if (dialect != null) {
-			deleteAll(dialect);
+	public DatabaseTestcase(final DBOperation dbOperation, final Class<?>... clazzes) {
+		this(clazzes);
+		this.dbOperation = dbOperation;
+	}
+
+	protected void after() throws Exception {
+		final DBOperation dbOperation = getDBOperation();
+
+		if (dbOperation != null) {
+			dbOperation.tearDownOperation();
 		}
 	}
 
-	/**
-	 * Delete everything from the DB: This cannot be done with the JPA, because
-	 * the order of deletion matters. Instead we directly use a JDBC connection.
-	 */
-	protected void deleteAll(final DBDialect dbDialect) {
+	protected void before() throws Exception {
+		final DBOperation dbOperation = getDBOperation();
 
-		try {
-			dbDialect.openConnection();
-			List<String> tableNames = dbDialect.getTableNames();
-
-			dbDialect.disableReferentialIntegrity();
-
-			dbDialect.deleteContent(tableNames);
-
-			dbDialect.commit();
-
-		} catch (SQLException e) {
-			LOG.error(e.getMessage(), e);
-			try {
-				dbDialect.rollback();
-			} catch (SQLException e1) {
-				LOG.error(e1.getMessage(), e1);
-			}
-		} finally {
-			try {
-				dbDialect.closeConnection();
-			} catch (SQLException e) {
-				LOG.error(e.getMessage(), e);
-			}
+		if (dbOperation != null) {
+			dbOperation.setUpOperation();
 		}
+	}
+
+	private DBOperation getDBOperation() {
+		return this.dbOperation != null ? this.dbOperation : configuration.getDBOperation();
 	}
 
 	public EntityManager getEntityManager() {
@@ -87,5 +85,24 @@ public class DatabaseTestcase {
 		}
 
 		return transactionHelper;
+	}
+
+	@Override
+	public Object getInjectedObject(Class<?> injectionPointType) {
+		return getInjectionProvider(injectionPointType).getInjectedObject(injectionPointType);
+	}
+
+	@Override
+	public boolean verify(InjectionTargetInformation injectionTargetInformation) {
+		return getInjectionProvider(injectionTargetInformation.getType()).verify(injectionTargetInformation);
+	}
+
+	@Override
+	public Object getKey(InjectionTargetInformation injectionTargetInformation) {
+		return getInjectionProvider(injectionTargetInformation.getType()).getKey(injectionTargetInformation);
+	}
+
+	private InjectionProvider<?> getInjectionProvider(final Class<?> type) {
+		return type == EntityManager.class ? entityManagerProvider : entityManagerFactoryProvider;
 	}
 }
