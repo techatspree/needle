@@ -1,6 +1,5 @@
 package de.akquinet.jbosscc.needle.db.operation.hsql;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -40,15 +39,13 @@ public class HSQLDeleteOperation extends AbstractDBOperation {
 	 */
 	@Override
 	public void tearDownOperation() throws SQLException {
-		Connection connection = null;
 		Statement statement = null;
 
 		try {
-			connection = getConnection();
-			statement = connection.createStatement();
+			statement = getConnection().createStatement();
 
 			disableReferentialIntegrity(statement);
-			List<String> tableNames = getTableNames(connection);
+			List<String> tableNames = getTableNames(getConnection());
 
 			deleteContent(tableNames, statement);
 

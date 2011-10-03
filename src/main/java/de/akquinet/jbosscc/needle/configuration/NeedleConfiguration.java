@@ -38,14 +38,12 @@ public final class NeedleConfiguration {
 
 	static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
 
-	static final Set<Class<Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupClasses(Annotation.class,
-	        CUSTOM_INJECTION_ANNOTATIONS_KEY);
+	static final Set<Class<Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupClasses(CUSTOM_INJECTION_ANNOTATIONS_KEY);
 
 	static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
 
 	@SuppressWarnings("rawtypes")
-	static final Set<Class<InjectionProvider>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(
-	        InjectionProvider.class, CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+	static final Set<Class<InjectionProvider>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
 
 	static final String JDBC_URL = CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY);
 
@@ -92,7 +90,7 @@ public final class NeedleConfiguration {
 	}
 
 	/**
-	 * Returns the configured {@link DBDialect} class.
+	 * Returns the configured {@link DBOperation} class.
 	 *
 	 * @return {@link DBOperation} or null
 	 */
@@ -147,7 +145,7 @@ public final class NeedleConfiguration {
 		return CUSTOM_INJECTION_PROVIDER_CLASSES;
 	}
 
-	private static <T> Set<Class<T>> lookupClasses(final Class<T> type, final String key) {
+	private static <T> Set<Class<T>> lookupClasses(final String key) {
 		final String classesList = CONFIGURATION_LOADER.containsKey(key) ? CONFIGURATION_LOADER.getPropertie(key) : "";
 
 		final Set<Class<T>> result = new HashSet<Class<T>>();

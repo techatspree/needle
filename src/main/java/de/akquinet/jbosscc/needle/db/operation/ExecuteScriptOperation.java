@@ -1,6 +1,5 @@
 package de.akquinet.jbosscc.needle.db.operation;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -19,8 +18,8 @@ public class ExecuteScriptOperation extends AbstractDBOperation {
 		super(jdbcConfiguration);
 	}
 
-	private final String BEFORE_SCRIPT_NAME = "before.sql";
-	private final String AFTER_SCRIPT_NAME = "after.sql";
+	private static final String BEFORE_SCRIPT_NAME = "before.sql";
+	private static final String AFTER_SCRIPT_NAME = "after.sql";
 
 	/**
 	 * Execute before.sql script in test setup.
@@ -45,12 +44,10 @@ public class ExecuteScriptOperation extends AbstractDBOperation {
 	}
 
 	private void execute(final String filename) {
-		Connection connection = null;
 		Statement statement = null;
 
 		try {
-			connection = getConnection();
-			statement = connection.createStatement();
+			statement = getConnection().createStatement();
 
 			executeScript(filename, statement);
 
