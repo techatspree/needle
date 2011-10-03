@@ -81,6 +81,20 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
+	 * Reset the given mock object and turn them to a mock with nice behavior.
+	 * For details, see the EasyMock documentation.
+	 *
+	 * @param mock
+	 *            the mock object
+	 *
+	 * @return the mock object
+	 */
+	public Object resetToNice(final Object mock) {
+		EasyMock.resetToNice(mock);
+		return mock;
+	}
+
+	/**
 	 * Resets the given mock objects and turn them to a mock with strict
 	 * behavior. For details, see the EasyMock documentation.
 	 *
@@ -89,6 +103,20 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 */
 	public void resetToStrict(final Object... mocks) {
 		EasyMock.resetToStrict(mocks);
+	}
+
+	/**
+	 * Reset the given mock object and turn them to a mock with strict behavior.
+	 * For details, see the EasyMock documentation.
+	 *
+	 * @param mock
+	 *            the mock objects
+	 *
+	 * @return the mock object
+	 */
+	public Object resetToStrict(final Object mock) {
+		EasyMock.resetToStrict(mock);
+		return mock;
 	}
 
 	/**
