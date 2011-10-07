@@ -15,7 +15,7 @@ import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.db.operation.JdbcConfiguration;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-class DatabaseTestcaseConfiguration {
+final class DatabaseTestcaseConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcaseConfiguration.class);
 
