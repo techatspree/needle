@@ -5,8 +5,6 @@ import javax.persistence.EntityManagerFactory;
 
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.db.transaction.TransactionHelper;
-import de.akquinet.jbosscc.needle.injection.EntityManagerFactoryProvider;
-import de.akquinet.jbosscc.needle.injection.EntityManagerProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 

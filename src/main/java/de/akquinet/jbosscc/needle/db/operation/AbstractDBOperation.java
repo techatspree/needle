@@ -123,38 +123,15 @@ public abstract class AbstractDBOperation implements DBOperation {
 
 	}
 
-	/**
-	 * Execute the given sql script.
-	 *
-	 * @param filename
-	 *            the filename of the sql script
-	 * @param statement
-	 *            the {@link Statement} to used for executing a SQL statement.
-	 *
-	 * @throws SQLException
-	 *             if a database access error occurs
-	 * @throws NullPointerException
-	 *             if the filename is null
-	 */
-	protected void executeScript(final String filename, final Statement statement) throws SQLException {
-		LOG.info("Executing sql script: " + filename);
+	private void executeScript(final BufferedReader script, final Statement statement) throws SQLException {
 
-		InputStream fileInputStream;
-		try {
-			fileInputStream = ConfigurationLoader.loadResource(filename);
-		} catch (FileNotFoundException e) {
-			LOG.error("could not execute script", e);
-			return;
-		}
-
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		long lineNo = 0;
 
 		StringBuffer sql = new StringBuffer();
 		String line;
 
 		try {
-			while ((line = reader.readLine()) != null) {
+			while ((line = script.readLine()) != null) {
 
 				lineNo++;
 				String trimmedLine = line.trim();
@@ -162,7 +139,7 @@ public abstract class AbstractDBOperation implements DBOperation {
 				if (trimmedLine.length() == 0 || trimmedLine.startsWith("--") || trimmedLine.startsWith("//")) {
 					continue;
 				} else if (trimmedLine.startsWith("/*")) {
-					while ((line = reader.readLine()) != null) {
+					while ((line = script.readLine()) != null) {
 						if (line.endsWith("*/")) {
 							LOG.debug("ignore " + line);
 							break;
@@ -186,6 +163,32 @@ public abstract class AbstractDBOperation implements DBOperation {
 			throw new SQLException("Error during import script execution at line " + lineNo, e);
 		}
 
+	}
+
+	/**
+	 * Execute the given sql script.
+	 *
+	 * @param filename
+	 *            the filename of the sql script
+	 * @param statement
+	 *            the {@link Statement} to used for executing a SQL statement.
+	 *
+	 * @throws SQLException
+	 *             if a database access error occurs
+	 */
+	protected void executeScript(final String filename, final Statement statement) throws SQLException {
+		LOG.info("Executing sql script: " + filename);
+
+		InputStream fileInputStream;
+		try {
+			fileInputStream = ConfigurationLoader.loadResource(filename);
+		} catch (FileNotFoundException e) {
+			LOG.error("could not execute script", e);
+			return;
+		}
+
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
+		executeScript(reader, statement);
 	}
 
 	/**

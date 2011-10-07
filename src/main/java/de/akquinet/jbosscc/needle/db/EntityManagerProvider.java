@@ -1,10 +1,12 @@
-package de.akquinet.jbosscc.needle.injection;
+package de.akquinet.jbosscc.needle.db;
 
 import javax.persistence.EntityManager;
 
-import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
+import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
+import de.akquinet.jbosscc.needle.injection.InjectionVerifier;
 
-public class EntityManagerProvider implements InjectionProvider<EntityManager> {
+class EntityManagerProvider implements InjectionProvider<EntityManager> {
 
 	private final DatabaseTestcase databaseTestcase;
 

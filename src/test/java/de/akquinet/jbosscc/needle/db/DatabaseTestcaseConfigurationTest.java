@@ -29,6 +29,5 @@ public class DatabaseTestcaseConfigurationTest {
 
 		Assert.assertNotNull(jdbcConfiguration);
 	}
-	
-	
+
 }

@@ -11,7 +11,7 @@ public class PersistenceUnitConfiguration implements PersistenceConfiguration {
 
 	public PersistenceUnitConfiguration(String puName) {
 		factory = Persistence.createEntityManagerFactory(puName);
-		entityManager = factory.createEntityManager();
+		entityManager = EntityManagerProxyFactory.createProxy(factory.createEntityManager());
 	}
 
 	public EntityManager getEntityManager() {

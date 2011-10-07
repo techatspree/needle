@@ -1,9 +1,5 @@
 package de.akquinet.jbosscc.needle.db;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -13,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
-import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfiguration;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
@@ -46,20 +41,20 @@ class DatabaseTestcaseConfiguration {
 
 	private final AbstractDBOperation dbOperation;
 
-	private final PersistenceUnitConfiguratiorn configuratiorn;
+	private final PersistenceConfigurationFactory configuratiorn;
 
-	private DatabaseTestcaseConfiguration(PersistenceUnitConfiguratiorn configuratiorn) {
+	private DatabaseTestcaseConfiguration(final PersistenceConfigurationFactory configuratiorn) {
 		this.configuratiorn = configuratiorn;
 		dbOperation = createDBOperation();
 	}
 
 	DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
-		this(new PersistenceUnitConfiguratiorn(clazzes));
+		this(new PersistenceConfigurationFactory(clazzes));
 
 	}
 
 	DatabaseTestcaseConfiguration(final String persistenceUnitName) {
-		this(new PersistenceUnitConfiguratiorn(persistenceUnitName));
+		this(new PersistenceConfigurationFactory(persistenceUnitName));
 
 	}
 
@@ -69,6 +64,10 @@ class DatabaseTestcaseConfiguration {
 
 	EntityManager getEntityManager() {
 		return configuratiorn.getEntityManager();
+	}
+
+	EntityManagerFactory getEntityManagerFactory() {
+		return configuratiorn.getEntityManagerFactory();
 	}
 
 	DBOperation getDBOperation() {
@@ -111,70 +110,6 @@ class DatabaseTestcaseConfiguration {
 		} catch (Exception e) {
 			throw new Exception("error while loading jdbc configuration properties form EntityManagerFactory", e);
 		}
-	}
-
-	EntityManagerFactory getEntityManagerFactory() {
-		return configuratiorn.getEntityManagerFactory();
-	}
-
-}
-
-class PersistenceUnitConfiguratiorn implements PersistenceConfiguration {
-
-	private PersistenceConfiguration persistenceConfiguration;
-
-	private String persistenceUnit;
-	private Class<?>[] cfgClazzes;
-
-	public PersistenceUnitConfiguratiorn(final String persistenceUnit) {
-		super();
-		this.persistenceUnit = persistenceUnit;
-	}
-
-	public PersistenceUnitConfiguratiorn(final Class<?>[] cfgClazzes) {
-		super();
-		this.cfgClazzes = cfgClazzes;
-	}
-
-	private PersistenceConfiguration getPersistenceConfiguration() {
-		if (persistenceConfiguration == null) {
-			if (persistenceUnit != null) {
-				persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(persistenceUnit);
-			} else if (cfgClazzes != null) {
-				persistenceConfiguration = PersistenceConfigurationFactory.getPersistenceConfiguration(cfgClazzes);
-			} else {
-				persistenceConfiguration = null;
-			}
-		}
-
-		return persistenceConfiguration;
-	}
-
-	private static EntityManager createProxy(final EntityManager real) {
-		return (EntityManager) Proxy.newProxyInstance(DatabaseTestcaseConfiguration.class.getClassLoader(),
-		        new Class[] { EntityManager.class }, new InvocationHandler() {
-			        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				        if (method.getName().equals("close")) {
-					        throw new RuntimeException("you are not allowed to explicitely close this EntityManager");
-				        }
-
-				        try {
-					        return method.invoke(real, args);
-				        } catch (InvocationTargetException e) {
-					        throw e.getCause();
-				        }
-			        }
-		        });
-	}
-
-	@Override
-	public EntityManager getEntityManager() {
-		return createProxy(getPersistenceConfiguration().getEntityManager());
-	}
-
-	@Override
-	public EntityManagerFactory getEntityManagerFactory() {
-		return getPersistenceConfiguration().getEntityManagerFactory();
 	}
 
 }
