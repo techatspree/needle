@@ -1,6 +1,7 @@
 package de.akquinet.jbosscc.needle.db.operation;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -138,13 +139,20 @@ public abstract class AbstractDBOperation implements DBOperation {
 	protected void executeScript(final String filename, final Statement statement) throws SQLException {
 		LOG.info("Executing sql script: " + filename);
 
-		final InputStream fileInputStream = ConfigurationLoader.loadResource(filename);
+		InputStream fileInputStream;
+		try {
+			fileInputStream = ConfigurationLoader.loadResource(filename);
+		} catch (FileNotFoundException e) {
+			LOG.error("could not execute script", e);
+			return;
+		}
 
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		long lineNo = 0;
 
 		StringBuffer sql = new StringBuffer();
 		String line;
+
 		try {
 			while ((line = reader.readLine()) != null) {
 

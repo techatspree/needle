@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -46,6 +47,11 @@ public class ConfigurationLoaderTest {
 
 		InputStream loadResourceWithLeadingSlash = ConfigurationLoader.loadResource("/needle.properties");
 		Assert.assertNotNull(loadResourceWithLeadingSlash);
+	}
+
+	@Test(expected = FileNotFoundException.class)
+	public void testLoadResource_NotFound() throws Exception {
+		ConfigurationLoader.loadResource("notfound.properties");
 	}
 
 }

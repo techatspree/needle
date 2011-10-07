@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -75,7 +76,16 @@ public final class ConfigurationLoader {
 		return ResourceBundle.getBundle(name);
 	}
 
-	public static InputStream loadResource(final String resource) {
+	/**
+	 * Returns an input stream for reading the specified resource.
+	 *
+	 * @param resource
+	 *            the resource name
+	 * @return an input stream for reading the resource.
+	 * @throws FileNotFoundException
+	 *             if the resource could not be found
+	 */
+	public static InputStream loadResource(final String resource) throws FileNotFoundException {
 		boolean hasLeadingSlash = resource.startsWith("/");
 		String stripped = hasLeadingSlash ? resource.substring(1) : resource;
 
@@ -87,6 +97,10 @@ public final class ConfigurationLoader {
 			if (stream == null && hasLeadingSlash) {
 				stream = classLoader.getResourceAsStream(stripped);
 			}
+		}
+
+		if (stream == null) {
+			throw new FileNotFoundException("resource " + resource + " not found");
 		}
 
 		return stream;

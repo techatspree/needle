@@ -12,8 +12,8 @@ import org.junit.Test;
 
 public class AbstractDBOperationTest {
 
-	private static final JdbcConfiguration HSQL_DB_CONFIGURATION = new JdbcConfiguration("jdbc:hsqldb:mem:AbstractDBOperationTestDB",
-	        "org.hsqldb.jdbcDriver", "sa", "");
+	private static final JdbcConfiguration HSQL_DB_CONFIGURATION = new JdbcConfiguration(
+	        "jdbc:hsqldb:mem:AbstractDBOperationTestDB", "org.hsqldb.jdbcDriver", "sa", "");
 
 	private AbstractDBOperation dbOperation = new AbstractDBOperation(HSQL_DB_CONFIGURATION) {
 
@@ -67,18 +67,10 @@ public class AbstractDBOperationTest {
 		}
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testExecuteScript_UnknownFileName() throws Exception {
-		Statement statement = null;
-		try {
-			Connection connection = dbOperation.getConnection();
-			statement = connection.createStatement();
-			dbOperation.executeScript("unknown.sql", statement);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
+		// expect logging and not an NullPointerException
+		dbOperation.executeScript("unknown.sql", null);
 	}
 
 	@After

@@ -3,7 +3,6 @@ package de.akquinet.jbosscc.needle.db;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.db.transaction.TransactionHelper;
 import de.akquinet.jbosscc.needle.injection.EntityManagerFactoryProvider;
@@ -13,100 +12,96 @@ import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 
 public class DatabaseTestcase implements InjectionProvider<Object> {
 
-  private final DatabaseTestcaseConfiguration configuration;
+	private final DatabaseTestcaseConfiguration configuration;
 
-  private TransactionHelper transactionHelper;
+	private TransactionHelper transactionHelper;
 
-  private DBOperation dbOperation;
+	private DBOperation dbOperation;
 
-  private final EntityManagerProvider entityManagerProvider;
-  private final EntityManagerFactoryProvider entityManagerFactoryProvider;
+	private EntityManagerProvider entityManagerProvider = new EntityManagerProvider(this);
+	private EntityManagerFactoryProvider entityManagerFactoryProvider = new EntityManagerFactoryProvider(this);
 
-  private DatabaseTestcase(final DatabaseTestcaseConfiguration configuration) {
-    this.configuration = configuration;
-    entityManagerProvider = new EntityManagerProvider(this);
-    entityManagerFactoryProvider = new EntityManagerFactoryProvider(this);
-  }
+	public DatabaseTestcase() {
+		configuration = new DatabaseTestcaseConfiguration();
 
-  public DatabaseTestcase(final String puName, final DBOperation dbOperation) {
-    this(new DatabaseTestcaseConfiguration(puName));
-    this.dbOperation = dbOperation;
-  }
+	}
 
-  public DatabaseTestcase(final String puName) {
-    this(puName, null);
-  }
+	public DatabaseTestcase(final DBOperation dbOperation) {
+		this();
+		this.dbOperation = dbOperation;
+	}
 
-  public DatabaseTestcase(final DBOperation dbOperation) {
-    this();
-    this.dbOperation = dbOperation;
-  }
+	public DatabaseTestcase(final String puName) {
+		configuration = new DatabaseTestcaseConfiguration(puName);
 
-  public DatabaseTestcase() {
-    this(NeedleConfiguration.getPersistenceunitName());
-  }
+	}
 
-  public DatabaseTestcase(final Class<?>... clazzes) {
-    this(new DatabaseTestcaseConfiguration(clazzes));
-  }
+	public DatabaseTestcase(final String puName, final DBOperation dbOperation) {
+		this(puName);
+		this.dbOperation = dbOperation;
+	}
 
-  public DatabaseTestcase(final DBOperation dbOperation, final Class<?>... clazzes) {
-    this(clazzes);
-    this.dbOperation = dbOperation;
-  }
+	public DatabaseTestcase(final Class<?>... clazzes) {
+		configuration = new DatabaseTestcaseConfiguration(clazzes);
+	}
 
-  protected void after() throws Exception {
-    final DBOperation dbOperation = getDBOperation();
+	public DatabaseTestcase(final DBOperation dbOperation, final Class<?>... clazzes) {
+		this(clazzes);
+		this.dbOperation = dbOperation;
+	}
 
-    if (dbOperation != null) {
-      dbOperation.tearDownOperation();
-    }
-  }
+	protected void after() throws Exception {
+		final DBOperation dbOperation = getDBOperation();
 
-  protected void before() throws Exception {
-    final DBOperation dbOperation = getDBOperation();
+		if (dbOperation != null) {
+			dbOperation.tearDownOperation();
+		}
+	}
 
-    if (dbOperation != null) {
-      dbOperation.setUpOperation();
-    }
-  }
+	protected void before() throws Exception {
+		final DBOperation dbOperation = getDBOperation();
 
-  private DBOperation getDBOperation() {
-    return this.dbOperation != null ? this.dbOperation : configuration.getDBOperation();
-  }
+		if (dbOperation != null) {
+			dbOperation.setUpOperation();
+		}
+	}
 
-  public EntityManager getEntityManager() {
-    return configuration.getEntityManager();
-  }
+	private DBOperation getDBOperation() {
+		return dbOperation != null ? dbOperation : configuration.getDBOperation();
+	}
 
-  public EntityManagerFactory getEntityManagerFactory() {
-    return configuration.getEntityManagerFactory();
-  }
+	public EntityManager getEntityManager() {
+		return configuration.getEntityManager();
+	}
 
-  public TransactionHelper getTransactionHelper() {
-    if (transactionHelper == null) {
-      transactionHelper = new TransactionHelper(getEntityManager());
-    }
+	public EntityManagerFactory getEntityManagerFactory() {
+		return configuration.getEntityManagerFactory();
+	}
 
-    return transactionHelper;
-  }
+	public TransactionHelper getTransactionHelper() {
+		if (transactionHelper == null) {
+			transactionHelper = new TransactionHelper(getEntityManager());
+		}
 
-  @Override
-  public Object getInjectedObject(final Class<?> injectionPointType) {
-    return getInjectionProvider(injectionPointType).getInjectedObject(injectionPointType);
-  }
+		return transactionHelper;
+	}
 
-  @Override
-  public boolean verify(final InjectionTargetInformation injectionTargetInformation) {
-    return getInjectionProvider(injectionTargetInformation.getType()).verify(injectionTargetInformation);
-  }
+	@Override
+	public Object getInjectedObject(final Class<?> injectionPointType) {
+		return getInjectionProvider(injectionPointType).getInjectedObject(injectionPointType);
+	}
 
-  @Override
-  public Object getKey(final InjectionTargetInformation injectionTargetInformation) {
-    return getInjectionProvider(injectionTargetInformation.getType()).getKey(injectionTargetInformation);
-  }
+	@Override
+	public boolean verify(final InjectionTargetInformation injectionTargetInformation) {
+		return getInjectionProvider(injectionTargetInformation.getType()).verify(injectionTargetInformation);
+	}
 
-  private InjectionProvider<?> getInjectionProvider(final Class<?> type) {
-    return type == EntityManager.class ? entityManagerProvider : entityManagerFactoryProvider;
-  }
+	@Override
+	public Object getKey(final InjectionTargetInformation injectionTargetInformation) {
+		return getInjectionProvider(injectionTargetInformation.getType()).getKey(injectionTargetInformation);
+	}
+
+	private InjectionProvider<?> getInjectionProvider(final Class<?> type) {
+		return type == EntityManager.class ? entityManagerProvider : entityManagerFactoryProvider;
+	}
 }
