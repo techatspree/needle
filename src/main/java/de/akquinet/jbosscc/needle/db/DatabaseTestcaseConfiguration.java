@@ -39,13 +39,16 @@ class DatabaseTestcaseConfiguration {
 	 */
 	private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
 
+	private static final Class<? extends AbstractDBOperation> DB_OPERATION_CLASS = lookupDBOperationClass(NeedleConfiguration
+	        .getDBOperationClassName());
+
 	private final AbstractDBOperation dbOperation;
 
 	private final PersistenceConfigurationFactory configuration;
 
 	private DatabaseTestcaseConfiguration(final PersistenceConfigurationFactory configuratiorn) {
 		this.configuration = configuratiorn;
-		dbOperation = createDBOperation();
+		dbOperation = createDBOperation(DB_OPERATION_CLASS);
 	}
 
 	DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
@@ -74,17 +77,31 @@ class DatabaseTestcaseConfiguration {
 		return dbOperation;
 	}
 
-	private AbstractDBOperation createDBOperation() {
-		final Class<? extends AbstractDBOperation> dbOperationClass = NeedleConfiguration.getDBOperationClass();
+	AbstractDBOperation createDBOperation(final Class<? extends AbstractDBOperation> dbOperationClass) {
 
 		if (dbOperationClass != null) {
 			try {
 				return ReflectionUtil.createInstance(dbOperationClass, getJdbcComfiguration());
 			} catch (Exception e) {
-				LOG.warn("could not create a new instance of db dialect {}, {}", dbOperationClass, e.getMessage());
+				LOG.warn("could not create a new instance of configured db operation {}, {}", dbOperationClass, e.getMessage());
+				LOG.debug(e.getMessage(), e);
 			}
 		} else {
 			LOG.info("no db operation configured");
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
+		try {
+			if (dbOperation != null) {
+				return (Class<? extends AbstractDBOperation>) Class.forName(dbOperation);
+			}
+
+		} catch (Exception e) {
+			LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
 		}
 
 		return null;

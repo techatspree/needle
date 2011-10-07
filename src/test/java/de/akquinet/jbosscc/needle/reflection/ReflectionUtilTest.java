@@ -183,13 +183,23 @@ public class ReflectionUtilTest {
 	public void testInvokeMethod_NoSuchMethod() throws Exception {
 		DerivedClass derivedClass = new DerivedClass();
 
-		ReflectionUtil.invokeMethod(derivedClass, "testInvokeWithPrimitive", "",
-		        1, 'c', true, 10L, 10, 3, 2.);
+		ReflectionUtil.invokeMethod(derivedClass, "testInvokeWithPrimitive");
 
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testInvokeMethod_WithWrongParameter() throws Exception {
+		ReflectionUtil.invokeMethod(this, "test", new Double(1.));
+	}
+
 	@SuppressWarnings("unused")
 	private String test() {
 		return "Hello World";
+	}
+
+	@SuppressWarnings("unused")
+	private String test(int value) {
+		return "";
 	}
 
 	@SuppressWarnings("unused")

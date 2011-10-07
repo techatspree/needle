@@ -7,7 +7,7 @@ import java.lang.reflect.Proxy;
 
 import javax.persistence.EntityManager;
 
-class EntityManagerProxyFactory {
+final class EntityManagerProxyFactory {
 
 	private EntityManagerProxyFactory() {
 		super();

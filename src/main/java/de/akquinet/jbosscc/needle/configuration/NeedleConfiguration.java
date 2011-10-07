@@ -8,12 +8,15 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
-import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
-import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
+/**
+ * Load an holds the configuration of needle.
+ *
+ * Needle configuration can be defined in <b>needle.properties</b> files
+ * somewhere in the classpath.
+ */
 public final class NeedleConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
@@ -24,7 +27,6 @@ public final class NeedleConfiguration {
 	static final String JDBC_DRIVER_KEY = "jdbc.driver";
 	static final String JDBC_USER_KEY = "jdbc.user";
 	static final String JDBC_PASSWORD_KEY = "jdbc.password";
-
 
 	static final String DB_OPERATION_KEY = "db.operation";
 
@@ -53,16 +55,16 @@ public final class NeedleConfiguration {
 
 	static final String JDBC_PASSWORD = CONFIGURATION_LOADER.getPropertie(JDBC_PASSWORD_KEY);
 
-	static final Class<? extends AbstractDBOperation> DB_OPERATION_CLASS = lookupDBOperationClass(CONFIGURATION_LOADER.containsKey(DB_OPERATION_KEY) ? CONFIGURATION_LOADER.getPropertie(DB_OPERATION_KEY) : CONFIGURATION_LOADER.getPropertie(DB_DIALECT_KEY));
+	static final String DB_OPERATION_CLASS_NAME = CONFIGURATION_LOADER.getPropertie(DB_OPERATION_KEY);
 
-	static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass();
+	static final String MOCK_PROVIDER_CLASS_NAME = CONFIGURATION_LOADER.getPropertie(MOCK_PROVIDER_KEY);
 
 	static {
 		StringBuilder builder = new StringBuilder();
 		builder.append("\nPU_NAME=").append(getPersistenceunitName());
 		builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
-		builder.append("\nDB_OPERATION=").append(getDBOperationClass());
-		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
+		builder.append("\nDB_OPERATION=").append(getDBOperationClassName());
+		builder.append("\nMOCK_PROVIDER=").append(getMockProviderClassName());
 
 		LOG.info("Needle Configuration: {}", builder.toString());
 	}
@@ -90,12 +92,12 @@ public final class NeedleConfiguration {
 	}
 
 	/**
-	 * Returns the configured {@link DBOperation} class.
+	 * Returns the configured database operation class name.
 	 *
-	 * @return {@link DBOperation} or null
+	 * @return database operation class name or null
 	 */
-	public static Class<? extends AbstractDBOperation> getDBOperationClass() {
-		return DB_OPERATION_CLASS;
+	public static String getDBOperationClassName() {
+		return DB_OPERATION_CLASS_NAME;
 	}
 
 	public static String getJdbcUrl() {
@@ -114,15 +116,13 @@ public final class NeedleConfiguration {
 		return JDBC_PASSWORD;
 	}
 
-
-
 	/**
-	 * Returns the configured {@link MockProvider}
+	 * Returns the configured mock provider class name
 	 *
-	 * @return {@link MockProvider} or null
+	 * @return mock provider class name or null
 	 */
-	public static Class<? extends MockProvider> getMockProviderClass() {
-		return MOCK_PROVIDER_CLASS;
+	public static String getMockProviderClassName() {
+		return MOCK_PROVIDER_CLASS_NAME;
 	}
 
 	/**
@@ -171,37 +171,4 @@ public final class NeedleConfiguration {
 
 		return result;
 	}
-
-	@SuppressWarnings("unchecked")
-	static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
-
-		try {
-			if (dbOperation != null) {
-				return (Class<? extends AbstractDBOperation>) Class.forName(dbOperation);
-			}
-
-		} catch (Exception e) {
-			LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
-		}
-
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Class<? extends MockProvider> lookupMockProviderClass() {
-		final String mockProvider = CONFIGURATION_LOADER.containsKey(MOCK_PROVIDER_KEY) ? CONFIGURATION_LOADER
-		        .getPropertie(MOCK_PROVIDER_KEY) : null;
-
-		try {
-			if (mockProvider != null) {
-				return (Class<? extends MockProvider>) Class.forName(mockProvider);
-			}
-
-		} catch (Exception e) {
-			LOG.warn("could not create mock provider {} {}", mockProvider, e.getMessage());
-		}
-
-		return null;
-	}
-
 }

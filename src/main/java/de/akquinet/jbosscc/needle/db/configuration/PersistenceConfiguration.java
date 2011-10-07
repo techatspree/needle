@@ -3,10 +3,26 @@ package de.akquinet.jbosscc.needle.db.configuration;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-public interface PersistenceConfiguration {
+/**
+ *
+ * Abstraction for bootstrapping {@link EntityManagerFactory} and
+ * {@link EntityManager}.
+ *
+ */
+interface PersistenceConfiguration {
 
+	/**
+	 * Returns a {@link EntityManager} instance.
+	 *
+	 * @return entityManager
+	 */
 	EntityManager getEntityManager();
 
+	/**
+	 * Returns the EntityManagerFactory.
+	 *
+	 * @return EntityManagerFactory
+	 */
 	EntityManagerFactory getEntityManagerFactory();
 
 }

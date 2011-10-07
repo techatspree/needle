@@ -22,6 +22,9 @@ public final class InjectionConfiguration {
 	private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
 	private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
+	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass(NeedleConfiguration
+	        .getMockProviderClassName());
+
 	private final Set<InjectionProvider<?>> injectionProviderSet = new HashSet<InjectionProvider<?>>();
 	private final List<InjectionProvider<?>> globalInjectionProviderList = new ArrayList<InjectionProvider<?>>();
 
@@ -80,20 +83,6 @@ public final class InjectionConfiguration {
 		return (T) mockProvider;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T extends MockProvider> T createMockProvider() {
-		final Class<? extends MockProvider> mockProviderClass = NeedleConfiguration.getMockProviderClass();
-
-		if (mockProviderClass != null) {
-			try {
-				return (T) mockProviderClass.newInstance();
-			} catch (Exception e) {
-				throw new RuntimeException("could not create a new instance of mock provider " + mockProviderClass, e);
-			}
-		}
-		throw new RuntimeException("no mock provider configured");
-	}
-
 	private void initGlobalInjectionAnnotation() {
 		Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
 
@@ -128,5 +117,28 @@ public final class InjectionConfiguration {
 
 	public boolean isAnnotationSupported(final Class<? extends Annotation> annotation) {
 		return injectionAnnotationClasses.contains(annotation);
+	}
+
+	@SuppressWarnings("unchecked")
+	<T extends MockProvider> T createMockProvider() {
+		try {
+			return (T) MOCK_PROVIDER_CLASS.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException("could not create a new instance of mock provider " + MOCK_PROVIDER_CLASS, e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	static Class<? extends MockProvider> lookupMockProviderClass(final String mockProviderClassName) {
+
+		try {
+			if (mockProviderClassName != null) {
+				return (Class<? extends MockProvider>) Class.forName(mockProviderClassName);
+			}
+		} catch (Exception e) {
+			LOG.warn("could not load mock provider class " + mockProviderClassName, e);
+		}
+
+		throw new RuntimeException("no mock provider configured");
 	}
 }

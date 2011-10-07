@@ -7,7 +7,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,19 @@ import org.slf4j.LoggerFactory;
 public final class ReflectionUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
+
+	private static final Map<Class<?>, Class<?>> PRIMITIVES = new HashMap<Class<?>, Class<?>>();
+
+	static {
+		PRIMITIVES.put(int.class, Integer.class);
+		PRIMITIVES.put(double.class, Double.class);
+		PRIMITIVES.put(boolean.class, Boolean.class);
+		PRIMITIVES.put(long.class, Long.class);
+		PRIMITIVES.put(float.class, Float.class);
+		PRIMITIVES.put(char.class, Character.class);
+		PRIMITIVES.put(short.class, Short.class);
+		PRIMITIVES.put(byte.class, Byte.class);
+	}
 
 	private ReflectionUtil() {
 		super();
@@ -292,32 +308,22 @@ public final class ReflectionUtil {
 			final Class<?> parameterClass = parameterTypes[i];
 			final Class<?> argumentClass = arguments[i].getClass();
 
-			if (!parameterClass.isAssignableFrom(argumentClass)) {
-
-				final boolean isInt = checkPrimativeArguments(parameterClass, argumentClass, int.class, Integer.class);
-				final boolean isDouble = checkPrimativeArguments(parameterClass, argumentClass, double.class,
-				        Double.class);
-				final boolean isBoolean = checkPrimativeArguments(parameterClass, argumentClass, boolean.class,
-				        Boolean.class);
-				final boolean isLong = checkPrimativeArguments(parameterClass, argumentClass, long.class, Long.class);
-				final boolean isFloat = checkPrimativeArguments(parameterClass, argumentClass, float.class, Float.class);
-				final boolean isShort = checkPrimativeArguments(parameterClass, argumentClass, short.class, Short.class);
-				final boolean isChar = checkPrimativeArguments(parameterClass, argumentClass, char.class,
-				        Character.class);
-				final boolean isByte = checkPrimativeArguments(parameterClass, argumentClass, byte.class, Byte.class);
-
-				if (!isInt && !isDouble && !isBoolean && !isLong && !isFloat && !isShort && !isChar && !isByte) {
-					match = false;
-				}
+			if (!parameterClass.isAssignableFrom(argumentClass)
+			        && !checkPrimativeArguments(parameterClass, argumentClass)) {
+				match = false;
 			}
 		}
 
 		return match;
 	}
 
-	private static boolean checkPrimativeArguments(final Class<?> parameterClass, final Class<?> argumentClass,
-	        final Class<?> primative, final Class<?> objectClass) {
-		return (parameterClass == primative) && (argumentClass == objectClass);
+	private static boolean checkPrimativeArguments(final Class<?> parameterClass, final Class<?> argumentClass) {
+		boolean result = false;
+		for (Entry<Class<?>, Class<?>> entry : PRIMITIVES.entrySet()) {
+			result = result || (parameterClass == entry.getKey()) && (argumentClass == entry.getValue());
+		}
+
+		return result;
 	}
 
 	/**

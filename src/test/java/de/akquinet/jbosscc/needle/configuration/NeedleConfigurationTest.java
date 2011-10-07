@@ -7,31 +7,22 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation1;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation2;
 import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
-import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public class NeedleConfigurationTest {
 
 	@Test
 	public void testGetMockProviderClass_Default() throws Exception {
-		Class<? extends MockProvider> mockProviderClass = NeedleConfiguration.getMockProviderClass();
-		Assert.assertEquals(EasyMockProvider.class, mockProviderClass);
+		Assert.assertEquals(EasyMockProvider.class.getName(), NeedleConfiguration.getMockProviderClassName());
 	}
 
-//	@Test
-//	public void testGetDBDialectClass_HSQDialect() throws Exception {
-//		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass(HSQLDialect.class
-//		        .getName());
-//		Assert.assertEquals(HSQLDialect.class, dbDialectClass);
-//	}
-//
-//	@Test
-//	public void testGetDBDialectClass_UnknownClass() throws Exception {
-//		Class<? extends AbstractDBDialect> dbDialectClass = NeedleConfiguration.lookupDBDialectClass("my.class");
-//		Assert.assertNull(dbDialectClass);
-//	}
+	@Test
+	public void testDBOperationClassName_NoDefaults() throws Exception {
+		Assert.assertEquals(HSQLDeleteOperation.class.getName(), NeedleConfiguration.getDBOperationClassName());
+	}
 
 	@Test
 	public void testGetCustomInjectionAnnotations() throws Exception {

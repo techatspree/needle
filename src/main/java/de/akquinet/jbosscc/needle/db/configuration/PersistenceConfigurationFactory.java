@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+/**
+ * Factory to create and access the configured persistence context.
+ */
 public final class PersistenceConfigurationFactory implements PersistenceConfiguration {
 
 	private static final Map<PersistenceConfigurationFactory, PersistenceConfiguration> PERSISTENCE_MAP = new HashMap<PersistenceConfigurationFactory, PersistenceConfiguration>();
@@ -36,17 +39,29 @@ public final class PersistenceConfigurationFactory implements PersistenceConfigu
 		return cfgClazzes;
 	}
 
+	/**
+	 * Returns the {@link EntityManager} instance which is associated with the
+	 * configured persistence context.
+	 *
+	 * @return {@link EntityManager}
+	 */
 	@Override
 	public EntityManager getEntityManager() {
 		return getPersistenceConfiguration().getEntityManager();
 	}
 
+	/**
+	 * Returns the {@link EntityManagerFactory}.
+	 *
+	 * @return {@link EntityManagerFactory}
+	 */
 	@Override
 	public EntityManagerFactory getEntityManagerFactory() {
 		return getPersistenceConfiguration().getEntityManagerFactory();
 	}
 
-	private static PersistenceConfiguration getPersistenceConfiguration(final PersistenceConfigurationFactory configuration) {
+	private static PersistenceConfiguration getPersistenceConfiguration(
+	        final PersistenceConfigurationFactory configuration) {
 		PersistenceConfiguration result = PERSISTENCE_MAP.get(configuration);
 
 		if (result == null) {

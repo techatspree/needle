@@ -8,10 +8,23 @@ import org.testng.annotations.BeforeMethod;
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 
+/**
+ *
+ * @see NeedleTestcase
+ *
+ */
 public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 
 	private DatabaseTestcase databaseTestcase;
 
+	/**
+	 * Create an instance of with optional additional injection provider.
+	 *
+	 * @param injectionProvider
+	 *            optional additional injection provider
+	 *
+	 * @see InjectionProvider
+	 */
 	public AbstractNeedleTestcase(InjectionProvider<?>... injectionProvider) {
 		super(injectionProvider);
 

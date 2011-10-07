@@ -25,31 +25,54 @@ import de.akquinet.jbosscc.needle.db.operation.DBOperation;
  * }
  * </pre>
  *
+ * @see DatabaseTestcase
+ * @see DBOperation
+ *
  */
 public class DatabaseRule extends DatabaseTestcase implements MethodRule {
 
+	/**
+	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase()
+	 */
 	public DatabaseRule() {
 		super();
 	}
 
+	/**
+	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(Class...)
+	 */
 	public DatabaseRule(final Class<?>... clazzes) {
 		super(clazzes);
 	}
 
+	/**
+	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(DBOperation,
+	 *      Class...)
+	 */
 	public DatabaseRule(final DBOperation dbOperation, final Class<?>... clazzes) {
 		super(dbOperation, clazzes);
 	}
 
+	/**
+	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(DBOperation)
+	 */
 	public DatabaseRule(final DBOperation dbOperation) {
 		super(dbOperation);
 	}
 
-	public DatabaseRule(final String puName, final DBOperation dbOperation) {
-		super(puName, dbOperation);
+	/**
+	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(String,
+	 *      DBOperation)
+	 */
+	public DatabaseRule(final String persistenceUnitName, final DBOperation dbOperation) {
+		super(persistenceUnitName, dbOperation);
 	}
 
-	public DatabaseRule(final String puName) {
-		super(puName);
+	/**
+	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(String)
+	 */
+	public DatabaseRule(final String persistenceUnitName) {
+		super(persistenceUnitName);
 	}
 
 	@Override

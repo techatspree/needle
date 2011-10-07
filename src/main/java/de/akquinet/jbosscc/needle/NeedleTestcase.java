@@ -40,6 +40,11 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
  * <li>Method injection</li>
  * </ol>
  *
+ * @see ObjectUnderTest
+ * @see InjectInto
+ * @see InjectIntoMany
+ * @see InjectionProvider
+ *
  */
 public abstract class NeedleTestcase {
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
@@ -60,6 +65,8 @@ public abstract class NeedleTestcase {
 	 *
 	 * @param injectionProvider
 	 *            optional additional injection provider
+	 *
+	 * @see InjectionProvider
 	 */
 	@SuppressWarnings("unchecked")
 	protected NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
