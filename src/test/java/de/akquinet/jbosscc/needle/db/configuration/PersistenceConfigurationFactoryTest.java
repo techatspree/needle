@@ -23,4 +23,19 @@ public class PersistenceConfigurationFactoryTest {
 		Assert.assertSame(persistenceConfigurationFactory1.getEntityManager(),
 		        persistenceConfigurationFactory2.getEntityManager());
 	}
+
+	@Test
+	public void testEqualsWithPersistenceUnitName() throws Exception {
+		PersistenceConfigurationFactory persistenceConfigurationFactory1 = new PersistenceConfigurationFactory(
+		        "TestDataModel");
+
+		PersistenceConfigurationFactory persistenceConfigurationFactory2 = new PersistenceConfigurationFactory(
+		        "TestDataModel");
+
+		Assert.assertSame(persistenceConfigurationFactory1.getEntityManagerFactory(),
+		        persistenceConfigurationFactory1.getEntityManagerFactory());
+
+		Assert.assertSame(persistenceConfigurationFactory1.getEntityManager(),
+		        persistenceConfigurationFactory2.getEntityManager());
+	}
 }

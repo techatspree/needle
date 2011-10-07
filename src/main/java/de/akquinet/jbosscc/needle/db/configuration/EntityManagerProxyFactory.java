@@ -8,6 +8,11 @@ import java.lang.reflect.Proxy;
 import javax.persistence.EntityManager;
 
 class EntityManagerProxyFactory {
+
+	private EntityManagerProxyFactory() {
+		super();
+	}
+
 	static EntityManager createProxy(final EntityManager real) {
 		return (EntityManager) Proxy.newProxyInstance(PersistenceConfigurationFactory.class.getClassLoader(),
 		        new Class[] { EntityManager.class }, new InvocationHandler() {

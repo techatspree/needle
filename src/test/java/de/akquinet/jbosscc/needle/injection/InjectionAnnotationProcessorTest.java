@@ -13,6 +13,7 @@ import de.akquinet.jbosscc.needle.MyEjbComponentBean;
 import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.db.User;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class InjectionAnnotationProcessorTest {
@@ -48,7 +49,7 @@ public class InjectionAnnotationProcessorTest {
 	public void testInjectManyWithInjectInto() throws Exception {
 		assertSame(queue, _userDao2.getQueue());
 		assertSame(queue, bean.getQueue());
-		
+
 		Assert.assertNull(_userDao1.getQueue());
 	}
 

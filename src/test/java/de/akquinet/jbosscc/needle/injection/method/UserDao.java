@@ -4,6 +4,7 @@ import java.util.Queue;
 
 import javax.inject.Inject;
 
+import de.akquinet.jbosscc.needle.db.User;
 import de.akquinet.jbosscc.needle.injection.CurrentUser;
 
 public class UserDao {

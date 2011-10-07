@@ -28,8 +28,11 @@ public class MockitoProviderTest {
 	@Test
 	public void testCreateMockComponent_Final() throws Exception {
 		Assert.assertNull(mockitoProvider.createMockComponent(String.class));
-		Assert.assertNull(mockitoProvider.createMockComponent(double.class));
+	}
 
+	@Test
+	public void testCreateMockComponent_isPrimitive() throws Exception {
+		Assert.assertNull(mockitoProvider.createMockComponent(int.class));
 	}
 
 }

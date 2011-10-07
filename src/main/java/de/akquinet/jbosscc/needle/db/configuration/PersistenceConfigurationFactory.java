@@ -28,7 +28,6 @@ public final class PersistenceConfigurationFactory implements PersistenceConfigu
 		return getPersistenceConfiguration(this);
 	}
 
-
 	String getPersistenceUnit() {
 		return persistenceUnit;
 	}
@@ -47,7 +46,7 @@ public final class PersistenceConfigurationFactory implements PersistenceConfigu
 		return getPersistenceConfiguration().getEntityManagerFactory();
 	}
 
-	private static PersistenceConfiguration getPersistenceConfiguration(PersistenceConfigurationFactory configuration) {
+	private static PersistenceConfiguration getPersistenceConfiguration(final PersistenceConfigurationFactory configuration) {
 		PersistenceConfiguration result = PERSISTENCE_MAP.get(configuration);
 
 		if (result == null) {
@@ -79,21 +78,27 @@ public final class PersistenceConfigurationFactory implements PersistenceConfigu
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		PersistenceConfigurationFactory other = (PersistenceConfigurationFactory) obj;
-		if (!Arrays.equals(cfgClazzes, other.cfgClazzes))
+		}
+		final PersistenceConfigurationFactory other = (PersistenceConfigurationFactory) obj;
+		if (!Arrays.equals(cfgClazzes, other.cfgClazzes)) {
 			return false;
+		}
 		if (persistenceUnit == null) {
-			if (other.persistenceUnit != null)
+			if (other.persistenceUnit != null) {
 				return false;
-		} else if (!persistenceUnit.equals(other.persistenceUnit))
+			}
+		} else if (!persistenceUnit.equals(other.persistenceUnit)) {
 			return false;
+		}
 		return true;
 	}
 

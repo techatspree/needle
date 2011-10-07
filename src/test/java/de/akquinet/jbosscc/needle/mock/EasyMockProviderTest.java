@@ -10,9 +10,11 @@ import de.akquinet.jbosscc.needle.MyComponent;
 import de.akquinet.jbosscc.needle.MyComponentBean;
 import de.akquinet.jbosscc.needle.MyEjbComponent;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.db.User;
+import de.akquinet.jbosscc.needle.injection.constuctor.UserDao;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
-public class EasyMockTest {
+public class EasyMockProviderTest {
 
 	@Rule
 	public final NeedleRule needleRule = new NeedleRule();
@@ -21,7 +23,6 @@ public class EasyMockTest {
 	private MyComponent component;
 
 	private EasyMockProvider mockProvider = (EasyMockProvider) needleRule.getMockProvider();
-
 
 	@Test
 	public void testNiceMock() throws Exception {
@@ -46,4 +47,32 @@ public class EasyMockTest {
 		mockProvider.verifyAll();
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void testResetToStric_Mocks() throws Exception {
+
+		User userMock = mockProvider.createMock(User.class);
+		UserDao userDaoMock = mockProvider.createMock(UserDao.class);
+		mockProvider.resetToStrict(userMock, userDaoMock);
+		userMock.getId();
+
+		userDaoMock.getUser();
+
+		mockProvider.replayAll();
+
+		mockProvider.verifyAll();
+	}
+
+
+	@Test(expected = IllegalStateException.class)
+	public void testResetToStric_Mock() throws Exception {
+
+		User userMock = mockProvider.resetToStrict(mockProvider.createMock(User.class));
+
+		userMock.getId();
+
+
+		mockProvider.replayAll();
+
+		mockProvider.verifyAll();
+	}
 }

@@ -89,9 +89,10 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 *
 	 * @return the mock object
 	 */
-	public Object resetToNice(final Object mock) {
+	@SuppressWarnings("unchecked")
+    public <X> X  resetToNice(final Object mock) {
 		EasyMock.resetToNice(mock);
-		return mock;
+		return (X) mock;
 	}
 
 	/**
@@ -114,9 +115,10 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 *
 	 * @return the mock object
 	 */
-	public Object resetToStrict(final Object mock) {
+	@SuppressWarnings("unchecked")
+    public <X> X resetToStrict(final Object mock) {
 		EasyMock.resetToStrict(mock);
-		return mock;
+		return (X) mock;
 	}
 
 	/**
@@ -139,9 +141,10 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 *
 	 * @return the mock object
 	 */
-	public Object resetToDefault(final Object mock) {
+	@SuppressWarnings("unchecked")
+    public <X> X  resetToDefault(final Object mock) {
 		EasyMock.resetToDefault(mock);
-		return mock;
+		return (X) mock;
 	}
 
 }

@@ -5,10 +5,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.db.User;
 import de.akquinet.jbosscc.needle.injection.CurrentUser;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
-import de.akquinet.jbosscc.needle.injection.method.User;
 import de.akquinet.jbosscc.needle.injection.method.UserDao;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 

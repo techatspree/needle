@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.db.User;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class InjectionQualifierTest {

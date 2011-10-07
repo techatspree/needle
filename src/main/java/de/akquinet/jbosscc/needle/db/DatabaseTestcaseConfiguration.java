@@ -41,10 +41,10 @@ class DatabaseTestcaseConfiguration {
 
 	private final AbstractDBOperation dbOperation;
 
-	private final PersistenceConfigurationFactory configuratiorn;
+	private final PersistenceConfigurationFactory configuration;
 
 	private DatabaseTestcaseConfiguration(final PersistenceConfigurationFactory configuratiorn) {
-		this.configuratiorn = configuratiorn;
+		this.configuration = configuratiorn;
 		dbOperation = createDBOperation();
 	}
 
@@ -63,11 +63,11 @@ class DatabaseTestcaseConfiguration {
 	}
 
 	EntityManager getEntityManager() {
-		return configuratiorn.getEntityManager();
+		return configuration.getEntityManager();
 	}
 
 	EntityManagerFactory getEntityManagerFactory() {
-		return configuratiorn.getEntityManagerFactory();
+		return configuration.getEntityManagerFactory();
 	}
 
 	DBOperation getDBOperation() {

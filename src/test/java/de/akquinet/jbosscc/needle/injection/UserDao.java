@@ -4,6 +4,8 @@ import java.util.Queue;
 
 import javax.inject.Inject;
 
+import de.akquinet.jbosscc.needle.db.User;
+
 public class UserDao {
 
 	@Inject
