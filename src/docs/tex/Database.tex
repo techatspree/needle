@@ -3,7 +3,7 @@
 
 \section{Database Testcase}
 -JPA Configuration
-- Hibernate CFG
+
 
 \section{Transaction utilities}
 
@@ -11,3 +11,112 @@
 
 
 \section{Testdatabuilder}
+
+With the Test Data Builder pattern, the class that is responsible for creating the test objects provides methods that can be used to configure the test objects. Properties that are not configured use default values. The builder methods can be chained together and provide transient or persistent testdata for the test case.
+
+For this purpose Needle provides an abstract base class. The following code examples shows two implementations of Test Data Builder pattern. The Testdatabuilder inherit from 
+de.akquinet.jbosscc.needle.db.testdata.\-AbstractTestdataBuilder class. 
+
+\begin{lstlisting}[language={JAVA},caption=User Testdatabuilder]
+public class UserTestdataBuilder extends AbstractTestdataBuilder<User> {
+
+   private String withUsername;
+   private String withPassword;
+   private Profile withProfile;
+
+   public UserTestdataBuilder() {
+      super();
+   }
+
+   public UserTestdataBuilder(EntityManager entityManager) {
+      super(entityManager);
+   }
+
+   public UserTestdataBuilder withUsername(final String username) {
+      this.withUsername = username;
+      return this;
+   }
+
+   private String getUsername() {
+      return withUsername != null ? withUsername : "username";
+   }
+
+   public UserTestdataBuilder withPassword(final String password) {
+      this.withPassword = password;
+      return this;
+   }
+
+   private String getPassword() {
+      return withPassword != null ? withPassword : "password";
+   }
+
+   public UserTestdataBuilder withProfile(final Profile profile) {
+      this.withProfile = profile;
+      return this;
+   }
+
+   private Profile getProfile() {
+      if (withProfile != null) {
+         return withProfile;
+      }
+
+      return hasEntityManager() ? new ProfileTestdataBuilder(
+            getEntityManager()).buildAndSave()
+            : new ProfileTestdataBuilder(getEntityManager()).build();
+
+   }
+
+   @Override
+   public User build() {
+      User user = new User();
+      user.setUsername(getUsername());
+      user.setPassword(getPassword());
+      user.setProfile(getProfile());
+      return user;
+   }
+
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={JAVA},caption=Profile Testdatabuilder]
+
+public class ProfileTestdataBuilder extends AbstractTestdataBuilder<Profile> {
+
+   private String withLanguage;
+   
+   public ProfileTestdataBuilder() {
+      super();
+   }
+
+   public ProfileTestdataBuilder(EntityManager entityManager) {
+      super(entityManager);
+   }
+
+
+   public ProfileTestdataBuilder withLanguage(final String language) {
+      this.withLanguage = language;
+      return this;
+   }
+
+   private String getLanguage() {
+      return withLanguage != null ? withLanguage : "de";
+   }
+
+   @Override
+   public Profile build() {
+      Profile profile = new Profile();
+      profile.setLanguage(getLanguage());
+      return profile;
+   }
+}
+\end{lstlisting}
+
+In the test cases the implemented Testdatabuilder can produce transient or persisted objects that satisfies the constraints. In the example the Testdatabuilder is using defaults for everything except the username.
+
+\begin{lstlisting}[language={JAVA},caption=Build an persistent User object]
+final User user = new UserTestdataBuilder(databaseRule.getEntityManager()).withUsername("user").buildAndSave();
+\end{lstlisting}
+
+\begin{lstlisting}[language={JAVA},caption=Build an transient User object]
+final User user = new UserTestdataBuilder().withUsername("user").build()
+\end{lstlisting}

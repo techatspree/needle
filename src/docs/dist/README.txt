@@ -14,27 +14,28 @@ Effective Unit Testing of Java EE
 ================================================================================
 
 Needle is a lightweight framework for testing Java EE components outside of the
-container. It reduce the test setup code by analysing dependencies and
-automatically injection of mock objects.
+container in isolation. It reduces the test setup code by analysing dependencies and
+automatic injection of mock objects. It will thus maximize the speed of development
+as well as the execution of unit tests.
 
 ================================================================================
 Core Features:
 
 * Instantiation of @ObjectUnderTest Components
 * Constructor, Method and Field based dependency injection
-* Default injection are Mock objects
-* Extensible by providing custom injection provider
+* Injection of Mock objects by default
+* Extensible by providing custom injection providers
 * Wiring of object graphs
 
 * Database testing via JPA Provider, e.g. EclipseLink or Hibernate
 * EntityManager creation and injection
-* Execute optional database operation on test setup and tear down
+* Execute optional database operations during test setup and tear down
 * Transaction Utilities
 
 * Provide Utilities for Reflection, e.g. for private method invocation or field access
 
-* Needle can used with JUnit or TestNG.
-* It supports out of the box EasyMock and Mockito as mock framework.
+* Needle can be used with JUnit or TestNG.
+* It supports EasyMock and Mockito out-of-the-box.
 
 ================================================================================
 Contents of distribution

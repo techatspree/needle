@@ -1,7 +1,90 @@
 %!TEX root = NeedleReference.tex
 \chapter{Testing with Mock objects}
+Mock objects are a useful way to write unit tests for objects that has collaborators. Needle generates Mock objects dynamically for dependencies of the components under test. 
+Out-of-the-box Needle has implementations for EasyMock and Mockito.
+To use other mock frameworks, the interface de.akquinet.jbosscc.needle.mock.MockProvider must be implemented and configured in the needle.properties file.
+
 
 \section{EasyMock}
 
+The EasyMockProvider create Nice Mock objects that are by default allows all method calls and returns appropriate empty values e.g. 0, null or false. 
+If needed, all mocks can also be converted from one type to another by calling resetAllToNice(), resetAllToDefault() or resetAllToStrict(). 
+
+The EasyMockProvider implementation is a subclass of EasyMockSupport. EasyMockSupport is a class that meant to be used as a helper or base class to your test cases. It will automatically registers all created mocks and to replay, reset or verify them in batch instead of explicitly. 
+
+The following test illustrates the use of EasyMock with Needle. 
+
+\begin{lstlisting}[language={JAVA},caption=Testing with EasyMock]
+public class AuthenticatorTest {
+
+   @Rule
+   public NeedleRule needleRule = new NeedleRule();
+
+   @ObjectUnderTest
+   private Authenticator authenticator;
+
+   private EasyMockProvider mockProvider = needleRule.getMockProvider();
+
+   @Test
+   public void testAuthenticate() throws Exception {
+
+      final User user = new UserTestdataBuilder().build();
+      final String username = "username";
+      final String password = "password";
+
+      final UserDao userDaoMock = needleRule.getInjectedObject(UserDao.class);
+      EasyMock.expect(userDaoMock.findBy(username, password)).andReturn(user);
+
+      mockProvider.replayAll();
+      boolean authenticated = authenticator.authenticate(username, password);
+      Assert.assertTrue(authenticated);
+      mockProvider.verifyAll();
+   }
+}
+\end{lstlisting}
+
+EasyMock is the default mock provider. Only the EasyMock library must be added to the test classpath.
+
+For more details about EasyMock, please refer to the EasyMock [http://easymock.org] documentation.
 
 \section{Mockito}
+
+Needle has also an mock provider implementation for Mockito. Mockito generates Mock objects, that are by default for all methods with return values, null, an empty collection or appropriate primitive value returns. 
+
+The following test illustrates the use of Mockito with Needle. 
+
+\begin{lstlisting}[language={JAVA},caption=Testing with Mockito]
+public class AuthenticatorTest {
+
+   @Rule
+   public NeedleRule needleRule = new NeedleRule();
+
+   @ObjectUnderTest
+   private Authenticator authenticator;
+
+   @Test
+   public void testAuthenticate() throws Exception {
+
+      final User user = new UserTestdataBuilder().build();
+      final String username = "username";
+      final String password = "password";
+
+      final UserDao userDaoMock = needleRule.getInjectedObject(UserDao.class);
+
+      Mockito.when(userDaoMock.findBy(username, password)).thenReturn(user);
+
+      boolean authenticated = authenticator.authenticate(username, password);
+      Assert.assertTrue(authenticated);
+
+   }
+}
+
+\end{lstlisting}
+
+To use Mockito, the mockito provider must be configured in the needle.properties file and mockito library must be added to the test classpath.
+
+\begin{lstlisting}[language={JAVA},caption=Mockito configuration]
+mock.provider=de.akquinet.jbosscc.needle.mock.MockitoProvider
+\end{lstlisting}
+
+For more details about Mockito, please refer to the Mockito [http://mockito.org] documentation.

@@ -1,15 +1,15 @@
 %!TEX root = NeedleReference.tex
-\chapter{Getting started}
+\chapter{Getting Started}
 
 \section{Sample Application}
 \label{sec: Sample Application}
-In this chapter, a very simple application is shown, which will be tested in the following chapters with Needle. 
-The application contains a simple user management.   
+In this chapter, a very simple application is shown which will be tested using Needle in the following chapters.
+The application implements a simple user management.
 
 \parskip 14pt
 \parindent 0pt
-There are two jpa entity classes - a User and a Profile, with OneToOne relationships between them. 
-The following two listings shows the implementation of the data model.
+There are two JPA entity classes - a User and a Profile, with OneToOne relationships between them.
+The following two listings show the implementation of the data model.
 
 \begin{lstlisting}[language={JAVA},caption=The user entity]
 @Entity
@@ -87,9 +87,9 @@ public class Profile {
 
 \parskip 14pt
 \parindent 0pt
-To access the user data there is a simple user dao component.
+There is a simple DAO component to access the user data.
 
-\begin{lstlisting}[language={JAVA},caption=The user dao component]
+\begin{lstlisting}[language={JAVA},caption=The User DAO component]
 public class UserDao {
 
    @PersistenceContext
@@ -120,7 +120,7 @@ public class UserDao {
 
 \parskip 14pt
 \parindent 0pt
-To authenticate a user the application has an implementation of an authenticator component which use the user dao.
+To authenticate a user, the application uses an implementation of an authenticator component which itself uses the User DAO.
 
 \begin{lstlisting}[language={JAVA},caption=The authenticator component]
 public class Authenticator {
@@ -142,12 +142,14 @@ public class Authenticator {
 \section{Using Needle with JUnit}
 \label{sec: JUnit}
 
-Needle provides JUnit Rules as extenstion for JUnit. Rules are basically wrappers around test methods. They can execute code before, after or instead of a test method.
+Needle provides JUnit Rules to extend JUnit. Rules are basically wrappers around test methods.
+They can execute code before, after or instead of a test method.
+The following example demonstrates a simple JUnit Needle test. In the test case there are two rules.
+The database rule provides access to the database via JPA and executes optional database operations.
+The Needle rule prepares all fields annotated with @ObjectUnderTest and initialises the components under test.
+Supported injections are constructor injection, field injection and method injection.
 
-The following example demonstrates a simple JUnit Needle test. In the Test case there are two Rules. The Database Rule provides access to the database via JPA and execute optional database operations. 
-The NeedleRule prepare all fields annotated with @ObjectUnderTest and initialize the components under test. Needle supported injections are constructor injection, field injection and method injection.
-
-\begin{lstlisting}[language={JAVA},caption=JUnit user dao test]
+\begin{lstlisting}[language={JAVA},caption=JUnit User DAO test]
 
 public class UserDaoTest {
 
@@ -184,9 +186,15 @@ public class UserDaoTest {
 \section{Using Needle with TestNG}
 \label{sec: TestNG}
 
-Needle also supports TestNG. There are two test cases. The de.akquinet.jbosscc.needle.testng.AbstractNeedleTestcase base test class that prepare all fields annotated with @ObjectUnderTest and initialize the components under test. The de.akquinet.jbosscc.needle.testng.DatabaseTestcase can use as a special provider for the EntityManager injection or as a base test case for jpa tests.
+Needle also supports TestNG. There are two test cases.
 
-\begin{lstlisting}[language={JAVA},caption=TestNG user dao test]
+The class de.akquinet.jbosscc.needle.testng.AbstractNeedleTestcase can be extended by the concrete test case class.
+It prepares all fields annotated with @ObjectUnderTest and initializes the components under test.
+
+The class de.akquinet.jbosscc.needle.testng.DatabaseTestcase can be either used as a special provider for EntityManager injection or as a base test case for JPA tests.
+In the first case, a new DatabaseTestcase instance is passed to the constructor of the AbstractNeedleTestcase:
+
+\begin{lstlisting}[language={JAVA},caption=TestNG User DAO test]
 public class UserDaoTest extends AbstractNeedleTestcase {
 
    public UserDaoTest() {

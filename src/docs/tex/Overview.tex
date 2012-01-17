@@ -2,24 +2,24 @@
 \chapter{Overview}
 
 Needle is a lightweight framework for testing Java EE components outside of the
-container in isolation. It reduce the test setup code by analysing dependencies and
-automatically injection of mock objects. Therefore it will thus maximize the speed of development and execution of unit tests.
+container in isolation. It reduces the test setup code by analysing dependencies and
+automatic injection of mock objects. It will thus maximize the speed of development as well as the execution of unit tests.
 
 \section{Features}
 \begin{itemize}
 	\item Instantiation of @ObjectUnderTest Components
 	\item Constructor, Method and Field based dependency injection
 	\item Injection of Mock objects by default
-	\item Extensible by providing custom injection provider
+	\item Extensible by providing custom injection providers
 	\item Wiring of object graphs
 
 	\item Database testing via JPA Provider, e.g. EclipseLink or Hibernate
 	\item EntityManager creation and injection
-	\item Execute optional database operation on test setup and tear down
+	\item Execute optional database operations during test setup and tear down
 	\item Transaction Utilities
 
 	\item Provide Utilities for Reflection, e.g. for private method invocation or field access
 
-	\item Needle can used with JUnit or TestNG.
-	\item It supports out of the box EasyMock and Mockito as mock framework.
+	\item Needle can be used with JUnit or TestNG.
+	\item It supports EasyMock and Mockito out-of-the-box.
 \end{itemize}
