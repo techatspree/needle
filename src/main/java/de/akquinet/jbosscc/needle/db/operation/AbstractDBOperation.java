@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -93,7 +94,7 @@ public abstract class AbstractDBOperation implements DBOperation {
 	}
 
 	/**
-	 * Returns the names of all tables in the database.
+	 * Returns the names of all tables in the database by using {@linkplain DatabaseMetaData}.
 	 *
 	 * @param connection
 	 *            the jdbc connection object

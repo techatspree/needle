@@ -30,8 +30,6 @@ public final class NeedleConfiguration {
 
 	static final String DB_OPERATION_KEY = "db.operation";
 
-	static final String DB_DIALECT_KEY = "db.dialect";
-
 	static final String PERSISTENCEUNIT_NAME_KEY = "persistenceUnit.name";
 
 	static final String MOCK_PROVIDER_KEY = "mock.provider";

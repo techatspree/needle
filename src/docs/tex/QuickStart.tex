@@ -1,14 +1,218 @@
 %!TEX root = NeedleReference.tex
-\chapter{Quick Start}
-\label{cha:QuickStart}
+\chapter{Getting started}
 
-\section{Installation}
+\section{Sample Application}
+\label{sec: Sample Application}
+In this chapter, a very simple application is shown, which will be tested in the following chapters with Needle. 
+The application contains a simple user management.   
 
-\begin{itemize}
+\parskip 14pt
+\parindent 0pt
+There are two jpa entity classes - a User and a Profile, with OneToOne relationships between them. 
+The following two listings shows the implementation of the data model.
 
-  \item Make sure Maven2 is installed on your computer.
-  
-  
+\begin{lstlisting}[language={JAVA},caption=The user entity]
+@Entity
+public class User {
 
-\end{itemize} 
+   @Id
+   @GeneratedValue(strategy = GenerationType.AUTO)
+   private Long id;
 
+   @Column(unique = true, nullable = false)
+   private String username;
+
+   @Column(nullable = false)
+   private String password;
+
+   @OneToOne(optional = false, cascade = CascadeType.ALL)
+   private Profile profile;
+
+   public Long getId() {
+      return id;
+   }
+
+   public String getUsername() {
+      return username;
+   }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
+
+   public Profile getProfile() {
+      return profile;
+   }
+
+   public void setProfile(Profile profile) {
+      this.profile = profile;
+   }
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[language={JAVA},caption=The profile entity]
+@Entity
+public class Profile {
+
+   @Id
+   @GeneratedValue(strategy = GenerationType.AUTO)
+   private Long id;
+
+   @Column(nullable = false)
+   private String language;
+
+   public String getLanguage() {
+      return language;
+   }
+
+   public void setLanguage(String language) {
+      this.language = language;
+   }
+
+   public Long getId() {
+      return id;
+   }
+}
+\end{lstlisting}
+
+
+\parskip 14pt
+\parindent 0pt
+To access the user data there is a simple user dao component.
+
+\begin{lstlisting}[language={JAVA},caption=The user dao component]
+public class UserDao {
+
+   @PersistenceContext
+   private EntityManager entityManager;
+
+   public User findBy(final String username, final String password) {
+      CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+      CriteriaQuery<User> query = builder.createQuery(User.class);
+
+      Root<User> user = query.from(User.class);
+
+      query.where(
+            builder.and(builder.equal(user.get(User_.username), username)),
+            builder.equal(user.get(User_.password), password));
+
+      return entityManager.createQuery(query).getSingleResult();
+   }
+
+
+   public List<User> findAll() {
+      CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+      CriteriaQuery<User> query = builder.createQuery(User.class);
+
+      return entityManager.createQuery(query).getResultList();
+   }
+}
+\end{lstlisting}
+
+\parskip 14pt
+\parindent 0pt
+To authenticate a user the application has an implementation of an authenticator component which use the user dao.
+
+\begin{lstlisting}[language={JAVA},caption=The authenticator component]
+public class Authenticator {
+
+   @Inject
+   private UserDao userDao;
+
+   public boolean authenticate(final String username, final String password) {
+
+      User user = userDao.findBy(username, password);
+
+      return user != null ? true : false;
+
+   }
+
+}
+\end{lstlisting}
+
+\section{Using Needle with JUnit}
+\label{sec: JUnit}
+
+Needle provides JUnit Rules as extenstion for JUnit. Rules are basically wrappers around test methods. They can execute code before, after or instead of a test method.
+
+The following example demonstrates a simple JUnit Needle test. In the Test case there are two Rules. The Database Rule provides access to the database via JPA and execute optional database operations. 
+The NeedleRule prepare all fields annotated with @ObjectUnderTest and initialize the components under test. Needle supported injections are constructor injection, field injection and method injection.
+
+\begin{lstlisting}[language={JAVA},caption=JUnit user dao test]
+
+public class UserDaoTest {
+
+   @Rule
+   public DatabaseRule databaseRule = new DatabaseRule();
+
+   @Rule
+   public NeedleRule needleRule = new NeedleRule(databaseRule);
+
+   @ObjectUnderTest
+   private UserDao userDao;
+
+   @Test
+   public void testFindByUsername() throws Exception {
+      final User user = new UserTestdataBuilder(
+            databaseRule.getEntityManager()).buildAndSave();
+
+      User findBy = userDao.findBy(user.getUsername(), user.getPassword());
+
+      Assert.assertEquals(user.getId(), findBy.getId());
+   }
+
+   @Test
+   public void testFindAll() throws Exception {
+      new UserTestdataBuilder(databaseRule.getEntityManager()).buildAndSave();
+
+      List<User> all = userDao.findAll();
+
+      Assert.assertEquals(1, all.size());
+   }
+}
+\end{lstlisting}
+
+\section{Using Needle with TestNG}
+\label{sec: TestNG}
+
+Needle also supports TestNG. There are two test cases. The de.akquinet.jbosscc.needle.testng.AbstractNeedleTestcase base test class that prepare all fields annotated with @ObjectUnderTest and initialize the components under test. The de.akquinet.jbosscc.needle.testng.DatabaseTestcase can use as a special provider for the EntityManager injection or as a base test case for jpa tests.
+
+\begin{lstlisting}[language={JAVA},caption=TestNG user dao test]
+public class UserDaoTest extends AbstractNeedleTestcase {
+
+   public UserDaoTest() {
+      super(new DatabaseTestcase());
+   }
+
+   @ObjectUnderTest
+   private UserDao userDao;
+
+   @Test
+   public void testFindByUsername() throws Exception {
+      final User user = new UserTestdataBuilder(getEntityManager())
+            .buildAndSave();
+
+      User findBy = userDao.findBy(user.getUsername(), user.getPassword());
+
+      Assert.assertEquals(user.getId(), findBy.getId());
+   }
+
+   @Test
+   public void testFindAll() throws Exception {
+      new UserTestdataBuilder(getEntityManager()).buildAndSave();
+
+      List<User> all = userDao.findAll();
+
+      Assert.assertEquals(1, all.size());
+   }
+}
+\end{lstlisting}

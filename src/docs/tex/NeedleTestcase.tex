@@ -1,0 +1,94 @@
+%!TEX root = NeedleReference.tex
+\chapter{Needle Testcase}
+
+\section{ObjectUnderTest instantiation and initialization}
+\label{sec: ObjectUnderTest}
+
+Needle automatically instantiate all objects under test. The Needle test case analyzes all fields of the test and create a complete initialize instance.
+Multiple fields can be annotated with the @ObjectUnderTest annotation. The annotation can optionally be configured with the implementation of the type and an id.
+The id may be used for additional injections. When an object under test already instantiated, only the dependency injection will be executed.
+
+
+\section{Injection}
+\label{sec:Injection}
+
+Needle supports field, constructor and method injection by processing @EJB, @Resource, @PersistenceContext, @PersistenceUnit
+and @Inject annotations, if the annotation is available in the classpath of the tests. By default Mock objects are created an injected.
+
+The injected objects can be accessed via the API.
+
+\begin{lstlisting}[language={JAVA},caption=Injected Components]
+UserDao injectedUserDao = needleRule.getInjectedObject(UserDao.class);
+\end{lstlisting}
+
+The key is generated from the respective injection provider. By default the class object of the associated injection point is used as key or in the case of resource injection the mapped name of the resource.
+
+
+\section{Custom injection provider}
+\label{sec:Custom injection provider}
+
+Needle is extensible by providing own injection provider.
+
+\begin{lstlisting}[language={JAVA},caption=Global Injection Prvider]
+custom.injection.annotations=org.jboss.seam.annotations.In, org.jboss.seam.annotations.Logger
+
+custom.injection.provider.classes=de.akquinet.judcon.CurrentUserInjectionProvider
+
+\end{lstlisting}
+
+\begin{lstlisting}[language={JAVA},caption=javax.inject.Qualifier Injection Provider]
+
+public class CurrentUserInjectionProvider implements InjectionProvider<User> {
+
+   private final User currentUser = new User();
+
+   @Override
+   public User getInjectedObject(Class<?> injectionPointType) {
+      return currentUser;
+   }
+
+   @Override
+   public boolean verify(InjectionTargetInformation information) {
+      return information.isAnnotationPresent(CurrentUser.class);
+   }
+
+   @Override
+   public Object getKey(InjectionTargetInformation information) {
+      return CurrentUser.class;
+   }
+
+}
+\end{lstlisting}
+
+
+\section{Wiring of object graphs}
+\label{sec:Wiring of object graphs}
+
+Sometimes it is necessary to provide own objects for injection or wiring complex object graphs. The object referenced by the field annotated with @InjectIntoMany is injected to all objects referenced by the field annotated with @ObjectUnderTest.
+The target property is automatically determined by the type.
+
+\begin{lstlisting}[language={JAVA},caption=InjectIntoMany]
+@ObjectUnderTest
+private Authenticator authenticator;
+
+@InjectIntoMany
+@ObjectUnderTest
+private UserDao userDao;
+\end{lstlisting}
+
+If the referenced object should be injected into a specific instance, the field can be annotated with @InjectInto with the ID of the target object.
+The target property is automatically determined by the type or can be specified by the field name of the target object with fieldName attribute of the annotation.
+
+\begin{lstlisting}[language={JAVA},caption=InjectInto]
+@ObjectUnderTest
+private Authenticator authenticator;
+
+@InjectInto(targetComponentId="authenticator")
+@ObjectUnderTest
+private UserDao userDao;
+\end{lstlisting}
+
+
+
+
+

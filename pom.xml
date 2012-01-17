@@ -11,7 +11,7 @@
 	<name>Needle</name>
 
 	<description>
-        Needle is a small but powerful framework on top of EasyMock and JUnit to inject mock objects for unit testing of EJB 3.0 and Seam components outside the container.
+        Needle is a lightweight framework for testing Java EE components outside of the container. It reduce the test setup code by analysing dependencies and automatically injection of mock objects.
     </description>
 
 	<licenses>
@@ -48,22 +48,19 @@
 	</scm>
 
 	<developers>
-
-		<developer>
-			<id>abendt</id>
-			<name>Alphonse Bendt</name>
-			<email>alphonse (dot) bendt (at) akquinet.de</email>
-			<organization>akquinet AG</organization>
-		</developer>
-
 		<developer>
 			<id>mdahm</id>
 			<name>Markus Dahm</name>
 			<email>markus (dot) dahm (at) akquinet.de</email>
 			<organization>akquinet AG</organization>
 		</developer>
-
-
+		
+		<developer>
+			<id>cerker</id>
+			<name>Carsten Erker</name>
+			<email>carsten (dot) erker (at) akquinet.de</email>
+			<organization>akquinet AG</organization>
+		</developer>
 
 		<developer>
 			<id>hwilming</id>
@@ -496,5 +493,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>

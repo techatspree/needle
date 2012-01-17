@@ -104,7 +104,9 @@ public class InjectionTargetInformation {
 	 *
 	 * @return the {@link AccessibleObject} of the injection target
 	 *
-	 * @see {@link Field}, {@link Method}, {@link Constructor}
+	 * @see Field
+	 * @see Method
+	 * @see Constructor
 	 */
 	public AccessibleObject getAccessibleObject() {
 		return accessibleObject;

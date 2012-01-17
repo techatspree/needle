@@ -32,7 +32,7 @@ public class HSQLDeleteOperation extends AbstractDBOperation {
 	}
 
 	/**
-	 * {@inheritDoc}. Delete all data from all tables given by {@link DatabaseMetaData#getTables(String, String, String, String[]).
+	 * {@inheritDoc}. Delete all data from all tables given by {@link #getTableNames(java.sql.Connection)}.
 	 *
 	 * @throws SQLException
 	 *             if a database access error occurs

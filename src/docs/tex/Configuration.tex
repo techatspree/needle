@@ -1,0 +1,93 @@
+%!TEX root = NeedleReference.tex
+\chapter{Configuration}
+
+\section{Maven dependency configuration}
+If you are using Maven [http://maven.apache.org/] as your build tool, first make sure maven is installed on your computer. Then, add the following single dependency to your pom.xml file to get started with Needle:
+
+\begin{lstlisting}[language=,caption=The Maven pom.xml,escapechar=|,label=lst:pom.xml]
+   <dependency>
+      <groupId>de.akquinet.jbosscc</groupId>
+      <artifactId>jbosscc-needle</artifactId>
+      <scope>test</scope>
+      <version>${needle.version}</version>   </dependency>
+\end{lstlisting}
+
+Needle has no transitive dependencies. The test dependency should be similar to the provided dependencies of the runtime environment. If you are using, for example, Hibernate as JPA provider, Hibernate must be present in the test classpath.
+
+\section{Needle configuration properties}
+
+Needle configuration can be defined in \textbf{needle.properties} files somewhere in the classpath.
+
+\parskip 14pt
+\parindent 0pt
+Configuration of additional custom injection annotations and injection provider.
+\begin{table}[H]
+\centering
+\begin{tabular}{p{6cm}p{11cm}} \toprule 
+    \textbf{Property name} & \textbf{Description} \\ \midrule
+    custom.injection.annotations & Comma seperated list of the fully qualified name of the annotation class. A standard mock provider will be created for each annotation. \\
+    custom.injection.provider.classes & Comma seperated list of the fully qualified name of the injection provider implementation. \\
+\bottomrule
+\end{tabular}
+\caption{custom injection provider}
+\end{table}
+
+\parskip 14pt
+\parindent 0pt
+Configuration of mock provider.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{6cm}p{11cm}} \toprule 
+    \textbf{Property name} & \textbf{Description} \\ \midrule
+    mock.provider & The fully qualified name of an implementation of the MockProvider interface. There is an implementation of EasyMock de.akquinet.jbosscc.needle.mock.EasyMockProvider and Mockito de.akquinet.jbosscc.needle.mock.MockitoProvider. \textbf{EasyMock is the default configuration.}  \\
+\bottomrule
+\end{tabular}
+\caption{mock provider}
+\end{table}
+
+
+\parskip 14pt
+\parindent 0pt
+Configuration of JPA, Database operation and JDBC connection.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{6cm}p{11cm}} \toprule 
+    \textbf{Property name} & \textbf{Description} \\ \midrule
+    persistenceUnit.name & The persistence unit name. Default is TestDataModel  \\
+    hibernate.cfg.filename & XML configuration file to use to configure Hibernate (eg. /hibernate.cfg.xml)  \\
+    db.operation & Optional database operation on test setup and tear down. Value is the fully qualified name of an implementation of the AbstractDBOperation base class. 
+There is an implementation for script execution de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation and for the  HSQL DB to delete all tables de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation.    \\
+    jdbc.url & The JDBC driver specific connection url.  \\
+    jdbc.driver & The fully qualified class name of the driver class.  \\
+    jdbc.user &  The JDBC user name used for the database connection.  \\
+    jdbc.password & The JDBC password used for the database connection.  \\
+\bottomrule 
+\end{tabular}
+\caption{JPA and jdbc configuration}
+\end{table}
+
+The JDBC configuration properties are only required, if database operation and JPA 1.0 are used. Otherwise the jdbc properties are related to the standard property names of JPA 2.0.
+
+\section{Logging}
+Needle use the Simple Logging Facade for Java (SLF4J). SLF4J serves as a simple facade or abstraction for various logging frameworks.
+The SLF4J distribution ships with several jar files referred to as "SLF4J bindings", with each binding corresponding to a supported framework. 
+
+
+For logging within the test, the following optional dependency may add to the classpath:
+
+
+\begin{lstlisting}[language=,caption=SLF4J dependency,escapechar=|,label=lst:SLF4J]
+   <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+   </dependency>
+\end{lstlisting}
+
+For more configuration details and additional informations please refer to http://www.slf4j.org/manual.html. 
+
+  
+ 
+
