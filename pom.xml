@@ -10,6 +10,12 @@
 	<packaging>jar</packaging>
 	<name>Needle</name>
 
+	<parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>5</version>
+    </parent>
+
 	<description>
         Needle is a lightweight framework for testing Java EE components outside of the container. It reduce the test setup code by analysing dependencies and automatically injection of mock objects.
     </description>
@@ -21,25 +27,6 @@
 		</license>
 	</licenses>
 
-	<distributionManagement>
-		<repository>
-			<id>nexus-releases</id>
-			<name>Nexus Release Repository</name>
-			<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-			<uniqueVersion>true</uniqueVersion>
-		</repository>
-
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<name>Nexus Snapshot Repository</name>
-			<url>http://oss.sonatype.org/content/repositories/sourceforge-snapshots/</url>
-		</snapshotRepository>
-
-		<site>
-			<id>shell.sourceforge.net</id>
-			<url>scp://shell.sourceforge.net/home/groups/j/jb/jbosscc-needle/htdocs/${project.artifactId}/${project.version}</url>
-		</site>
-	</distributionManagement>
 
 	<scm>
 		<connection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</connection>

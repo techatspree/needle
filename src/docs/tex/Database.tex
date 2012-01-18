@@ -3,7 +3,51 @@
 
 \section{Database Testcase}
 -JPA Configuration
+\begin{lstlisting}[caption=test persistence.xml]
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+   version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
+   <persistence-unit name="TestDataModel"
+      transaction-type="RESOURCE_LOCAL">
 
+      <class>de.akquinet.jbosscc.needle.example.User</class>
+      <class>de.akquinet.jbosscc.needle.example.Profile</class>
+
+      <properties>
+         <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
+         <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:." />
+         <property name="javax.persistence.jdbc.user" value="sa" />
+         <property name="javax.persistence.jdbc.password" value="" />
+
+         <!-- EclipseLink should create the database schema automatically -->
+         <property name="eclipselink.ddl-generation" value="create-tables" />
+         <property name="eclipselink.ddl-generation.output-mode"
+            value="database" />
+      </properties>
+
+   </persistence-unit>
+</persistence>
+\end{lstlisting}
+
+\begin{lstlisting}[language={JAVA},caption=User persistence test]
+public class UserTest {
+
+   @Rule
+   public DatabaseRule databaseRule = new DatabaseRule();
+
+   @Test
+   public void testPersist() throws Exception {
+
+      EntityManager entityManager = databaseRule.getEntityManager();
+
+      User user = new UserTestdataBuilder(entityManager).buildAndSave();
+
+      User userFromDb = entityManager.find(User.class, user.getId());
+      Assert.assertEquals(user.getId(), userFromDb.getId());
+   }
+}
+\end{lstlisting}
 
 \section{Transaction utilities}
 
@@ -62,7 +106,7 @@ public class UserTestdataBuilder extends AbstractTestdataBuilder<User> {
 
       return hasEntityManager() ? new ProfileTestdataBuilder(
             getEntityManager()).buildAndSave()
-            : new ProfileTestdataBuilder(getEntityManager()).build();
+            : new ProfileTestdataBuilder().build();
 
    }
 
