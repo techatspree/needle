@@ -5,7 +5,7 @@
 	<groupId>de.akquinet.jbosscc</groupId>
 	<artifactId>jbosscc-needle</artifactId>
 	<url>http://jbosscc-needle.sourceforge.net/${project.artifactId}/${project.version}</url>
-	<version>2.0-SNAPSHOT</version>
+	<version>2.0</version>
 	<packaging>jar</packaging>
 	<name>Needle</name>
 
@@ -28,9 +28,9 @@
 
 
 	<scm>
-		<connection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</connection>
-		<developerConnection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</developerConnection>
-		<url>https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</url>
+		<connection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/tags/jbosscc-needle-2.0</connection>
+		<developerConnection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/tags/jbosscc-needle-2.0</developerConnection>
+		<url>https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/tags/jbosscc-needle-2.0</url>
 	</scm>
 
 	<developers>
