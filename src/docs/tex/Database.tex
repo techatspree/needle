@@ -2,7 +2,13 @@
 \chapter{Database Testing}
 
 \section{Database Testcase}
--JPA Configuration
+
+When unit-testing your application, it is usually recommended to mock out database access (i.e. use mock objects for JPA EntityManagers or DAOs). But sometimes you might like to test against a real database, e.g. to make sure that your queries work as expected. 
+
+In these cases, Needle automatically creates and injects the EntitiyManager instance into your objects under test. You simply need to provide a JPA persistence.xml and the JDBC driver to the classpath of the test execution. The persistence.xml file is the standard configuration file in JPA. The persistence.xml file must define a persistence-unit with a unique name and the transaction type RESOURCE\_LOCAL for a Java SE environment. 
+
+The following listing below shows a complete example of a persistence.xml file. 
+
 \begin{lstlisting}[caption=test persistence.xml]
 <?xml version="1.0" encoding="UTF-8" ?>
 <persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -29,6 +35,8 @@
    </persistence-unit>
 </persistence>
 \end{lstlisting}
+
+The UserTest below checks the JPA mapping against a real database.
 
 \begin{lstlisting}[language={JAVA},caption=User persistence test]
 public class UserTest {
@@ -85,6 +93,16 @@ public class UserTest {
 The above example illustrates the use of the TransactionHelper class and the execution of a transaction. The implementation of the VoidRunnable is executed within a transaction.
 
 \section{Database operation}
+
+One common issue in unit tests that access a real database is their affect on the state of the persistence store. Even when you are using a development database, changes to the state may affect future tests. For that, optional Database operations can be executed before and after test execution. 
+
+There are two implementations:
+\begin{enumerate}
+\item de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation \\ Execute sql scripts during test setup and tear down. A before.sql and after.sql script must be provided to the classpath.
+\item de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation \\ Deletes all rows of all tables of the hsql database.
+\end{enumerate}
+
+To use own Database operation implementations, the abstract base class de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation must be implemented and configured in the needle.properties file.
 
 
 \section{Testdatabuilder}
