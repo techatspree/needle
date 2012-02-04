@@ -19,6 +19,7 @@ import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 import de.akquinet.jbosscc.needle.injection.TestcaseInjectionProcessor;
+import de.akquinet.jbosscc.needle.mock.MockAnnotationProcessor;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -46,8 +47,9 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 public abstract class NeedleTestcase {
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
-	private static final InjectionAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionAnnotationProcessor();
-	private static final TestcaseInjectionProcessor TESTCASE_INJECTION_PROCESSOR = new TestcaseInjectionProcessor();
+	private final InjectionAnnotationProcessor injectionIntoAnnotationProcessor = new InjectionAnnotationProcessor();
+	private final TestcaseInjectionProcessor testcaseInjectionProcessor = new TestcaseInjectionProcessor();
+	private final MockAnnotationProcessor mockAnnotationProcessor = new MockAnnotationProcessor();
 
 	private final InjectionConfiguration configuration = new InjectionConfiguration();
 
@@ -105,8 +107,9 @@ public abstract class NeedleTestcase {
 			}
 		}
 
-		INJECTION_INTO_ANNOTATION_PROCESSOR.process(context);
-		TESTCASE_INJECTION_PROCESSOR.process(context, configuration);
+		mockAnnotationProcessor.process(context, configuration);
+		injectionIntoAnnotationProcessor.process(context);
+		testcaseInjectionProcessor.process(context, configuration);
 
 	}
 
