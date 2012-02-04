@@ -31,5 +31,4 @@ public class InjectionConfigurationTest {
 		MockProvider mockProvider = injectionConfiguration.createMockProvider();
 		Assert.assertTrue(mockProvider instanceof EasyMockProvider);
 	}
-
 }

@@ -58,6 +58,29 @@ public final class ReflectionUtil {
 		return result;
 	}
 
+	public static Map<Class<? extends Annotation>, List<Field>> getAllAnnotatedFields(final Class<?> clazz) {
+		final Map<Class<? extends Annotation>, List<Field>> result = new HashMap<Class<? extends Annotation>, List<Field>>();
+		final List<Field> fields = getAllFields(clazz);
+
+		for (Field field : fields) {
+			Annotation[] annotations = field.getAnnotations();
+			for (Annotation annotation : annotations) {
+				Class<? extends Annotation> annotationType = annotation.annotationType();
+				List<Field> list = result.get(annotationType);
+
+				if (list == null) {
+					list = new ArrayList<Field>();
+				}
+
+				list.add(field);
+				result.put(annotationType, list);
+
+			}
+
+		}
+		return result;
+	}
+
 	public static List<Field> getAllFieldsAssinableFrom(final Class<?> assinableType, final Class<?> clazz) {
 		final List<Field> result = new ArrayList<Field>();
 

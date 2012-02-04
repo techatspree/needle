@@ -3,15 +3,20 @@ package de.akquinet.jbosscc.needle.reflection;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 
+import de.akquinet.jbosscc.needle.MyComponentBean;
 import de.akquinet.jbosscc.needle.db.Address;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 import de.akquinet.jbosscc.needle.mock.MockitoProvider;
@@ -42,6 +47,16 @@ public class ReflectionUtilTest {
 
 		assertThat(allFields.size(), equalTo(5));
 	}
+
+	@Test
+	public void testAllAnnotatedFields() throws Exception {
+	    final Map<Class<? extends Annotation>, List<Field>> allAnnotatedFields = ReflectionUtil.getAllAnnotatedFields(MyComponentBean.class);
+	    Assert.assertEquals(4, allAnnotatedFields.size());
+
+	    List<Field> list = allAnnotatedFields.get(Resource.class);
+	    Assert.assertEquals(3,list.size());
+
+    }
 
 	@Test
 	public void testInvokeMethod() throws Exception {

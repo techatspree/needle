@@ -16,7 +16,7 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 public class NeedleTest {
 
 	@Rule
-	public static DatabaseRule databaseRule = new DatabaseRule();
+	public DatabaseRule databaseRule = new DatabaseRule();
 
 	@Rule
 	public NeedleRule needle = new NeedleRule(databaseRule);

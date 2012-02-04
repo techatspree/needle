@@ -4,13 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +18,7 @@ import de.akquinet.jbosscc.needle.injection.InjectionAnnotationProcessor;
 import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
+import de.akquinet.jbosscc.needle.injection.TestcaseInjectionProcessor;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -50,14 +47,11 @@ public abstract class NeedleTestcase {
 	private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
 	private static final InjectionAnnotationProcessor INJECTION_INTO_ANNOTATION_PROCESSOR = new InjectionAnnotationProcessor();
-
-	private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
+	private static final TestcaseInjectionProcessor TESTCASE_INJECTION_PROCESSOR = new TestcaseInjectionProcessor();
 
 	private final InjectionConfiguration configuration = new InjectionConfiguration();
-	private final Map<String, Object> objectUnderTestMap = new HashMap<String, Object>();
-	private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
-	private final List<Collection<InjectionProvider<?>>> injectionProviders;
+	private NeedleContext context;
 
 	/**
 	 * Create an instance of {@link NeedleTestcase} with optional additional
@@ -68,18 +62,13 @@ public abstract class NeedleTestcase {
 	 *
 	 * @see InjectionProvider
 	 */
-	@SuppressWarnings("unchecked")
 	protected NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
 		addInjectionProvider(injectionProvider);
-
-		injectionProviders = Arrays.asList(injectionProviderList, configuration.getGlobalCustomInjectionProvider(),
-		        configuration.getInjectionProvider());
 	}
 
+	@Deprecated
 	protected final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
-		for (final InjectionProvider<?> provider : injectionProvider) {
-			injectionProviderList.add(0, provider);
-		}
+		configuration.addInjectionProvider(injectionProvider);
 	}
 
 	/**
@@ -98,10 +87,9 @@ public abstract class NeedleTestcase {
 	protected final void initTestcase(final Object test) throws Exception {
 		LOG.info("init testcase {}", test);
 
-		objectUnderTestMap.clear();
-		injectedObjectMap.clear();
+		context = new NeedleContext(test);
 
-		final List<Field> fields = ReflectionUtil.getAllFieldsWithAnnotation(test, ObjectUnderTest.class);
+		final List<Field> fields = context.getAnnotatedTestcaseFields(ObjectUnderTest.class);
 
 		LOG.debug("found fields {}", fields);
 
@@ -117,7 +105,8 @@ public abstract class NeedleTestcase {
 			}
 		}
 
-		INJECTION_INTO_ANNOTATION_PROCESSOR.process(test, Collections.unmodifiableMap(objectUnderTestMap));
+		INJECTION_INTO_ANNOTATION_PROCESSOR.process(context);
+		TESTCASE_INJECTION_PROCESSOR.process(context, configuration);
 
 	}
 
@@ -176,11 +165,13 @@ public abstract class NeedleTestcase {
 			final InjectionTargetInformation injectionTargetInformation = injectionTargetInformationFactory.create(
 			        parameterTypes[i], i);
 
-			for (final Collection<InjectionProvider<?>> collection : injectionProviders) {
-				final Object injection = handleInjectionProvider(collection, injectionTargetInformation);
+			for (final Collection<InjectionProvider<?>> collection : configuration.getInjectionProvider()) {
+				Entry<Object, Object> injection = configuration.handleInjectionProvider(collection,
+				        injectionTargetInformation);
 
 				if (injection != null) {
-					arguments[i] = injection;
+					arguments[i] = injection.getValue();
+					context.addInjectedObject(injection.getKey(), injection.getValue());
 					continue parameter;
 				}
 
@@ -198,12 +189,15 @@ public abstract class NeedleTestcase {
 			final InjectionTargetInformation injectionTargetInformation = new InjectionTargetInformation(
 			        field.getType(), field);
 
-			for (final Collection<InjectionProvider<?>> collection : injectionProviders) {
-				final Object injection = handleInjectionProvider(collection, injectionTargetInformation);
+			for (final Collection<InjectionProvider<?>> collection : configuration.getInjectionProvider()) {
+				Entry<Object, Object> injection = configuration.handleInjectionProvider(collection,
+				        injectionTargetInformation);
 
 				if (injection != null) {
 					try {
-						ReflectionUtil.setField(field, instance, injection);
+						ReflectionUtil.setField(field, instance, injection.getValue());
+						context.addInjectedObject(injection.getKey(), injection.getValue());
+
 					} catch (final Exception e) {
 						LOG.error(e.getMessage(), e);
 					}
@@ -214,22 +208,6 @@ public abstract class NeedleTestcase {
 
 		}
 
-	}
-
-	private Object handleInjectionProvider(final Collection<InjectionProvider<?>> injectionProviders,
-	        final InjectionTargetInformation injectionTargetInformation) {
-
-		for (final InjectionProvider<?> provider : injectionProviders) {
-
-			if (provider.verify(injectionTargetInformation)) {
-				final Object object = provider.getInjectedObject(injectionTargetInformation.getType());
-
-				injectedObjectMap.put(provider.getKey(injectionTargetInformation), object);
-				return object;
-			}
-
-		}
-		return null;
 	}
 
 	private Object setInstanceIfNotNull(final Field field, final Object test) throws Exception {
@@ -260,7 +238,7 @@ public abstract class NeedleTestcase {
 			}
 		}
 
-		objectUnderTestMap.put(id, instance);
+		context.addObjectUnderTest(id, instance);
 
 		return instance;
 
@@ -343,7 +321,7 @@ public abstract class NeedleTestcase {
 	 */
 	@SuppressWarnings("unchecked")
 	public <X> X getInjectedObject(final Object key) {
-		return (X) injectedObjectMap.get(key);
+		return (X) context.getInjectedObject(key);
 	}
 
 	/**

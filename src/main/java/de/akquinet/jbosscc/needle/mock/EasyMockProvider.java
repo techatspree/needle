@@ -1,8 +1,6 @@
 package de.akquinet.jbosscc.needle.mock;
 
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
@@ -38,8 +36,6 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EasyMockProvider.class);
 
-	private Map<Class<?>, Object> mocks = new HashMap<Class<?>, Object>();
-
 	/**
 	 * {@inheritDoc} By default a mock with nice behavior. Skipping creation, if
 	 * the type is final or primitive. For details, see the EasyMock
@@ -47,23 +43,14 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 *
 	 * @return the mock object or null, if the type is final or primitive.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T createMockComponent(final Class<T> type) {
-
-		if (mocks.containsKey(type)) {
-
-			Object mock = mocks.get(type);
-			resetToNice(mock);
-			return (T) mock;
-		}
 
 		if (Modifier.isFinal(type.getModifiers()) || type.isPrimitive()) {
 			LOG.warn("Skipping creation of a mock : {} as it is final or primitive type.", type.getSimpleName());
 			return null;
 		}
 		T mock = createNiceMock(type);
-		mocks.put(type, mock);
 
 		return mock;
 
@@ -90,7 +77,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 * @return the mock object
 	 */
 	@SuppressWarnings("unchecked")
-    public <X> X  resetToNice(final Object mock) {
+	public <X> X resetToNice(final Object mock) {
 		EasyMock.resetToNice(mock);
 		return (X) mock;
 	}
@@ -116,7 +103,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 * @return the mock object
 	 */
 	@SuppressWarnings("unchecked")
-    public <X> X resetToStrict(final Object mock) {
+	public <X> X resetToStrict(final Object mock) {
 		EasyMock.resetToStrict(mock);
 		return (X) mock;
 	}
@@ -142,7 +129,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	 * @return the mock object
 	 */
 	@SuppressWarnings("unchecked")
-    public <X> X  resetToDefault(final Object mock) {
+	public <X> X resetToDefault(final Object mock) {
 		EasyMock.resetToDefault(mock);
 		return (X) mock;
 	}

@@ -1,5 +1,7 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import javax.inject.Inject;
+
 import junit.framework.Assert;
 
 import org.junit.Rule;
@@ -30,6 +32,13 @@ public class InjectionQualifierTest {
 		}
 	};
 
+	@Inject
+	@CurrentUser
+	private User currentUserToInject;
+
+	@Inject
+	private User user;
+
 	@Rule
 	public NeedleRule needleRule = new NeedleRule(currentUserprovider);
 
@@ -45,5 +54,12 @@ public class InjectionQualifierTest {
 
 		Assert.assertEquals(currentUser, needleRule.getInjectedObject(CurrentUser.class));
 	}
+
+
+	@Test
+	public void testTestInjection() throws Exception {
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(currentUserToInject);
+    }
 
 }

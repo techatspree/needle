@@ -42,8 +42,7 @@ public final class NeedleConfiguration {
 
 	static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
 
-	@SuppressWarnings("rawtypes")
-	static final Set<Class<InjectionProvider>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+	static final Set<Class<InjectionProvider<?>>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
 
 	static final String JDBC_URL = CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY);
 
@@ -138,8 +137,7 @@ public final class NeedleConfiguration {
 	 *
 	 * @return a {@link Set} of {@link InjectionProvider} classes
 	 */
-	@SuppressWarnings("rawtypes")
-	public static Set<Class<InjectionProvider>> getCustomInjectionProviderClasses() {
+	public static Set<Class<InjectionProvider<?>>> getCustomInjectionProviderClasses() {
 		return CUSTOM_INJECTION_PROVIDER_CLASSES;
 	}
 

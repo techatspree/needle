@@ -2,13 +2,18 @@ package de.akquinet.jbosscc.needle.injection;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.akquinet.jbosscc.needle.common.MapEntry;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
@@ -25,16 +30,25 @@ public final class InjectionConfiguration {
 	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass(NeedleConfiguration
 	        .getMockProviderClassName());
 
+	// Default InjectionProvider for annotations
 	private final Set<InjectionProvider<?>> injectionProviderSet = new HashSet<InjectionProvider<?>>();
+
+	// Global InjectionProvider for custom implementation
 	private final List<InjectionProvider<?>> globalInjectionProviderList = new ArrayList<InjectionProvider<?>>();
+
+	// Test-specific custom injection provider
+	private final List<InjectionProvider<?>> testInjectionProvider = new ArrayList<InjectionProvider<?>>();
+
+	// all with priority order
+	private final List<Collection<InjectionProvider<?>>> allInjectionProvider;
 
 	private final Set<Class<? extends Annotation>> injectionAnnotationClasses = new HashSet<Class<? extends Annotation>>();
 
 	private final MockProvider mockProvider;
 
+	@SuppressWarnings("unchecked")
 	public InjectionConfiguration() {
 		super();
-
 		mockProvider = createMockProvider();
 
 		add(INJECT_CLASS);
@@ -45,6 +59,8 @@ public final class InjectionConfiguration {
 
 		initGlobalInjectionAnnotation();
 		initGlobalInjectionProvider();
+
+		allInjectionProvider = Arrays.asList(testInjectionProvider, globalInjectionProviderList, injectionProviderSet);
 
 	}
 
@@ -70,17 +86,19 @@ public final class InjectionConfiguration {
 		return ReflectionUtil.forName(className);
 	}
 
-	public Set<InjectionProvider<?>> getInjectionProvider() {
-		return injectionProviderSet;
-	}
-
-	public List<InjectionProvider<?>> getGlobalCustomInjectionProvider() {
-		return globalInjectionProviderList;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T extends MockProvider> T getMockProvider() {
 		return (T) mockProvider;
+	}
+
+	public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
+		for (final InjectionProvider<?> provider : injectionProvider) {
+			testInjectionProvider.add(0, provider);
+		}
+	}
+
+	public List<Collection<InjectionProvider<?>>> getInjectionProvider() {
+		return allInjectionProvider;
 	}
 
 	private void initGlobalInjectionAnnotation() {
@@ -92,14 +110,13 @@ public final class InjectionConfiguration {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void initGlobalInjectionProvider() {
-		Set<Class<InjectionProvider>> customInjectionProviders = NeedleConfiguration
+		Set<Class<InjectionProvider<?>>> customInjectionProviders = NeedleConfiguration
 		        .getCustomInjectionProviderClasses();
 
-		for (Class<InjectionProvider> injectionProviderClass : customInjectionProviders) {
+		for (Class<InjectionProvider<?>> injectionProviderClass : customInjectionProviders) {
 			try {
-				InjectionProvider injection = ReflectionUtil.createInstance(injectionProviderClass);
+				InjectionProvider<?> injection = ReflectionUtil.createInstance(injectionProviderClass);
 				globalInjectionProviderList.add(0, injection);
 			} catch (Exception e) {
 				LOG.warn("could not create an instance of injection provider " + injectionProviderClass, e);
@@ -119,10 +136,33 @@ public final class InjectionConfiguration {
 		return injectionAnnotationClasses.contains(annotation);
 	}
 
+	Set<Class<? extends Annotation>> getSupportedAnnotations() {
+		return Collections.unmodifiableSet(injectionAnnotationClasses);
+	}
+
+	public Entry<Object, Object> handleInjectionProvider(final Collection<InjectionProvider<?>> injectionProviders,
+	        final InjectionTargetInformation injectionTargetInformation) {
+
+		for (final InjectionProvider<?> provider : injectionProviders) {
+
+			if (provider.verify(injectionTargetInformation)) {
+				final Object object = provider.getInjectedObject(injectionTargetInformation.getType());
+				final Object key = provider.getKey(injectionTargetInformation);
+
+				return new MapEntry<Object, Object>(key, object);
+
+			}
+
+		}
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
 	<T extends MockProvider> T createMockProvider() {
 		try {
-			return (T) MOCK_PROVIDER_CLASS.newInstance();
+			final T mockProvider = (T) MOCK_PROVIDER_CLASS.newInstance();
+			injectionProviderSet.add(new MockProviderInjectionProvider(mockProvider));
+			return mockProvider;
 		} catch (Exception e) {
 			throw new RuntimeException("could not create a new instance of mock provider " + MOCK_PROVIDER_CLASS, e);
 		}

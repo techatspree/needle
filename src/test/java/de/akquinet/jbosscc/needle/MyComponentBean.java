@@ -48,4 +48,18 @@ public class MyComponentBean implements MyComponent {
 		return entityManagerFactory;
 	}
 
+	public SessionContext getSessionContext() {
+    	return sessionContext;
+    }
+
+	public Queue getQueue1() {
+    	return queue1;
+    }
+
+	public Queue getQueue2() {
+    	return queue2;
+    }
+	
+	
+
 }
