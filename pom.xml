@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.akquinet.jbosscc</groupId>
 	<artifactId>jbosscc-needle</artifactId>
-	<url>http://jbosscc-needle.sourceforge.net/${project.artifactId}/${project.version}</url>
+	<url>http://needle.spree.de</url>
 	<version>2.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Needle</name>
@@ -69,6 +69,16 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-latex-plugin-repo</id>
+			<url>http://akquinet.github.com/maven-latex-plugin/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
@@ -405,6 +415,57 @@
 							</execution>
 						</executions>
 					</plugin>
+
+					<plugin>
+						<groupId>de.akquinet.maven</groupId>
+						<artifactId>maven-latex-plugin</artifactId>
+						<inherited>false</inherited>
+
+						<configuration>
+							<settings>
+								<texDirectory>${basedir}/src/docs/tex</texDirectory>
+								<tempDirectory>target/m2latex</tempDirectory>
+								<cleanUp>false</cleanUp>
+							</settings>
+						</configuration>
+
+						<executions>
+							<execution>
+								<id>PDF</id>
+								<configuration>
+									<settings>
+										<outputDirectory>docs/reference/pdf</outputDirectory>
+									</settings>
+								</configuration>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>latex</goal>
+								</goals>
+							</execution>
+
+							<execution>
+								<id>HTML singlepage</id>
+								<configuration>
+									<settings>
+										<outputDirectory>docs/reference/html</outputDirectory>
+										<tex4htCommandArgs>
+											<tex4htCommandArg>tex4ht,1</tex4htCommandArg>
+											<tex4htCommandArg />
+											<tex4htCommandArg />
+											<tex4htCommandArg>-interaction=nonstopmode
+												--src-specials
+                                    </tex4htCommandArg>
+										</tex4htCommandArgs>
+									</settings>
+								</configuration>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>tex4ht</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
 				</plugins>
 			</build>
 		</profile>

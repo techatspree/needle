@@ -36,7 +36,7 @@ public class TestcaseInjectionProcessor {
 
 	private void processField(final NeedleContext context, final InjectionConfiguration configuration,
 	        final Field field) {
-		final List<Collection<InjectionProvider<?>>> injectionProviderList = configuration.getInjectionProvider();
+		final List<List<InjectionProvider<?>>> injectionProviderList = configuration.getInjectionProvider();
 		final InjectionTargetInformation injectionTargetInformation = new InjectionTargetInformation(field.getType(),
 		        field);
 
@@ -50,6 +50,7 @@ public class TestcaseInjectionProcessor {
 
 				try {
 					ReflectionUtil.setField(field, context.getTest(), injectedObject);
+					return;
 
 				} catch (Exception e) {
 					LOG.error(e.getMessage(), e);

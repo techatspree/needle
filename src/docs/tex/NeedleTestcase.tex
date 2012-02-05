@@ -15,7 +15,33 @@ The id may be used for additional injections. When an object under test is alrea
 Needle supports field, constructor and method injection by processing @EJB, @Resource, @PersistenceContext, @PersistenceUnit
 and @Inject annotations, if the annotation is available in the classpath of the test execution. By default, Mock objects are created and injected.
 
-The injected objects can be accessed via the API.
+The injected objects can be also easily injected into your testcase.
+Tescase injection can be done in the same way as the injection of dependencies in the production code.
+All standard Java EE annotations and additional configured injection annotations can be used to inject a reference into the testcase.
+
+\begin{lstlisting}[language={JAVA},caption=Testcase injection]
+public class AuthenticatorTest {
+
+   @Rule
+   public NeedleRule needleRule = new NeedleRule();
+
+   @ObjectUnderTest
+   private Authenticator authenticator;
+
+   @Inject
+   private EasyMockProvider mockProvider;
+
+   @Inject
+   private UserDao userDaoMock;
+
+   @Test
+   public void test() {
+      ...
+   }
+}
+\end{lstlisting}
+
+It is also possible to use the API to get a reference of an injected object.
 
 \begin{lstlisting}[language={JAVA},caption=Injected Components]
 UserDao injectedUserDao = needleRule.getInjectedObject(UserDao.class);

@@ -144,9 +144,10 @@ public class Authenticator {
 
 Needle provides JUnit Rules to extend JUnit. Rules are basically wrappers around test methods.
 They can execute code before, after or instead of a test method.
+
 The following example demonstrates a simple JUnit Needle test. In the test case there are two rules.
-The database rule provides access to the database via JPA and executes optional database operations.
-The Needle rule prepares all fields annotated with @ObjectUnderTest and initialises the components under test.
+The database rule provides access to the database via JPA and may execute optional database operations.
+The Needle rule prepares all fields annotated with @ObjectUnderTest and initialises the components under test by injection of collaborators.
 Supported injections are constructor injection, field injection and method injection.
 
 \begin{lstlisting}[language={JAVA},caption=JUnit User DAO test]

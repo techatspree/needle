@@ -31,7 +31,7 @@ public final class InjectionConfiguration {
 	        .getMockProviderClassName());
 
 	// Default InjectionProvider for annotations
-	private final Set<InjectionProvider<?>> injectionProviderSet = new HashSet<InjectionProvider<?>>();
+	private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
 
 	// Global InjectionProvider for custom implementation
 	private final List<InjectionProvider<?>> globalInjectionProviderList = new ArrayList<InjectionProvider<?>>();
@@ -40,7 +40,7 @@ public final class InjectionConfiguration {
 	private final List<InjectionProvider<?>> testInjectionProvider = new ArrayList<InjectionProvider<?>>();
 
 	// all with priority order
-	private final List<Collection<InjectionProvider<?>>> allInjectionProvider;
+	private final List<List<InjectionProvider<?>>> allInjectionProvider;
 
 	private final Set<Class<? extends Annotation>> injectionAnnotationClasses = new HashSet<Class<? extends Annotation>>();
 
@@ -60,7 +60,10 @@ public final class InjectionConfiguration {
 		initGlobalInjectionAnnotation();
 		initGlobalInjectionProvider();
 
-		allInjectionProvider = Arrays.asList(testInjectionProvider, globalInjectionProviderList, injectionProviderSet);
+
+		injectionProviderList.add(0, new MockProviderInjectionProvider(mockProvider));
+
+		allInjectionProvider = Arrays.asList(testInjectionProvider, globalInjectionProviderList, injectionProviderList);
 
 	}
 
@@ -68,7 +71,7 @@ public final class InjectionConfiguration {
 
 		if (RESOURCE_CLASS != null) {
 			addInjectionAnnotation(RESOURCE_CLASS);
-			injectionProviderSet.add(new ResourceMockInjectionProvider(mockProvider));
+			injectionProviderList.add(new ResourceMockInjectionProvider(mockProvider));
 		}
 	}
 
@@ -76,7 +79,7 @@ public final class InjectionConfiguration {
 
 		if (clazz != null) {
 			LOG.debug("register injection handler for class {}", clazz);
-			injectionProviderSet.add(new DefaultMockInjectionProvider(clazz, mockProvider));
+			injectionProviderList.add(new DefaultMockInjectionProvider(clazz, mockProvider));
 			addInjectionAnnotation(clazz);
 		}
 
@@ -97,7 +100,7 @@ public final class InjectionConfiguration {
 		}
 	}
 
-	public List<Collection<InjectionProvider<?>>> getInjectionProvider() {
+	public List<List<InjectionProvider<?>>> getInjectionProvider() {
 		return allInjectionProvider;
 	}
 
@@ -160,9 +163,7 @@ public final class InjectionConfiguration {
 	@SuppressWarnings("unchecked")
 	<T extends MockProvider> T createMockProvider() {
 		try {
-			final T mockProvider = (T) MOCK_PROVIDER_CLASS.newInstance();
-			injectionProviderSet.add(new MockProviderInjectionProvider(mockProvider));
-			return mockProvider;
+			return (T) MOCK_PROVIDER_CLASS.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException("could not create a new instance of mock provider " + MOCK_PROVIDER_CLASS, e);
 		}
