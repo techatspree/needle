@@ -72,7 +72,11 @@ public class TransactionHelper {
 			@Override
 			@SuppressWarnings("unchecked")
 			public List<T> run(final EntityManager entityManager) {
-				return entityManager.createQuery("FROM " + clazz.getSimpleName()).getResultList();
+
+				final String fromEntity = clazz.getSimpleName();
+				final String alias = fromEntity.toLowerCase();
+
+				return entityManager.createQuery("SELECT " + alias + " FROM " + fromEntity + " " + alias).getResultList();
 			}
 		});
 	}
