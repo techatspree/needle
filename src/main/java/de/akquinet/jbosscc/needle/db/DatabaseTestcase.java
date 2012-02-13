@@ -96,6 +96,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	 * @see DBOperation
 	 *
 	 */
+	@Deprecated
 	public DatabaseTestcase(final Class<?>... clazzes) {
 		configuration = new DatabaseTestcaseConfiguration(clazzes);
 	}
@@ -113,6 +114,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	 *
 	 * @see DBOperation
 	 */
+	@Deprecated
 	public DatabaseTestcase(final DBOperation dbOperation, final Class<?>... clazzes) {
 		this(clazzes);
 		this.dbOperation = dbOperation;

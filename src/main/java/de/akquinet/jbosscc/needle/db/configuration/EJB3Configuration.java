@@ -10,6 +10,7 @@ import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 /**
  * Allow a fine configuration of an EntityManagerFactory.
  */
+@Deprecated
 class EJB3Configuration implements PersistenceConfiguration {
 
 	private final EntityManagerFactory factory;

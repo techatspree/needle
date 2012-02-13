@@ -22,6 +22,7 @@ public class DatabaseTestcase extends de.akquinet.jbosscc.needle.db.DatabaseTest
 	/**
 	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(Class...)
 	 */
+	@Deprecated
 	public DatabaseTestcase(final Class<?>... clazzes) {
 		super(clazzes);
 	}
@@ -29,6 +30,7 @@ public class DatabaseTestcase extends de.akquinet.jbosscc.needle.db.DatabaseTest
 	/**
 	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(DBOperation, Class...)
 	 */
+	@Deprecated
 	public DatabaseTestcase(final DBOperation dbOperation, final Class<?>... clazzes) {
 		super(dbOperation, clazzes);
 	}
