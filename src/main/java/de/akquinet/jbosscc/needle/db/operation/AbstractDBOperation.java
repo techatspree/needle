@@ -45,7 +45,10 @@ public abstract class AbstractDBOperation implements DBOperation {
 		if (connection == null) {
 			try {
 				Class.forName(configuration.getJdbcDriver());
-			} catch (ClassNotFoundException e) {
+			}catch(NullPointerException npe){
+				throw new RuntimeException("error while lookup jdbc driver class. jdbc driver is not configured.", npe);
+			}
+			catch (ClassNotFoundException e) {
 				throw new RuntimeException("jdbc driver not found", e);
 			}
 

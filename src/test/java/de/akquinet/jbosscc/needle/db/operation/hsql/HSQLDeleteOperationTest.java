@@ -106,8 +106,7 @@ public class HSQLDeleteOperationTest {
 			Statement st = hsqlDeleteOperation.getConnection().createStatement();
 			ResultSet rs = st.executeQuery("select * from " + Address.TABLE_NAME);
 			Assert.assertTrue(rs.next());
-			rs.close();
-			st.close();
+
 
 			List<String> tableNames = new ArrayList<String>();
 			tableNames.add(Address.TABLE_NAME);
@@ -118,6 +117,8 @@ public class HSQLDeleteOperationTest {
 			Assert.assertFalse(rs.next());
 			rs.close();
 			st.close();
+
+
 		} finally {
 			statement.close();
 		}

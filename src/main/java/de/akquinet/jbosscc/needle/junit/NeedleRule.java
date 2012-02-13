@@ -37,6 +37,11 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
  */
 public class NeedleRule extends NeedleTestcase implements MethodRule {
 
+
+	public NeedleRule(){
+		super();
+	}
+
 	/**
 	 * @see NeedleTestcase#NeedleTestcase(InjectionProvider...)
 	 */
