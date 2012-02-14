@@ -3,11 +3,11 @@
 
 \section{Requirements}
 
-Ensure that you have already installed a Java 6+ JDK \\
-[http://www.oracle.com/technetwork/java/javase/downloads/index.html].
+Ensure that you have already a 
+\href{http://www.oracle.com/technetwork/java/javase/downloads/index.html}{JDK6+} installed.
 
 \section{Maven dependency configuration}
-If you are using Maven [http://maven.apache.org/] as your build tool, first make sure maven is installed on your computer.
+If you are using \href{http://maven.apache.org/}{Maven} as your build tool, first make sure maven is installed on your computer.
 Then, add the following single dependency to your pom.xml file to get started with Needle:
 
 \begin{lstlisting}[language=,caption=The Maven pom.xml,escapechar=|,label=lst:pom.xml]
@@ -15,7 +15,8 @@ Then, add the following single dependency to your pom.xml file to get started wi
       <groupId>de.akquinet.jbosscc</groupId>
       <artifactId>jbosscc-needle</artifactId>
       <scope>test</scope>
-      <version>${needle.version}</version>   </dependency>
+      <version>${needle.version}</version>
+   </dependency>
 \end{lstlisting}
 
 Needle has no transitive dependencies. The test dependency should be similar to the provided dependencies of the runtime environment.

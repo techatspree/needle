@@ -2,21 +2,25 @@
 \chapter{Overview}
 
 Needle is a lightweight framework for testing Java EE components outside of the
-container in isolation. It reduces the test setup code by analysing dependencies and
-automatic injection of mock objects. It will thus maximize the speed of development as well as the execution of unit tests. 
+container in isolation. The main goals are the reduction of setup code
+and faster executions of tests, especially compared to running embedded or external server tests.
+
+Needle will automatically analyse the dependencies of components and inject
+mock objects by default. The developer may freely provide default or custom objects instead.
 
 \parindent 0pt
-Needle is a open source library, hosted on SourceForge.net [https://sourceforge.net/projects/jbosscc-needle]. 
-It is licensed under GNU Lesser General Public License (LGPL) version 2.1 or later.	
+Needle is an Open Source library, hosted at SourceForge.net \url{https://sourceforge.net/projects/jbosscc-needle}.
+It is licensed under GNU Lesser General Public License (LGPL) version 2.1 or later.
+	
 \section{Features}
 \begin{itemize}
-	\item Instantiation of @ObjectUnderTest Components
+	\item Instantiation of tested components
 	\item Constructor, Method and Field based dependency injection
 	\item Injection of Mock objects by default
 	\item Extensible by providing custom injection providers
-	\item Wiring of object graphs
+	\item Comfortable automatic wiring of dependency graphs
 
-	\item Database testing via JPA Provider, e.g. EclipseLink or Hibernate
+	\item Database testing via JPA Provider, e.g. \href{http://www.eclipse.org/eclipselink/}{EclipseLink} or \href{http://www.hibernate.org}{Hibernate}
 	\item EntityManager creation and injection
 	\item Execute optional database operations during test setup and tear down
 	\item Transaction Utilities
@@ -24,16 +28,16 @@ It is licensed under GNU Lesser General Public License (LGPL) version 2.1 or lat
 	\item Provide Utilities for Reflection, e.g. for private method invocation or field access
 
 	\item Needle can be used with JUnit or TestNG.
-	\item It supports EasyMock and Mockito out-of-the-box.
+	\item It supports EasyMock and Mockito out-of-the-box but could also be extended with other frameworks.
 \end{itemize}
 
 \section{Links}
 
 \begin{itemize}
-	\item Needle Home Page: http://needle.spree.de/
-	\item Downloads:              https://sourceforge.net/projects/jbosscc-needle/
-	\item Forums:                 https://sourceforge.net/projects/jbosscc-needle/forums
-	\item Issue Tracking:         https://sourceforge.net/tracker/?group\_id=306915
+ \item Needle Home Page:   	\url{http://needle.spree.de/}
+	\item Downloads:        \url{https://sourceforge.net/projects/jbosscc-needle/}
+	\item Forums:           \url{https://sourceforge.net/projects/jbosscc-needle/forums}
+	\item Issue Tracking:   \url{https://sourceforge.net/tracker/?group\_id=306915}
 	\item Source Code:
 \end{itemize}
 
