@@ -1,13 +1,16 @@
 %!TEX root = NeedleReference.tex
 \chapter{Database Testing}
 
+When unit-testing your application, it is usually recommended to mock calls to DAOs oder database dependent services in your test cases.
+However, you will also need to test against a real database, e.g. to make sure that your queries work as expected. 
+
 \section{Database Testcase}
 
-When unit-testing your application, it is usually recommended to mock out database access (i.e. use mock objects for JPA EntityManagers or DAOs). But sometimes you might like to test against a real database, e.g. to make sure that your queries work as expected. 
+In these cases, Needle can automatically create and inject the \verb|EntityManager| instance into your objects under test. 
+You simply need to provide a JPA persistence.xml and the JDBC driver to the classpath of the test execution. 
+The \verb|persistence.xml| file is the standard configuration file in JPA. The \verb|persistence.xml| file must define a persistence-unit with a unique name and the transaction type RESOURCE\_LOCAL for a Java SE environment. 
 
-In these cases, Needle automatically creates and injects the EntitiyManager instance into your objects under test. You simply need to provide a JPA persistence.xml and the JDBC driver to the classpath of the test execution. The persistence.xml file is the standard configuration file in JPA. The persistence.xml file must define a persistence-unit with a unique name and the transaction type RESOURCE\_LOCAL for a Java SE environment. 
-
-The following listing below shows a complete example of a persistence.xml file. 
+The following listing below shows a complete example of a \verb|persistence.xml| file. 
 
 \begin{lstlisting}[caption=test persistence.xml]
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -40,13 +43,11 @@ The UserTest below checks the JPA mapping against a real database.
 
 \begin{lstlisting}[language={JAVA},caption=User persistence test]
 public class UserTest {
-
    @Rule
    public DatabaseRule databaseRule = new DatabaseRule();
 
    @Test
    public void testPersist() throws Exception {
-
       EntityManager entityManager = databaseRule.getEntityManager();
 
       User user = new UserTestdataBuilder(entityManager).buildAndSave();
@@ -59,12 +60,12 @@ public class UserTest {
 
 \section{Transaction utilities}
 
-The EntityManager is the primary interface used by application developers to interact with the underlying database. Many operations must be executed in a transaction.
-The TransactionHelper Utility class manage transactions conveniently.
+The EntityManager is the primary interface used by application developers to interact with the underlying database.
+Many operations must be executed in a transaction which is not started in the test component, because it is ususally maintained by
+the application server. To run your code using transactions the \verb|TransactionHelper| Utility makes this more convenient.
 
 \begin{lstlisting}[language={JAVA},caption=Transaction utilities]
 public class UserTest {
-
    @Rule
    public DatabaseRule databaseRule = new DatabaseRule();
    
@@ -90,24 +91,26 @@ public class UserTest {
 }
 \end{lstlisting}
 
-The above example illustrates the use of the TransactionHelper class and the execution of a transaction. The implementation of the VoidRunnable is executed within a transaction.
+The above example illustrates the use of the \verb|TransactionHelper| class and the execution of a transaction. The implementation of the VoidRunnable is executed within a transaction. There is also \verb|Runnable<T>| interface that contains a method run return a value to be used for further testing.
 
 \section{Database operation}
 
-One common issue in unit tests that access a real database is their affect on the state of the persistence store. Even when you are using a development database, changes to the state may affect future tests. For that, optional Database operations can be executed before and after test execution. 
+A common issue in unit tests that access a real database is their effect on the state of the persistence store.
+They usually expect a certain state at the beginning and alter it at runtime which of course will affect other tests.
+To address that problem optional Database operations can be executed before and after test execution, in order to clean up or set up data. 
 
 There are two implementations:
 \begin{enumerate}
-\item de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation \\ Execute sql scripts during test setup and tear down. A before.sql and after.sql script must be provided to the classpath.
-\item de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation \\ Deletes all rows of all tables of the hsql database.
+\item \verb|de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation| \\ Execute sql scripts during test setup and tear down. A before.sql and after.sql script must be provided on the classpath.
+\item \verb|de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation| \\ Deletes all rows of all tables of the hsql database.
 \end{enumerate}
 
-To use own Database operation implementations, the abstract base class de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation must be implemented and configured in the needle.properties file.
-
+To use own Database operation implementations, the abstract base class \verb|de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation| must be implemented and configured in the \verb|needle.properties| file.
 
 \section{Testdatabuilder}
 
-With the Test Data Builder pattern, the class that is responsible for creating the test objects provides methods that can be used to configure the test objects. Properties that are not configured use default values. The builder methods can be chained together and provide transient or persistent testdata for the test case.
+Using the Test Data Builder pattern, the builder class provides methods that can be used to configure the test objects. 
+Properties that are not configured use default values. The builder methods can be chained together and provide transient or persistent testdata for the test case.
 
 For this purpose Needle provides an abstract base class. The following code examples shows two implementations of Test Data Builder pattern. The Testdatabuilder inherit from 
 de.akquinet.jbosscc.needle.db.testdata.\-AbstractTestdataBuilder class. 
@@ -174,7 +177,6 @@ public class UserTestdataBuilder extends AbstractTestdataBuilder<User> {
 \end{lstlisting}
 
 \begin{lstlisting}[language={JAVA},caption=Profile Testdatabuilder]
-
 public class ProfileTestdataBuilder extends AbstractTestdataBuilder<Profile> {
 
    private String withLanguage;
@@ -206,7 +208,7 @@ public class ProfileTestdataBuilder extends AbstractTestdataBuilder<Profile> {
 }
 \end{lstlisting}
 
-In the test cases the implemented Testdatabuilder can produce transient or persisted objects that satisfies the constraints. In the example the Testdatabuilder is using defaults for everything except the username.
+In the example the Testdatabuilder is using defaults for everything except the username.
 
 \begin{lstlisting}[language={JAVA},caption=Build an persistent User object]
 final User user = new UserTestdataBuilder(databaseRule.getEntityManager()).withUsername("user").buildAndSave();

@@ -1,18 +1,16 @@
 %!TEX root = NeedleReference.tex
 \chapter{Testing with Mock objects}
-Mock objects are a useful way to write unit tests for objects that has collaborators. Needle generates Mock objects dynamically for dependencies of the components under test.
+Mock objects are a useful way to write unit tests for objects that have collaborators. 
+Needle generates Mock objects dynamically for dependencies of the components under test by default.
 Out-of-the-box Needle has implementations for EasyMock and Mockito.
-To use other mock frameworks, the interface de.akquinet.jbosscc.needle.mock.MockProvider must be implemented and configured in the needle.properties file.
+To use other mock frameworks, the interface \verb|de.akquinet.jbosscc.needle.mock.MockProvider| must be implemented and configured in the \verb|needle.properties| file.
 
 \section{Create a Mock Object}
 
-To create a Mock object, you can easily annotate a field with the annotation @Mock.
-Each field is initialized with a mock object with the type of the field.
+To create a Mock object, you can annotate a field with the annotation \verb|@Mock|.
 
 \begin{lstlisting}[language={JAVA},caption=Mock annotation]
-
 public class Test {
-
    @Rule
    public NeedleRule needleRule = new NeedleRule();
 
@@ -24,7 +22,6 @@ public class Test {
        ...
    }
 }
-
 \end{lstlisting}
 
 The dependencies of an object under test are automatically initialized by the corresponding InjectionProvider.
@@ -32,11 +29,11 @@ These dependencies can also injected into the testcase by using the correspondin
 
 \section{EasyMock}
 
-The EasyMockProvider create Nice Mock objects that are by default allows all method calls and returns appropriate empty values e.g. 0, null or false.
-If needed, all mocks can also be converted from one type to another by calling resetAllToNice(), resetAllToDefault() or resetAllToStrict().
+The EasyMockProvider creates "Nice" Mock objects by default. Such nice mocks allow all method calls and returns appropriate empty values e.g. 0, null or false.
+If needed, all mocks can also be converted to use another policy by calling resetAllToNice(), resetAllToDefault() or resetAllToStrict().
 
 The EasyMockProvider implementation is a subclass of EasyMockSupport. EasyMockSupport is a class that meant to be used as a helper or base class to your test cases.
-It will automatically registers all created mocks and to replay, reset or verify them in batch instead of explicitly.
+It will automatically register all created mocks and to replay, reset or verify them in batch instead of explicitly.
 
 The following test illustrates the usage of EasyMock with Needle and the injection of generated mock objects.
 
@@ -57,7 +54,6 @@ public class AuthenticatorTest {
 
    @Test
    public void testAuthenticate() throws Exception {
-
       final User user = new UserTestdataBuilder().build();
       final String username = "username";
       final String password = "password";
@@ -85,7 +81,6 @@ The following test illustrates the usage of Mockito with Needle.
 
 \begin{lstlisting}[language={JAVA},caption=Testing with Mockito]
 public class AuthenticatorTest {
-
    @Rule
    public NeedleRule needleRule = new NeedleRule();
 
@@ -112,7 +107,7 @@ public class AuthenticatorTest {
 
 \end{lstlisting}
 
-To use Mockito, the mockito provider must be configured in the needle.properties file and the mockito library must be present in test classpath.
+To use Mockito, the mockito provider must be configured in the \verb|needle.properties| file and the mockito library must be present on test classpath.
 
 \begin{lstlisting}[language={JAVA},caption=Mockito configuration]
 mock.provider=de.akquinet.jbosscc.needle.mock.MockitoProvider
