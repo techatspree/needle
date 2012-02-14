@@ -3,12 +3,11 @@
 
 \section{Requirements}
 
-Ensure that you have already a 
+Ensure that you have a 
 \href{http://www.oracle.com/technetwork/java/javase/downloads/index.html}{JDK6+} installed.
 
 \section{Maven dependency configuration}
-If you are using \href{http://maven.apache.org/}{Maven} as your build tool, first make sure maven is installed on your computer.
-Then, add the following single dependency to your pom.xml file to get started with Needle:
+If you are using \href{http://maven.apache.org/}{Maven} as your build tool add the following single dependency to your pom.xml file to get started with Needle:
 
 \begin{lstlisting}[language=,caption=The Maven pom.xml,escapechar=|,label=lst:pom.xml]
    <dependency>
@@ -19,16 +18,20 @@ Then, add the following single dependency to your pom.xml file to get started wi
    </dependency>
 \end{lstlisting}
 
-Needle has no transitive dependencies. The test dependency should be similar to the provided dependencies of the runtime environment.
-If you are using, for example, Hibernate as JPA provider, Hibernate must be present in the test classpath.
+Where \verb|needle.version| currently should have the value "2.0". 
+
+To reduce complexity Needle has no transitive dependencies, and does thus not restrict you to use specific versions of JUnit or TestNG.
+On the other hand, you will have to explicitely configure dependencies for the test scope, for example, to Hibernate as the JPA provider.
 
 \section{Needle configuration properties}
 
-Needle configuration can be defined in a \textbf{needle.properties} file in the classpath root.
+The Needle default configuration may be modified in a \verb|needle.properties| file in the classpath root. I.e., Needle will look for a file 
+\verb|/needle.properties| somewhere in the classpath.
 
 \parskip 14pt
 \parindent 0pt
 Configuration of additional custom injection annotations and injection provider.
+
 \begin{table}[H]
 \centering
 \begin{tabular}{p{6cm}p{11cm}} \toprule
@@ -79,13 +82,25 @@ There is an implementation for script execution de.akquinet.jbosscc.needle.db.op
 The JDBC configuration properties are only required if database operation and JPA 1.0 are used.
 Otherwise, the JDBC properties are related to the standard property names of JPA 2.0.
 
-\section{Logging}
-Needle uses the Simple Logging Facade for Java (SLF4J). SLF4J serves as a simple facade or abstraction for various logging frameworks.
-The SLF4J distribution ships with several jar files referred to as "SLF4J bindings", with each binding corresponding to a supported framework.
+\subsection{Example configuration}
 
+A typical \verb|needle.properties| file might look like this:
+
+\begin{lstlisting}[language=,caption=needle.properties,escapechar=|,label=lst:needle.properties]
+db.operation=de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation
+jdbc.driver=org.hsqldb.jdbcDriver
+jdbc.url=jdbc:hsqldb:mem:memoryDB
+jdbc.user=sa
+jdbc.password=
+\end{lstlisting}
+
+\section{Logging}
+
+Needle uses the Simple Logging Facade for Java (SLF4J). \href{http://www.slf4j.org/manual.html}{SLF4J} serves as a simple facade or 
+abstraction for various logging frameworks.
+The SLF4J distribution ships with several JAR files referred to as "SLF4J bindings", with each binding corresponding to a supported framework.
 
 For logging within the test, the following optional dependency may be added to the classpath:
-
 
 \begin{lstlisting}[language=,caption=SLF4J dependency,escapechar=|,label=lst:SLF4J]
    <dependency>
@@ -94,7 +109,4 @@ For logging within the test, the following optional dependency may be added to t
       <scope>test</scope>
    </dependency>
 \end{lstlisting}
-
-For more configuration details and additional information please refer to \\
-http://www.slf4j.org/manual.html.
 
