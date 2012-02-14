@@ -4,29 +4,32 @@
 \section{ObjectUnderTest instantiation and initialization}
 \label{sec: ObjectUnderTest}
 
-Needle automatically instantiates all objects under test. The Needle test case analyzes all fields of the test class and thus creates a completely initialized instance.
-Multiple fields can be annotated with the @ObjectUnderTest annotation. The annotation can optionally be configured with the implementation of the type and an id.
-The id may be used for additional injections. When an object under test is already instantiated, only the dependency injection will be done.
+Needle may automatically instantiate all objects under test for you.
+The Needle test case scans all fields of the test class for annotations and creates a completely initialized instance. Alternatively, the 
+developer may of course instantiate the field herself, too.
 
+Multiple fields can be annotated with the \verb|@ObjectUnderTest| annotation. The annotation can optionally be configured with the implementation of the type and an id.
+The id may be used for additional injections (explained later). When an object under test is already instantiated, only the dependency injection will be done.
 
 \section{Injection}
 \label{sec:Injection}
 
-Needle supports field, constructor and method injection by processing @EJB, @Resource, @PersistenceContext, @PersistenceUnit
-and @Inject annotations, if the annotation is available in the classpath of the test execution. By default, Mock objects are created and injected.
+Needle supports field, constructor and method injection by evaluating \verb|@EJB|, \verb|@Resource|, \verb|@PersistenceContext|, \verb|@PersistenceUnit|
+and \verb|@Inject| annotations. Note that the annotation class needs to be available one the classpath of the test execution.
+By default, Mock objects for the dependencies are created and injected.
 
-The injected objects can be also easily injected into your testcase.
-Tescase injection can be done in the same way as the injection of dependencies in the production code.
-All standard Java EE annotations and additional configured injection annotations can be used to inject a reference into the testcase.
+The injected (mock or real) objects can be also injected into your testcase. Test case injection can be done in the same way as the injection of dependencies in the production code. I.e., you may write \verb|@Inject| within your test case to access
+the generated components.
+
+All standard Java EE annotations and any additionally configured injection annotation can be used to inject a reference into the testcase.
 
 \begin{lstlisting}[language={JAVA},caption=Testcase injection]
 public class AuthenticatorTest {
-
    @Rule
    public NeedleRule needleRule = new NeedleRule();
 
    @ObjectUnderTest
-   private Authenticator authenticator;
+   private Authenticator authenticator = new Authenticator();
 
    @Inject
    private EasyMockProvider mockProvider;
@@ -35,7 +38,7 @@ public class AuthenticatorTest {
    private UserDao userDaoMock;
 
    @Test
-   public void test() {
+   public void testAuthenticate() {
       ...
    }
 }
@@ -50,24 +53,22 @@ UserDao injectedUserDao = needleRule.getInjectedObject(UserDao.class);
 The key is generated from the respective injection provider. By default, the class object of the associated injection point is used as the key or
 -- in the case of resource injection -- the mapped name of the resource.
 
-
 \section{Custom injection provider}
 \label{sec:Custom injection provider}
 
-Needle is extensible by implementing own injection providers or by registering additional annotations.
+Needle is fully extensible, you may implement your own injection providers or register additional annotations.
 
-The following example shows the registration of additional annotations. Needle generates a DefaultMockProvider for each annotation.
+The following example shows the registration of additional annotations in the \verb|needle.properties|.
 
 \begin{lstlisting}[language={JAVA},caption=Additional Annotation]
 custom.injection.annotations=org.jboss.seam.annotations.In, org.jboss.seam.annotations.Logger
 \end{lstlisting}
 
-It is also possible to implement own providers. A custom injection provider must implement the de.akquinet.jbosscc.needle.injection.InjectionProvider interface.
+It is also possible to implement custom providers.
+A custom injection provider must implement the \verb|de.akquinet.jbosscc.needle.injection.InjectionProvider| interface.
 
 \begin{lstlisting}[language={JAVA},caption=javax.inject.Qualifier Injection Provider]
-
 public class CurrentUserInjectionProvider implements InjectionProvider<User> {
-
    private final User currentUser = new User();
 
    @Override
@@ -84,29 +85,30 @@ public class CurrentUserInjectionProvider implements InjectionProvider<User> {
    public Object getKey(InjectionTargetInformation information) {
       return CurrentUser.class;
    }
-
 }
 \end{lstlisting}
 
-A custom injection provider can be provided for a specific test or as a global provider.
+A custom injection provider can be provided for a specific test or as a global provider (again in the \verb|needle.properties| file).
 
 \begin{lstlisting}[language={JAVA},caption=Custom injection provider for a specific test]
 @Rule
 public NeedleRule needleRule = new NeedleRule(new CurrentUserInjectionProvider());
 \end{lstlisting}
 
-
 \begin{lstlisting}[language={JAVA},caption=Global custom injection provider]
 custom.injection.provider.classes=de.akquinet.CurrentUserInjectionProvider
 \end{lstlisting}
 
+\section{Wiring of object dependencies}
+\label{sec:Wiring of object dependencies}
 
-\section{Wiring of object graphs}
-\label{sec:Wiring of object graphs}
+Sometimes you may want to provide your own objects as components or influence the wiring of complex object graphs. Typically, you may want to mix
+mock objects and "real" objects, depending on the focus of your test.
 
-Sometimes it is necessary to provide own objects as dependencies or wiring complex object graphs.
-The object referenced by the field annotated with @InjectIntoMany is injected into all objects referenced by the field annotated with @ObjectUnderTest.
-The target field is automatically determined by the type.
+The object referenced by the field annotated with \verb|@InjectIntoMany| is injected into all fields annotated with \verb|@ObjectUnderTest|.
+
+In the following example UserDao is not a mock, but a fully initialized component. It is injected into the Authenticator object (or any other
+component annotated with \verb|@ObjectUnderTest|). 
 
 \begin{lstlisting}[language={JAVA},caption=InjectIntoMany]
 @ObjectUnderTest
@@ -117,8 +119,9 @@ private Authenticator authenticator;
 private UserDao userDao;
 \end{lstlisting}
 
-If the referenced object shall be injected into a specific instance, the field can be annotated using @InjectInto with the ID of the target object.
-The target property is automatically determined by the type or can be specified by the field name of the target object with the annotation's fieldName attribute.
+If you need more fine-grained configuration you may also use the \verb|@InjectInto| annotation to specify the component IDs where the object 
+shall be injected.
+The ID corresponds to the field name of the target object by default.
 
 \begin{lstlisting}[language={JAVA},caption=InjectInto]
 @ObjectUnderTest
