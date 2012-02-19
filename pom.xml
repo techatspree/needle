@@ -360,11 +360,6 @@
 								<configuration>
 									<projectsDirectory>src/examples</projectsDirectory>
 									<cloneProjectsTo>target/it-examples</cloneProjectsTo>
-									<!--
-									<pomIncludes>
-										<pomInclude>archetype-generate/pom.xml</pomInclude>
-									</pomIncludes>
-									 -->
 								</configuration>
 								<goals>
 									<!-- installs this project artifact into a project local repository -->
