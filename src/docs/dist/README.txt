@@ -46,6 +46,9 @@ Contents of distribution
 ./docs
 	API documentation and reference guide.
 
+./examples
+	Maven-based example projects.
+
 ================================================================================
 Licensing
 

@@ -71,15 +71,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>maven-latex-plugin-repo</id>
-			<url>http://akquinet.github.com/maven-latex-plugin/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
@@ -218,6 +209,11 @@
 				</plugin>
 
 				<plugin>
+					<artifactId>maven-invoker-plugin</artifactId>
+					<version>1.5</version>
+				</plugin>
+
+				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.4</version>
 
@@ -344,6 +340,46 @@
 			</build>
 		</profile>
 
+		<profile>
+			<id>it-tests</id>
+
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-invoker-plugin</artifactId>
+
+						<configuration>
+							<localRepositoryPath>target/local-repo</localRepositoryPath>
+							<settingsFile>src/it-test/settings.xml</settingsFile>
+							<streamLogs>true</streamLogs>
+						</configuration>
+
+						<executions>
+							<execution>
+								<id>build-examples</id>
+								<configuration>
+									<projectsDirectory>src/examples</projectsDirectory>
+									<cloneProjectsTo>target/it-examples</cloneProjectsTo>
+									<!--
+									<pomIncludes>
+										<pomInclude>archetype-generate/pom.xml</pomInclude>
+									</pomIncludes>
+									 -->
+								</configuration>
+								<goals>
+									<!-- installs this project artifact into a project local repository -->
+									<goal>install</goal>
+									<!-- generates a project from the freshly built archetype -->
+									<goal>run</goal>
+								</goals>
+							</execution>
+
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+
+		</profile>
 
 
 		<profile>
@@ -439,7 +475,7 @@
 										<outputDirectory>docs/reference/pdf</outputDirectory>
 									</settings>
 								</configuration>
-								<phase>install</phase>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>latex</goal>
 								</goals>

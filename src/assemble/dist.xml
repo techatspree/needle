@@ -12,11 +12,14 @@
 	</formats>
 
 	<fileSets>
-
-
 		<fileSet>
 			<directory>${project.build.directory}/site/docs</directory>
 			<outputDirectory>docs</outputDirectory>
+		</fileSet>
+
+		<fileSet>
+			<directory>${project.basedir}/src/examples</directory>
+			<outputDirectory>examples</outputDirectory>
 		</fileSet>
 
 		<fileSet>

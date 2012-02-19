@@ -1,0 +1,20 @@
+Needle Changelog
+====================
+
+
+Release Notes - Needle - Version 2.1
+
+** Bug
+    * [3486382] - Syntax error parsing the query - TransactionHelper
+
+
+** Feature Request
+    * [3484382] - Mock generation with annotations.
+    * [3484365] - Injection of Mock Objects into the testcase
+
+
+** Task
+    * [3489127] - Documentation improvement
+    * [3489128] - Needle examples
+
+
