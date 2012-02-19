@@ -148,7 +148,7 @@
 		<dependency>
 			<groupId>de.akquinet.jbosscc</groupId>
 			<artifactId>jbosscc-needle</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
+			<version>2.1</version>
 			<scope>test</scope>
 		</dependency>
 
