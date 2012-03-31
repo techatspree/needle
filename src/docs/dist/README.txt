@@ -10,7 +10,7 @@
 .888,.....8888..8888888888..888888888$.O88888888.......888888888..888888888.....
 ................................................................................
 ================================================================================
-Effective Unit Testing of Java EE
+Effective Unit Testing for Java EE
 ================================================================================
 
 Needle is a lightweight framework for testing Java EE components outside of the
@@ -60,7 +60,7 @@ Needle URLs
 Needle Home Page:		http://needle.spree.de/
 Downloads:              https://sourceforge.net/projects/jbosscc-needle/
 Forums:                 https://sourceforge.net/projects/jbosscc-needle/forums
-Source Code:            https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/
+Source Code:            https://github.com/akquinet/needle
 Issue Tracking:         https://sourceforge.net/tracker/?group_id=306915
 
 ================================================================================
