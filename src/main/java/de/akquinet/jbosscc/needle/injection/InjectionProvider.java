@@ -3,7 +3,7 @@ package de.akquinet.jbosscc.needle.injection;
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 
 /**
- * Provides an instances of {@code T} and verifies a injection target.
+ * Provides an instances of {@code T} and verifies an injection target.
  *
  * @param <T>
  *            - The type of the provided object.

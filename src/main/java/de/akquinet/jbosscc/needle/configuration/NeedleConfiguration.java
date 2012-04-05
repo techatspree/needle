@@ -12,10 +12,10 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
- * Load an holds the configuration of needle.
+ * Loads an holds the configuration of needle.
  *
  * Needle configuration can be defined in <b>needle.properties</b> files
- * somewhere in the classpath.
+ * anywhere in the classpath.
  */
 public final class NeedleConfiguration {
 

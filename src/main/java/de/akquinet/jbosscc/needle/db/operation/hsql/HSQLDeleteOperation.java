@@ -84,7 +84,7 @@ public class HSQLDeleteOperation extends AbstractDBOperation {
 	}
 
 	/**
-	 * Enabled the referential constraints of the database, e.g foreign keys.
+	 * Enables the referential constraints of the database, e.g foreign keys.
 	 *
 	 * @throws SQLException
 	 *             - if a database access error occurs
@@ -109,7 +109,7 @@ public class HSQLDeleteOperation extends AbstractDBOperation {
 	 *            a {@link List} of table names who are to be deleted.
 	 *
 	 * @param statement
-	 *            the {@link Statement} to used for executing a SQL statement.
+	 *            the {@link Statement} to be used for executing a SQL statement.
 	 *
 	 *
 	 * @throws SQLException

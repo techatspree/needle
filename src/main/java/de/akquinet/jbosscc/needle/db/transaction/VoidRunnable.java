@@ -3,7 +3,7 @@ package de.akquinet.jbosscc.needle.db.transaction;
 import javax.persistence.EntityManager;
 
 /**
- * Default implementation of Runnable doing nothing.
+ * Default implementation of {@link Runnable}. Does nothing.
  */
 public abstract class VoidRunnable implements Runnable<Object> {
   /**
@@ -22,7 +22,7 @@ public abstract class VoidRunnable implements Runnable<Object> {
    *          entityManager
    * 
    * @throws Exception
-   *           -- when something failed
+   *           when something failed
    */
   public abstract void doRun(EntityManager entityManager) throws Exception;
 }

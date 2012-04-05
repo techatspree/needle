@@ -6,9 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 
 /**
- *
  * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase
- *
  */
 public class DatabaseTestcase extends de.akquinet.jbosscc.needle.db.DatabaseTestcase {
 

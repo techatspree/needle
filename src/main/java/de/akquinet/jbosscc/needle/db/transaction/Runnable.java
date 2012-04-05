@@ -13,10 +13,10 @@ public interface Runnable<T> {
    * Operation to be automatically called inside executeInTransaction().
    * 
    * @param entityManager
-   *          -- an entity manager
-   * @return -- return value
+   *          an {@link javax.persistence.EntityManager}
+   * @return return value of the operation
    * @throws Exception
-   *           -- thrown when something failed
+   *           thrown when something failed
    */
   T run(EntityManager entityManager) throws Exception;
 }
