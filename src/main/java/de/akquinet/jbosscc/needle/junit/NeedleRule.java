@@ -9,8 +9,8 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 
 /**
- * JUnit {@link MethodRule} for the initialization of the test. The Rule process
- * and initialize all Fields annotated with {@link ObjectUnderTest}.
+ * JUnit {@link MethodRule} for the initialization of the test. The Rule processes
+ * and initializes all fields annotated with {@link ObjectUnderTest}.
  *
  * <pre>
  * Example:

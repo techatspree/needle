@@ -19,8 +19,7 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.configuration.ConfigurationLoader;
 
 /**
- * A abstract implementation of {@link DBOperation} with common jdbc operations.
- *
+ * An abstract implementation of {@link DBOperation} with common jdbc operations.
  */
 public abstract class AbstractDBOperation implements DBOperation {
 
@@ -175,7 +174,7 @@ public abstract class AbstractDBOperation implements DBOperation {
 	 * @param filename
 	 *            the filename of the sql script
 	 * @param statement
-	 *            the {@link Statement} to used for executing a SQL statement.
+	 *            the {@link Statement} to be used for executing a SQL statement.
 	 *
 	 * @throws SQLException
 	 *             if a database access error occurs

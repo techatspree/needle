@@ -185,7 +185,7 @@ public final class ReflectionUtil {
 	}
 
 	/**
-	 * Get the value of a given fields on a given object via reflection.
+	 * Get the value of a given field on a given object via reflection.
 	 *
 	 * @param object
 	 *            -- target object of field access
@@ -206,7 +206,7 @@ public final class ReflectionUtil {
 	}
 
 	/**
-	 * Get the value of a given fields on a given object via reflection.
+	 * Get the value of a given field on a given object via reflection.
 	 *
 	 * @param object
 	 *            -- target object of field access
@@ -229,7 +229,7 @@ public final class ReflectionUtil {
 	}
 
 	/**
-	 * Get the value of a given fields on a given object via reflection.
+	 * Get the value of a given field on a given object via reflection.
 	 *
 	 * @param object
 	 *            -- target object of field access

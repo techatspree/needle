@@ -2,7 +2,6 @@ package de.akquinet.jbosscc.needle.db.operation;
 
 /**
  * JDBC configuration properties.
- *
  */
 public class JdbcConfiguration {
 
@@ -12,7 +11,7 @@ public class JdbcConfiguration {
 	private final String jdbcPassword;
 
 	/**
-	 * Create an instance of {@link JdbcConfiguration}
+	 * Creates an instance of {@link JdbcConfiguration}
 	 *
 	 * @param jdbcUrl
 	 *            the JDBC connection url to use to connect to the database
@@ -33,7 +32,7 @@ public class JdbcConfiguration {
 	}
 
 	/**
-	 * Returns the JDBC connection url to use to connect to the database
+	 * Returns the JDBC connection url to be used to connect to the database
 	 *
 	 * @return the JDBC connection url
 	 */
@@ -42,7 +41,7 @@ public class JdbcConfiguration {
 	}
 
 	/**
-	 * Return the name of a JDBC driver to use to connect to the database.
+	 * Returns the name of the JDBC driver to be used to connect to the database.
 	 *
 	 * @return the jdbc driver name
 	 */
@@ -51,7 +50,7 @@ public class JdbcConfiguration {
 	}
 
 	/**
-	 * Returns the user name to use to connect to the database.
+	 * Returns the user name to be used to connect to the database.
 	 *
 	 * @return the jdbc user name
 	 *
@@ -61,7 +60,7 @@ public class JdbcConfiguration {
 	}
 
 	/**
-	 * Returns the password to use to connect to the database.
+	 * Returns the password to be used to connect to the database.
 	 *
 	 * @return the JDBC connection password
 	 */

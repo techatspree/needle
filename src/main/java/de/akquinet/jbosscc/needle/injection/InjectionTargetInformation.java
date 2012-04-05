@@ -59,7 +59,7 @@ public class InjectionTargetInformation {
 	 *
 	 * @param type
 	 *            class object of the constructor parameter
-	 * @param method
+	 * @param constructor
 	 *            {@link Constructor} object of the injection target
 	 * @param parameterAnnotations
 	 *            annotations of constructor parameter
@@ -120,7 +120,7 @@ public class InjectionTargetInformation {
 	 *            - the Class object corresponding to the annotation type
 	 * @return true if an annotation for the specified annotation type is
 	 *         present on this element, else false
-	 * @throw NullPointerException - if the given annotation class is null
+	 * @throws  NullPointerException - if the given annotation class is null
 	 */
 	public boolean isAnnotationPresent(final Class<? extends Annotation> annotationClass) {
 		return getAnnotation(annotationClass) != null ? true : false;
@@ -132,14 +132,14 @@ public class InjectionTargetInformation {
 	 *
 	 * If the {@link AccessibleObject} of the injection target is of type
 	 * {@link Method} or {@link Constructor}, then the {@link Annotation} may
-	 * specified on the {@link AccessibleObject} or on the corresponding
+	 * be specified on the {@link AccessibleObject} or on the corresponding
 	 * parameter.
 	 *
 	 * @param annotationClass
 	 *            - the Class object corresponding to the annotation type
 	 * @return annotation for the specified annotation type if present on this
 	 *         element, otherwise null
-	 * @throw NullPointerException - if the given annotation class is null
+	 * @throws NullPointerException - if the given annotation class is null
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getAnnotation(final Class<? extends Annotation> annotationClass) {

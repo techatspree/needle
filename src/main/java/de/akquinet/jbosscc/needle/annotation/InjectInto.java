@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Is used to inject a instance into a specific {@link ObjectUnderTest}
+ * Is used to inject an instance into a specific {@link ObjectUnderTest}
  * instance.
  *
  */

@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Is used to inject a instance into multiple {@link ObjectUnderTest} instances.
+ * Is used to inject an instance into multiple {@link ObjectUnderTest} instances.
  *
  * <pre>
  *  Example 1:
