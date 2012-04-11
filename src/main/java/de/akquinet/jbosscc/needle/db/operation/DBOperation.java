@@ -3,8 +3,7 @@ package de.akquinet.jbosscc.needle.db.operation;
 import java.sql.SQLException;
 
 /**
- * Database operation before and after test execution.
- *
+ * Database operations before and after test execution.
  */
 public interface DBOperation {
 

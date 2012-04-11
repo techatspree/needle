@@ -1,7 +1,7 @@
 package de.akquinet.jbosscc.needle.db.testdata;
 
 /**
- * Interface for an concrete TestDataBuilder implementation.
+ * Interface for a concrete TestDataBuilder implementation.
  *
  * @param <T>
  *            the type to build
@@ -16,7 +16,7 @@ public interface TestdataBuilder<T> {
 	T build();
 
 	/**
-	 * Creates a new instance of type {@link T} and save the instance.
+	 * Creates a new instance of type {@link T} and saves the instance.
 	 *
 	 * @return a new persisted instance of type {@link T}
 	 */

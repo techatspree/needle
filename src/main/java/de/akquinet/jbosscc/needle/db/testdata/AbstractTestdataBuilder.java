@@ -5,7 +5,7 @@ import javax.persistence.EntityManager;
 import de.akquinet.jbosscc.needle.db.transaction.TransactionHelper;
 
 /**
- * A abstract implementation of {@link TestdataBuilder}.
+ * An abstract implementation of {@link TestdataBuilder}.
  *
  * <pre>
  *
@@ -61,9 +61,9 @@ public abstract class AbstractTestdataBuilder<T> implements TestdataBuilder<T> {
 	private TransactionHelper transactionHelper;
 
 	/**
-	 * Creates an new {@link TestdataBuilder} with persistence.
+	 * Creates a new {@link TestdataBuilder} with persistence.
 	 *
-	 * @param entityManager
+	 * @param entityManager {@link EntityManager} to be used by this {@link TestdataBuilder}
 	 */
 	public AbstractTestdataBuilder(final EntityManager entityManager) {
 		this.entityManager = entityManager;
@@ -71,7 +71,7 @@ public abstract class AbstractTestdataBuilder<T> implements TestdataBuilder<T> {
 	}
 
 	/**
-	 * Creates an new {@link TestdataBuilder} without persistence.
+	 * Creates a new {@link TestdataBuilder} without persistence.
 	 */
 	public AbstractTestdataBuilder() {
 	}
@@ -86,7 +86,7 @@ public abstract class AbstractTestdataBuilder<T> implements TestdataBuilder<T> {
 	}
 
 	/**
-	 * Returns whether the {@link TestdataBuilder} is constructed with a
+	 * Returns whether the {@link TestdataBuilder} is constructed with an
 	 * {@link EntityManager}
 	 *
 	 * @return true if {@link EntityManager} is available, else false
@@ -96,11 +96,11 @@ public abstract class AbstractTestdataBuilder<T> implements TestdataBuilder<T> {
 	}
 
 	/**
-	 * Ensure the {@link TestdataBuilder} is constructed with a
+	 * Ensure the {@link TestdataBuilder} is constructed with an
 	 * {@link EntityManager}
 	 *
 	 * @throws IllegalStateException
-	 *             if the {@link TestdataBuilder} is constructed without a
+	 *             if the {@link TestdataBuilder} is constructed without an
 	 *             {@link EntityManager}
 	 */
 	protected final void ensureEntityManager() {
@@ -113,7 +113,7 @@ public abstract class AbstractTestdataBuilder<T> implements TestdataBuilder<T> {
 	 * {@inheritDoc} Executed within a new transaction.
 	 *
 	 * @throws IllegalStateException
-	 *             if the {@link TestdataBuilder} is constructed without a
+	 *             if the {@link TestdataBuilder} is constructed without an
 	 *             {@link EntityManager}
 	 */
 	@Override
@@ -127,7 +127,7 @@ public abstract class AbstractTestdataBuilder<T> implements TestdataBuilder<T> {
 	}
 
 	/**
-	 * Returns an integer value from an static counter.
+	 * Returns an integer value from a static counter.
 	 *
 	 * @return value of the static counter.
 	 */

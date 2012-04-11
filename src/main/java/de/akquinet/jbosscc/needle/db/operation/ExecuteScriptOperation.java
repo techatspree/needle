@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Execute before and after sql scripts in test setup and tear down.
- *
  */
 public class ExecuteScriptOperation extends AbstractDBOperation {
 
@@ -22,7 +21,7 @@ public class ExecuteScriptOperation extends AbstractDBOperation {
 	private static final String AFTER_SCRIPT_NAME = "after.sql";
 
 	/**
-	 * Execute before.sql script in test setup.
+	 * Execute <tt>before.sql</tt> script in test setup.
 	 *
 	 * @throws SQLException
 	 *             if a database access error occurs
@@ -33,7 +32,7 @@ public class ExecuteScriptOperation extends AbstractDBOperation {
 	}
 
 	/**
-	 * Execute after.sql script in test tear down.
+	 * Execute <tt>after.sql</tt> script in test tear down.
 	 *
 	 * @throws SQLException
 	 *             if a database access error occurs

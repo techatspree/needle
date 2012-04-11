@@ -57,7 +57,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
-	 * Resets the given mock objects and turn them to a mock with nice behavior.
+	 * Resets the given mock objects and turns them to a mock with nice behavior.
 	 * For details, see the EasyMock documentation.
 	 *
 	 * @param mocks
@@ -68,7 +68,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
-	 * Reset the given mock object and turn them to a mock with nice behavior.
+	 * Resets the given mock object and turns them to a mock with nice behavior.
 	 * For details, see the EasyMock documentation.
 	 *
 	 * @param mock
@@ -83,7 +83,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
-	 * Resets the given mock objects and turn them to a mock with strict
+	 * Resets the given mock objects and turns them to a mock with strict
 	 * behavior. For details, see the EasyMock documentation.
 	 *
 	 * @param mocks
@@ -94,7 +94,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
-	 * Reset the given mock object and turn them to a mock with strict behavior.
+	 * Resets the given mock object and turns them to a mock with strict behavior.
 	 * For details, see the EasyMock documentation.
 	 *
 	 * @param mock
@@ -109,7 +109,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
-	 * Resets the given mock objects and turn them to a mock with default
+	 * Resets the given mock objects and turns them to a mock with default
 	 * behavior. For details, see the EasyMock documentation.
 	 *
 	 * @param mocks
@@ -120,7 +120,7 @@ public class EasyMockProvider extends EasyMockSupport implements MockProvider {
 	}
 
 	/**
-	 * Reset the given mock object and turn them to a mock with default
+	 * Resets the given mock object and turns them to a mock with default
 	 * behavior. For details, see the EasyMock documentation.
 	 *
 	 * @param mock

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 
 /**
- * Is used to specify a object under test. The annotated fields will initialized
+ * Is used to specify an object under test. The annotated fields will be initialized
  * by the {@link NeedleTestcase}.
  *
  */

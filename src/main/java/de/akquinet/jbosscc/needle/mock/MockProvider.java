@@ -7,7 +7,7 @@ package de.akquinet.jbosscc.needle.mock;
 public interface MockProvider {
 
 	/**
-	 * Creates a mock object of given class or interface.
+	 * Creates a mock object of a given class or interface.
 	 *
 	 * @param type
 	 *            class or interface to mock

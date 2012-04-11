@@ -18,12 +18,12 @@ public class TransactionHelper {
 	 * Saves the given object in the database.
 	 *
 	 * @param <T>
-	 *            -- type of given object obj
+	 *            type of given object obj
 	 * @param obj
-	 *            -- object to save
-	 * @return -- saved object
+	 *            object to save
+	 * @return saved object
 	 * @throws Exception
-	 *             -- save objects failed
+	 *             save objects failed
 	 */
 	public final <T> T saveObject(final T obj) throws Exception {
 		return executeInTransaction(new Runnable<T>() {
@@ -35,17 +35,17 @@ public class TransactionHelper {
 	}
 
 	/**
-	 * Finds and returns object of the given id in the persistence context.
+	 * Finds and returns the object of the given id in the persistence context.
 	 *
 	 * @param <T>
-	 *            -- type of searched object
+	 *            type of searched object
 	 * @param clazz
-	 *            -- type of searched object
+	 *            type of searched object
 	 * @param id
-	 *            -- technical id of searched object
-	 * @return -- found object
+	 *            technical id of searched object
+	 * @return found object
 	 * @throws Exception
-	 *             -- finding object failed
+	 *             finding object failed
 	 */
 	public final <T> T loadObject(final Class<T> clazz, final Object id) throws Exception {
 		return executeInTransaction(new Runnable<T>() {
@@ -60,12 +60,12 @@ public class TransactionHelper {
 	 * Returns all objects of the given class in persistence context.
 	 *
 	 * @param <T>
-	 *            -- type of searched objects
+	 *            type of searched objects
 	 * @param clazz
-	 *            -- type of searched objects
-	 * @return -- list of found objects
+	 *            type of searched objects
+	 * @return list of found objects
 	 * @throws Exception
-	 *             -- finding objects failed
+	 *             finding objects failed
 	 */
 	public final <T> List<T> loadAllObjects(final Class<T> clazz) throws Exception {
 		return executeInTransaction(new Runnable<List<T>>() {
@@ -85,15 +85,15 @@ public class TransactionHelper {
 	 * Encapsulates execution of runnable.run() in transactions.
 	 *
 	 * @param <T>
-	 *            -- result type of runnable.run()
+	 *            result type of runnable.run()
 	 * @param runnable
-	 *            -- algorithm to execute
+	 *            algorithm to execute
 	 * @param clearAfterCommit
-	 *            -- <tt>true</tt> triggers entityManager.clear() after
+	 *            <tt>true</tt> triggers entityManager.clear() after
 	 *            transaction commit
-	 * @return -- return value of runnable.run()
+	 * @return return value of runnable.run()
 	 * @throws Exception
-	 *             -- execution failed
+	 *             execution failed
 	 */
 	public final <T> T executeInTransaction(final Runnable<T> runnable, final boolean clearAfterCommit)
 	        throws Exception {
@@ -121,12 +121,12 @@ public class TransactionHelper {
 	 * see executeInTransaction(runnable, clearAfterCommit) .
 	 *
 	 * @param <T>
-	 *            -- result type of runnable.run()
+	 *            result type of runnable.run()
 	 * @param runnable
-	 *            -- algorithm to execute
-	 * @return -- return value of runnable.run()
+	 *            algorithm to execute
+	 * @return return value of runnable.run()
 	 * @throws Exception
-	 *             -- execution failed
+	 *             execution failed
 	 */
 	public final <T> T executeInTransaction(final Runnable<T> runnable) throws Exception {
 		return executeInTransaction(runnable, true);

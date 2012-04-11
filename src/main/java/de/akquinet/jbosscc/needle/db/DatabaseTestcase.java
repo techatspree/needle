@@ -9,10 +9,10 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 
 /**
- * Base class for a database test case. Execute optional database operation on
+ * Base class for a database test case. Executes optional database operation on
  * test setup and tear down.
  *
- * May used as injection provider for {@link EntityManager} and
+ * May be used as an injection provider for {@link EntityManager} and
  * {@link EntityManagerFactory}.
  *
  * @see InjectionProvider
@@ -31,7 +31,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	private EntityManagerFactoryProvider entityManagerFactoryProvider = new EntityManagerFactoryProvider(this);
 
 	/**
-	 * Create an instance of {@link DatabaseTestcase} with the global configured
+	 * Creates an instance of {@link DatabaseTestcase} with the global configured
 	 * persistence unit name and the global configured {@link DBOperation}.
 	 *
 	 * @see DBOperation
@@ -41,9 +41,9 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	}
 
 	/**
-	 * Create an instance of {@link DatabaseTestcase} with the global configured
-	 * persistence unit name and override the global configured
-	 * {@link DBOperation} with the give database operation.
+	 * Creates an instance of {@link DatabaseTestcase} with the global configured
+	 * persistence unit name and overrides the global configured
+	 * {@link DBOperation} with the given database operation.
 	 *
 	 * @param dbOperation
 	 *            database operation to execute on test setup and tear down
@@ -56,7 +56,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	}
 
 	/**
-	 * Create an instance of {@link DatabaseTestcase} with the given persistence
+	 * Creates an instance of {@link DatabaseTestcase} with the given persistence
 	 * unit name and the global configured {@link DBOperation}.
 	 *
 	 * @param persistenceUnitName
@@ -70,9 +70,9 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	}
 
 	/**
-	 * Create an instance of {@link DatabaseTestcase} with the given persistence
-	 * unit name and override the global configured {@link DBOperation} with the
-	 * give database operation.
+	 * Creates an instance of {@link DatabaseTestcase} with the given persistence
+	 * unit name and overrides the global configured {@link DBOperation} with the
+	 * given database operation.
 	 *
 	 * @param persistenceUnitName
 	 *            the name of the persistence unit
@@ -87,7 +87,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	}
 
 	/**
-	 * Create an instance of {@link DatabaseTestcase} for the given entity
+	 * Creates an instance of {@link DatabaseTestcase} for the given entity
 	 * classes by using the configured hibernate specific configuration file
 	 * (*cfg.xml) and use the global configured {@link DBOperation}.
 	 *
@@ -102,9 +102,9 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
 	}
 
 	/**
-	 * Create an instance of {@link DatabaseTestcase} for the given entity
+	 * Creates an instance of {@link DatabaseTestcase} for the given entity
 	 * classes by using the configured hibernate specific configuration file
-	 * (*cfg.xml) and override the global configured {@link DBOperation} with
+	 * (*cfg.xml) and overrides the global configured {@link DBOperation} with
 	 * the give database operation.
 	 *
 	 * @param dbOperation

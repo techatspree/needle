@@ -4,15 +4,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 /**
- *
  * Abstraction for bootstrapping {@link EntityManagerFactory} and
  * {@link EntityManager}.
- *
  */
 interface PersistenceConfiguration {
 
 	/**
-	 * Returns a {@link EntityManager} instance.
+	 * Returns an {@link EntityManager} instance.
 	 *
 	 * @return entityManager
 	 */

@@ -8,7 +8,7 @@ import org.hibernate.ejb.Ejb3Configuration;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 
 /**
- * Allow a fine configuration of an EntityManagerFactory.
+ * Allows a fine configuration of an {@link EntityManagerFactory}.
  */
 @Deprecated
 class EJB3Configuration implements PersistenceConfiguration {
@@ -17,7 +17,7 @@ class EJB3Configuration implements PersistenceConfiguration {
 	private final EntityManager entityManager;
 
 	/**
-	 * Create an {@link EntityManagerFactory} and {@link EntityManager} for the
+	 * Creates an {@link EntityManagerFactory} and {@link EntityManager} for the
 	 * given entity classes by using the configured hibernate specific
 	 * configuration file (*cfg.xml).
 	 *

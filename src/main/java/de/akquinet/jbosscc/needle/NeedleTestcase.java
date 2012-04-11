@@ -76,7 +76,7 @@ public abstract class NeedleTestcase {
 	/**
 	 * Initialize all fields annotated with {@link ObjectUnderTest}. Is an
 	 * object under test annotated field already initialized, only the injection
-	 * of dependencies will executed.
+	 * of dependencies will be executed.
 	 *
 	 * After initialization, {@link InjectIntoMany} and {@link InjectInto}
 	 * annotations are processed for optional additional injections.
@@ -114,13 +114,13 @@ public abstract class NeedleTestcase {
 	}
 
 	/**
-	 * Inject dependencies into the given instance. First all field injection
-	 * are executed, if there exist an {@link InjectionProvider} for the target.
-	 * Then the method injection is executed, if the injection annotation are
+	 * Inject dependencies into the given instance. First, all field injections
+	 * are executed, if there exists an {@link InjectionProvider} for the target.
+	 * Then the method injection is executed, if the injection annotations are
 	 * supported.
 	 *
 	 * @param instance
-	 *            the instance that is to initialize.
+	 *            the instance to initialize.
 	 */
 	protected final void initInstance(final Object instance) {
 		initFields(instance);

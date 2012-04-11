@@ -9,16 +9,14 @@ import de.akquinet.jbosscc.needle.NeedleTestcase;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 
 /**
- *
  * @see NeedleTestcase
- *
  */
 public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 
 	private DatabaseTestcase databaseTestcase;
 
 	/**
-	 * Create an instance of with optional additional injection provider.
+	 * Creates an instance of {@link NeedleTestcase} with optional additional injection provider.
 	 *
 	 * @param injectionProvider
 	 *            optional additional injection provider
@@ -52,8 +50,8 @@ public abstract class AbstractNeedleTestcase extends NeedleTestcase {
 	}
 
 	/**
-	 * Returns {@link EntityManager}, if the test is constructed with a
-	 * {@link DatabaseTestcase} instance.
+	 * Returns the {@link EntityManager}, if the test is constructed with a
+	 * {@link DatabaseTestcase} instance or null otherwise.
 	 *
 	 * @return {@link EntityManager} or null
 	 */

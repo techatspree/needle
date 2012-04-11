@@ -5,9 +5,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- * Create an {@link EntityManagerFactory} and {@link EntityManager} for a named
+ * Creates an {@link EntityManagerFactory} and {@link EntityManager} for a named
  * persistence unit.
- *
  */
 class PersistenceUnitConfiguration implements PersistenceConfiguration {
 
@@ -15,7 +14,7 @@ class PersistenceUnitConfiguration implements PersistenceConfiguration {
 	private final EntityManager entityManager;
 
 	/**
-	 * Create an {@link EntityManagerFactory} and {@link EntityManager} for the
+	 * Creates an {@link EntityManagerFactory} and {@link EntityManager} for the
 	 * named persistence unit.
 	 *
 	 * @param persistenceUnitName
