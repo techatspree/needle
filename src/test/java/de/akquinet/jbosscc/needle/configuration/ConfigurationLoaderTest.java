@@ -19,8 +19,8 @@ public class ConfigurationLoaderTest {
 
 	@Test
 	public void testGetProperty() throws Exception {
-		Assert.assertEquals("TestDataModel", configurationLoader.getPropertie(NeedleConfiguration.PERSISTENCEUNIT_NAME_KEY));
-		Assert.assertNull(configurationLoader.getPropertie("any key"));
+		Assert.assertEquals("TestDataModel", configurationLoader.getProperty(NeedleConfiguration.PERSISTENCEUNIT_NAME_KEY));
+		Assert.assertNull(configurationLoader.getProperty("any key"));
 	}
 
 	@Test

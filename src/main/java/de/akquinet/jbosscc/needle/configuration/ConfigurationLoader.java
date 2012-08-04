@@ -24,7 +24,7 @@ public final class ConfigurationLoader {
 		configProperties = loadResourceAndDefault("needle");
 	}
 
-	String getPropertie(final String key) {
+	String getProperty(final String key) {
 		return configProperties.get(key);
 	}
 
