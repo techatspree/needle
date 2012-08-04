@@ -40,7 +40,7 @@ public final class ConfigurationLoader {
 
 			for (Enumeration<String> keys = customBundle.getKeys(); keys.hasMoreElements();) {
 				String key = keys.nextElement();
-				result.put(key, customBundle.getString(key));
+                addKeyValuePair(result, key, customBundle.getString(key));
 			}
 
 			URL url = NeedleConfiguration.class.getResource("/" + name + ".properties");
@@ -56,9 +56,8 @@ public final class ConfigurationLoader {
 			for (Enumeration<String> keys = defaultResourceBundle.getKeys(); keys.hasMoreElements();) {
 				String key = keys.nextElement();
 				if (!result.containsKey(key)) {
-					result.put(key, defaultResourceBundle.getString(key));
+                    addKeyValuePair(result, key, defaultResourceBundle.getString(key));
 				}
-
 			}
 
 			URL url = NeedleConfiguration.class.getResource("/" + DEFAULT_CONFIGURATION_FILENAME + ".properties");
@@ -71,6 +70,16 @@ public final class ConfigurationLoader {
 
 		return result;
 	}
+
+    private void addKeyValuePair(Map<String, String> target, String key, String value) {
+        String trimmedValue = value.trim();
+
+        if (!trimmedValue.equals(value)) {
+            LOG.warn("trimmed value " + value + " to " + trimmedValue + " (key was " + key + ")");
+        }
+
+        target.put(key, trimmedValue);
+    }
 
 	private ResourceBundle loadResourceBundle(String name) {
 		return ResourceBundle.getBundle(name);
