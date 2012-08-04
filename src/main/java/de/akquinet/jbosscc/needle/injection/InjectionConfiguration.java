@@ -177,7 +177,7 @@ public final class InjectionConfiguration {
 				return (Class<? extends MockProvider>) Class.forName(mockProviderClassName);
 			}
 		} catch (Exception e) {
-			LOG.warn("could not load mock provider class " + mockProviderClassName, e);
+            throw new RuntimeException("could not load mock provider class: '" + mockProviderClassName + "'", e);
 		}
 
 		throw new RuntimeException("no mock provider configured");

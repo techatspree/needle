@@ -44,17 +44,17 @@ public final class NeedleConfiguration {
 
 	static final Set<Class<InjectionProvider<?>>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
 
-	static final String JDBC_URL = CONFIGURATION_LOADER.getPropertie(JDBC_URL_KEY);
+	static final String JDBC_URL = CONFIGURATION_LOADER.getProperty(JDBC_URL_KEY);
 
-	static final String JDBC_DRIVER = CONFIGURATION_LOADER.getPropertie(JDBC_DRIVER_KEY);
+	static final String JDBC_DRIVER = CONFIGURATION_LOADER.getProperty(JDBC_DRIVER_KEY);
 
-	static final String JDBC_USER = CONFIGURATION_LOADER.getPropertie(JDBC_USER_KEY);
+	static final String JDBC_USER = CONFIGURATION_LOADER.getProperty(JDBC_USER_KEY);
 
-	static final String JDBC_PASSWORD = CONFIGURATION_LOADER.getPropertie(JDBC_PASSWORD_KEY);
+	static final String JDBC_PASSWORD = CONFIGURATION_LOADER.getProperty(JDBC_PASSWORD_KEY);
 
-	static final String DB_OPERATION_CLASS_NAME = CONFIGURATION_LOADER.getPropertie(DB_OPERATION_KEY);
+	static final String DB_OPERATION_CLASS_NAME = CONFIGURATION_LOADER.getProperty(DB_OPERATION_KEY);
 
-	static final String MOCK_PROVIDER_CLASS_NAME = CONFIGURATION_LOADER.getPropertie(MOCK_PROVIDER_KEY);
+	static final String MOCK_PROVIDER_CLASS_NAME = CONFIGURATION_LOADER.getProperty(MOCK_PROVIDER_KEY);
 
 	static {
 		StringBuilder builder = new StringBuilder();
@@ -76,7 +76,7 @@ public final class NeedleConfiguration {
 	 * @return jpa persistence unit name
 	 */
 	public static String getPersistenceunitName() {
-		return CONFIGURATION_LOADER.getPropertie(PERSISTENCEUNIT_NAME_KEY);
+		return CONFIGURATION_LOADER.getProperty(PERSISTENCEUNIT_NAME_KEY);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public final class NeedleConfiguration {
 	 * @return name of hibernate.cfg file
 	 */
 	public static String getHibernateCfgFilename() {
-		return CONFIGURATION_LOADER.getPropertie(HIBERNATE_CFG_FILENAME_KEY);
+		return CONFIGURATION_LOADER.getProperty(HIBERNATE_CFG_FILENAME_KEY);
 	}
 
 	/**
@@ -142,7 +142,7 @@ public final class NeedleConfiguration {
 	}
 
 	private static <T> Set<Class<T>> lookupClasses(final String key) {
-		final String classesList = CONFIGURATION_LOADER.containsKey(key) ? CONFIGURATION_LOADER.getPropertie(key) : "";
+		final String classesList = CONFIGURATION_LOADER.containsKey(key) ? CONFIGURATION_LOADER.getProperty(key) : "";
 
 		final Set<Class<T>> result = new HashSet<Class<T>>();
 		final StringTokenizer tokenizer = new StringTokenizer(classesList, ",");
