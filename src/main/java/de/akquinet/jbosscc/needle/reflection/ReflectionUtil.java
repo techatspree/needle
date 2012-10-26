@@ -36,14 +36,13 @@ public final class ReflectionUtil {
 		super();
 	}
 
-	public static List<Field> getAllFieldsWithAnnotation(final Class<?> clazz,
-	        final Class<? extends Annotation> annotation) {
+	public static List<Field> getAllFieldsWithAnnotation(final Class<?> clazz, final Class<? extends Annotation> annotation) {
 		final List<Field> result = new ArrayList<Field>();
 
 		new DerivedClassInterator(clazz) {
 
 			@Override
-			protected void handleClass(Class<?> clazz) {
+			protected void handleClass(final Class<?> clazz) {
 				final Field[] fields = clazz.getDeclaredFields();
 
 				for (final Field field : fields) {
@@ -62,10 +61,10 @@ public final class ReflectionUtil {
 		final Map<Class<? extends Annotation>, List<Field>> result = new HashMap<Class<? extends Annotation>, List<Field>>();
 		final List<Field> fields = getAllFields(clazz);
 
-		for (Field field : fields) {
-			Annotation[] annotations = field.getAnnotations();
-			for (Annotation annotation : annotations) {
-				Class<? extends Annotation> annotationType = annotation.annotationType();
+		for (final Field field : fields) {
+			final Annotation[] annotations = field.getAnnotations();
+			for (final Annotation annotation : annotations) {
+				final Class<? extends Annotation> annotationType = annotation.annotationType();
 				List<Field> list = result.get(annotationType);
 
 				if (list == null) {
@@ -87,7 +86,7 @@ public final class ReflectionUtil {
 		new DerivedClassInterator(clazz) {
 
 			@Override
-			protected void handleClass(Class<?> clazz) {
+			protected void handleClass(final Class<?> clazz) {
 				final Field[] fields = clazz.getDeclaredFields();
 
 				for (final Field field : fields) {
@@ -103,8 +102,7 @@ public final class ReflectionUtil {
 
 	}
 
-	public static List<Field> getAllFieldsWithAnnotation(final Object instance,
-	        final Class<? extends Annotation> annotation) {
+	public static List<Field> getAllFieldsWithAnnotation(final Object instance, final Class<? extends Annotation> annotation) {
 		return getAllFieldsWithAnnotation(instance.getClass(), annotation);
 
 	}
@@ -135,7 +133,7 @@ public final class ReflectionUtil {
 
 	/**
 	 * Changing the value of a given field.
-	 *
+	 * 
 	 * @param object
 	 *            -- target object of injection
 	 * @param clazz
@@ -145,8 +143,7 @@ public final class ReflectionUtil {
 	 * @param value
 	 *            -- object that is injected
 	 */
-	public static void setFieldValue(final Object object, final Class<?> clazz, final String fieldName,
-	        final Object value) throws NoSuchFieldException {
+	public static void setFieldValue(final Object object, final Class<?> clazz, final String fieldName, final Object value) throws NoSuchFieldException {
 		final Field field = clazz.getDeclaredField(fieldName);
 
 		try {
@@ -158,7 +155,7 @@ public final class ReflectionUtil {
 
 	/**
 	 * Changing the value of a given field.
-	 *
+	 * 
 	 * @param object
 	 *            -- target object of injection
 	 * @param fieldName
@@ -171,7 +168,7 @@ public final class ReflectionUtil {
 		new DerivedClassInterator(object.getClass()) {
 
 			@Override
-			protected void handleClass(Class<?> clazz) {
+			protected void handleClass(final Class<?> clazz) {
 				try {
 					setFieldValue(object, clazz, fieldName, value);
 					return;
@@ -186,15 +183,14 @@ public final class ReflectionUtil {
 
 	/**
 	 * Get the value of a given field on a given object via reflection.
-	 *
+	 * 
 	 * @param object
 	 *            -- target object of field access
 	 * @param clazz
 	 *            -- type of argument object
 	 * @param fieldName
 	 *            -- name of the field
-	 * @return -- the value of the represented field in object; primitive values
-	 *         are wrapped in an appropriate object before being returned
+	 * @return -- the value of the represented field in object; primitive values are wrapped in an appropriate object before being returned
 	 */
 	public static Object getFieldValue(final Object object, final Class<?> clazz, final String fieldName) {
 		try {
@@ -207,14 +203,13 @@ public final class ReflectionUtil {
 
 	/**
 	 * Get the value of a given field on a given object via reflection.
-	 *
+	 * 
 	 * @param object
 	 *            -- target object of field access
 	 * @param field
 	 *            -- target field
-	 *
-	 * @return -- the value of the represented field in object; primitive values
-	 *         are wrapped in an appropriate object before being returned
+	 * 
+	 * @return -- the value of the represented field in object; primitive values are wrapped in an appropriate object before being returned
 	 */
 	public static Object getFieldValue(final Object object, final Field field) {
 		try {
@@ -230,22 +225,20 @@ public final class ReflectionUtil {
 
 	/**
 	 * Get the value of a given field on a given object via reflection.
-	 *
+	 * 
 	 * @param object
 	 *            -- target object of field access
 	 * @param fieldName
 	 *            -- name of the field
-	 * @return -- the value of the represented field in object; primitive values
-	 *         are wrapped in an appropriate object before being returned
+	 * @return -- the value of the represented field in object; primitive values are wrapped in an appropriate object before being returned
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {
 		return getFieldValue(object, object.getClass(), fieldName);
 	}
 
 	/**
-	 * Invoke a given method with given arguments on a given object via
-	 * reflection.
-	 *
+	 * Invoke a given method with given arguments on a given object via reflection.
+	 * 
 	 * @param object
 	 *            -- target object of invocation
 	 * @param clazz
@@ -258,8 +251,7 @@ public final class ReflectionUtil {
 	 * @throws Exception
 	 *             - operation exception
 	 */
-	public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName,
-	        final Object... arguments) throws Exception {
+	public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName, final Object... arguments) throws Exception {
 
 		Class<?> superClazz = clazz;
 
@@ -280,8 +272,7 @@ public final class ReflectionUtil {
 		throw new IllegalArgumentException("Method " + methodName + ":" + Arrays.toString(arguments) + " not found");
 	}
 
-	public static Object invokeMethod(final Method method, final Object instance, final Object... arguments)
-	        throws Exception {
+	public static Object invokeMethod(final Method method, final Object instance, final Object... arguments) throws Exception {
 		try {
 			if (!method.isAccessible()) {
 				method.setAccessible(true);
@@ -298,19 +289,18 @@ public final class ReflectionUtil {
 		}
 	}
 
-	public static Method getMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes)
-	        throws NoSuchMethodException {
+	public static Method getMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) throws NoSuchMethodException {
 
 		final List<Method> result = new ArrayList<Method>();
 
 		new DerivedClassInterator(clazz) {
 
 			@Override
-			protected void handleClass(Class<?> clazz) {
+			protected void handleClass(final Class<?> clazz) {
 				try {
 					result.add(clazz.getDeclaredMethod(methodName, parameterTypes));
 					return;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// do nothing
 				}
 
@@ -331,8 +321,7 @@ public final class ReflectionUtil {
 			final Class<?> parameterClass = parameterTypes[i];
 			final Class<?> argumentClass = arguments[i].getClass();
 
-			if (!parameterClass.isAssignableFrom(argumentClass)
-			        && !checkPrimativeArguments(parameterClass, argumentClass)) {
+			if (!parameterClass.isAssignableFrom(argumentClass) && !checkPrimativeArguments(parameterClass, argumentClass)) {
 				match = false;
 			}
 		}
@@ -342,7 +331,7 @@ public final class ReflectionUtil {
 
 	private static boolean checkPrimativeArguments(final Class<?> parameterClass, final Class<?> argumentClass) {
 		boolean result = false;
-		for (Entry<Class<?>, Class<?>> entry : PRIMITIVES.entrySet()) {
+		for (final Entry<Class<?>, Class<?>> entry : PRIMITIVES.entrySet()) {
 			result = result || (parameterClass == entry.getKey()) && (argumentClass == entry.getValue());
 		}
 
@@ -350,9 +339,8 @@ public final class ReflectionUtil {
 	}
 
 	/**
-	 * Invoke a given method with given arguments on a given object via
-	 * reflection.
-	 *
+	 * Invoke a given method with given arguments on a given object via reflection.
+	 * 
 	 * @param object
 	 *            -- target object of invocation
 	 * @param methodName
@@ -362,15 +350,13 @@ public final class ReflectionUtil {
 	 * @return -- method object to which invocation is actually dispatched
 	 * @throws Exception
 	 */
-	public static Object invokeMethod(final Object object, final String methodName, final Object... arguments)
-	        throws Exception {
+	public static Object invokeMethod(final Object object, final String methodName, final Object... arguments) throws Exception {
 		return invokeMethod(object, object.getClass(), methodName, arguments);
 	}
 
 	/**
-	 * Returns the <code>Class</code> object associated with the class or
-	 * interface with the given string name.
-	 *
+	 * Returns the <code>Class</code> object associated with the class or interface with the given string name.
+	 * 
 	 * @param className
 	 *            the fully qualified name of the desired class.
 	 * @return <code>Class</code> or null
@@ -405,8 +391,7 @@ public final class ReflectionUtil {
 	}
 
 	public static Field getField(final Class<?> clazz, final String fieldName) {
-		Field field = null;
-		field = getFieldByName(clazz, fieldName);
+		Field field = getFieldByName(clazz, fieldName);
 
 		Class<?> superClazz = clazz.getSuperclass();
 
@@ -428,7 +413,7 @@ public final class ReflectionUtil {
 		}
 	}
 
-	public static <T> T createInstance(final Class<T> clazz, Object... parameter) throws Exception {
+	public static <T> T createInstance(final Class<T> clazz, final Object... parameter) throws Exception {
 
 		final Class<?>[] parameterTypes = new Class<?>[parameter.length];
 
@@ -436,7 +421,7 @@ public final class ReflectionUtil {
 			parameterTypes[i] = parameter[i].getClass();
 		}
 
-		Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+		final Constructor<T> constructor = clazz.getConstructor(parameterTypes);
 
 		return constructor.newInstance(parameter);
 	}

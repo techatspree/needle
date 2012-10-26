@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +94,7 @@ public abstract class NeedleTestcase {
 			try {
 				final Object instance = setInstanceIfNotNull(field, test);
 				initInstance(instance);
+				configuration.getPostConstructProcessor().process(field, instance);
 			} catch (final InstantiationException e) {
 				LOG.error(e.getMessage(), e);
 			} catch (final IllegalAccessException e) {
@@ -117,10 +116,9 @@ public abstract class NeedleTestcase {
 	 *            the instance to initialize.
 	 * @throws ObjectUnderTestInstantiationException
 	 */
-	protected final void initInstance(final Object instance) throws ObjectUnderTestInstantiationException {
+	protected final void initInstance(final Object instance) {
 		initFields(instance);
 		initMethodInjection(instance);
-		postConstruct(instance);
 	}
 
 	private void initMethodInjection(final Object instance) {
@@ -152,24 +150,6 @@ public abstract class NeedleTestcase {
 				LOG.warn("could not invoke method", e);
 			}
 
-		}
-	}
-
-	/**
-	 * calls all methods annotated with @PostConstruct including superclasses
-	 * 
-	 * @param instance
-	 * @throws ObjectUnderTestInstantiationException
-	 */
-	private void postConstruct(final Object instance) throws ObjectUnderTestInstantiationException {
-		try {
-			for (final Method method : ReflectionUtil.getMethods(instance.getClass())) {
-				if (method.isAnnotationPresent(PostConstruct.class)) {
-					ReflectionUtil.invokeMethod(method, instance);
-				}
-			}
-		} catch (final Exception e) {
-			throw new ObjectUnderTestInstantiationException(e);
 		}
 	}
 

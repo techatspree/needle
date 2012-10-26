@@ -81,10 +81,10 @@ public class PostConstructAfterInjectionTest {
 	@Rule
 	public NeedleRule needleRule = new NeedleRule();
 
-	@ObjectUnderTest
+	@ObjectUnderTest(postConstruct = true)
 	private PostConstructTestObjectUnderTest objectUnderTest;
 
-	@ObjectUnderTest
+	@ObjectUnderTest(postConstruct = true)
 	@InjectIntoMany
 	private PostConstructDummyA dummyA;
 
