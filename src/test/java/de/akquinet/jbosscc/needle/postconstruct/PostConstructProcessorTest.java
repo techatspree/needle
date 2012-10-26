@@ -16,6 +16,12 @@ import org.junit.Test;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
+/**
+ * 
+ * 
+ * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
+ * 
+ */
 public class PostConstructProcessorTest {
 
 	public static final String POSTCONSTRUCT_NAME = "javax.annotation.PostConstruct";
