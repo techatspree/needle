@@ -5,8 +5,6 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
-import de.akquinet.jbosscc.needle.db.EntityManagerFactoryProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 

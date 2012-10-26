@@ -16,10 +16,13 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.common.MapEntry;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
+import de.akquinet.jbosscc.needle.postconstruct.PostConstructProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public final class InjectionConfiguration {
 	private static final Logger LOG = LoggerFactory.getLogger(InjectionConfiguration.class);
+
+	private static final String[] POSTCONSTRUCT_CLASSES = "javax.annotation.PostConstruct".split(",");
 
 	private static final Class<?> RESOURCE_CLASS = getClass("javax.annotation.Resource");
 	private static final Class<?> INJECT_CLASS = getClass("javax.inject.Inject");
@@ -27,8 +30,7 @@ public final class InjectionConfiguration {
 	private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
 	private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
-	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass(NeedleConfiguration
-	        .getMockProviderClassName());
+	private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass(NeedleConfiguration.getMockProviderClassName());
 
 	// Default InjectionProvider for annotations
 	private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
@@ -46,10 +48,13 @@ public final class InjectionConfiguration {
 
 	private final MockProvider mockProvider;
 
+	private final PostConstructProcessor postConstructProcessor;
+
 	@SuppressWarnings("unchecked")
 	public InjectionConfiguration() {
-		super();
 		mockProvider = createMockProvider();
+
+		this.postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
 
 		add(INJECT_CLASS);
 		add(EJB_CLASS);
@@ -59,7 +64,6 @@ public final class InjectionConfiguration {
 
 		initGlobalInjectionAnnotation();
 		initGlobalInjectionProvider();
-
 
 		injectionProviderList.add(0, new MockProviderInjectionProvider(mockProvider));
 
@@ -94,6 +98,10 @@ public final class InjectionConfiguration {
 		return (T) mockProvider;
 	}
 
+	public PostConstructProcessor getPostConstructProcessor() {
+		return postConstructProcessor;
+	}
+
 	public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
 		for (final InjectionProvider<?> provider : injectionProvider) {
 			testInjectionProvider.add(0, provider);
@@ -105,23 +113,22 @@ public final class InjectionConfiguration {
 	}
 
 	private void initGlobalInjectionAnnotation() {
-		Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
+		final Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
 
-		for (Class<? extends Annotation> annotation : customInjectionAnnotations) {
+		for (final Class<? extends Annotation> annotation : customInjectionAnnotations) {
 			addInjectionAnnotation(annotation);
 			globalInjectionProviderList.add(0, new DefaultMockInjectionProvider(annotation, getMockProvider()));
 		}
 	}
 
 	private void initGlobalInjectionProvider() {
-		Set<Class<InjectionProvider<?>>> customInjectionProviders = NeedleConfiguration
-		        .getCustomInjectionProviderClasses();
+		final Set<Class<InjectionProvider<?>>> customInjectionProviders = NeedleConfiguration.getCustomInjectionProviderClasses();
 
-		for (Class<InjectionProvider<?>> injectionProviderClass : customInjectionProviders) {
+		for (final Class<InjectionProvider<?>> injectionProviderClass : customInjectionProviders) {
 			try {
-				InjectionProvider<?> injection = ReflectionUtil.createInstance(injectionProviderClass);
+				final InjectionProvider<?> injection = ReflectionUtil.createInstance(injectionProviderClass);
 				globalInjectionProviderList.add(0, injection);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				LOG.warn("could not create an instance of injection provider " + injectionProviderClass, e);
 			}
 		}
@@ -129,7 +136,7 @@ public final class InjectionConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addInjectionAnnotation(Class<?> clazz) {
+	private void addInjectionAnnotation(final Class<?> clazz) {
 		if (clazz.isAnnotation()) {
 			injectionAnnotationClasses.add((Class<? extends Annotation>) clazz);
 		}
@@ -143,8 +150,7 @@ public final class InjectionConfiguration {
 		return Collections.unmodifiableSet(injectionAnnotationClasses);
 	}
 
-	public Entry<Object, Object> handleInjectionProvider(final Collection<InjectionProvider<?>> injectionProviders,
-	        final InjectionTargetInformation injectionTargetInformation) {
+	public Entry<Object, Object> handleInjectionProvider(final Collection<InjectionProvider<?>> injectionProviders, final InjectionTargetInformation injectionTargetInformation) {
 
 		for (final InjectionProvider<?> provider : injectionProviders) {
 
@@ -153,9 +159,7 @@ public final class InjectionConfiguration {
 				final Object key = provider.getKey(injectionTargetInformation);
 
 				return new MapEntry<Object, Object>(key, object);
-
 			}
-
 		}
 		return null;
 	}
@@ -164,7 +168,7 @@ public final class InjectionConfiguration {
 	<T extends MockProvider> T createMockProvider() {
 		try {
 			return (T) MOCK_PROVIDER_CLASS.newInstance();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException("could not create a new instance of mock provider " + MOCK_PROVIDER_CLASS, e);
 		}
 	}
@@ -176,8 +180,8 @@ public final class InjectionConfiguration {
 			if (mockProviderClassName != null) {
 				return (Class<? extends MockProvider>) Class.forName(mockProviderClassName);
 			}
-		} catch (Exception e) {
-            throw new RuntimeException("could not load mock provider class: '" + mockProviderClassName + "'", e);
+		} catch (final Exception e) {
+			throw new RuntimeException("could not load mock provider class: '" + mockProviderClassName + "'", e);
 		}
 
 		throw new RuntimeException("no mock provider configured");
