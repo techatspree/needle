@@ -40,7 +40,7 @@ public interface InjectionProvider<T> extends InjectionVerifier {
 	 *            the type of the injection target.
 	 * @return <T> instance of {@code T}
 	 */
-	T getInjectedObject(final Class<?> injectionPointType);
+	T getInjectedObject(Class<?> injectionPointType);
 
 	/**
 	 * Returns a key object, which identifies the provided object.
