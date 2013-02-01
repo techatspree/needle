@@ -9,9 +9,8 @@ import java.lang.annotation.Target;
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 
 /**
- * Is used to specify an object under test. The annotated fields will be initialized
- * by the {@link NeedleTestcase}.
- *
+ * Is used to specify an object under test. The annotated fields will be initialized by the {@link NeedleTestcase}.
+ * 
  */
 @Target({ FIELD })
 @Retention(RUNTIME)
@@ -30,4 +29,13 @@ public @interface ObjectUnderTest {
 	 * Default is the field name.
 	 */
 	String id() default "";
+
+	/**
+	 * (Optional) execute @PostConstruct method of Class under test
+	 * <p>
+	 * Default is false
+	 * 
+	 * @return
+	 */
+	boolean postConstruct() default false;
 }
