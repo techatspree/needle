@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.11</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>1.9.0</version>
+			<version>1.9.5</version>
 			<optional>true</optional>
 		</dependency>
 
