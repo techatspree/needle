@@ -24,90 +24,93 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
  */
 public class PostConstructProcessorTest {
 
-	public static final String POSTCONSTRUCT_NAME = "javax.annotation.PostConstruct";
+    public static final String POSTCONSTRUCT_NAME = "javax.annotation.PostConstruct";
 
-	/**
-	 * a dummy class without init()
-	 */
-	public static class A {
+    /**
+     * a dummy class without init()
+     */
+    public static class A {
 
-		protected boolean postConstructed = false;
+        protected boolean postConstructed = false;
 
-	}
+    }
 
-	/**
-	 * a dummy class with init()
-	 */
-	public static class B extends A {
+    /**
+     * a dummy class with init()
+     */
+    public static class B extends A {
 
-		@PostConstruct
-		public void init() {
-			postConstructed = true;
-		}
+        @PostConstruct
+        public void init() {
+            postConstructed = true;
+        }
 
-	}
+    }
 
-	private final PostConstructProcessor postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_NAME);
+    private final PostConstructProcessor postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_NAME);
 
-	// This Processor test does not use the NeeldeRule!
-	@ObjectUnderTest(postConstruct = true)
-	private A isConfiguredForPostConstructionButDoesNotContainMethod = new A();
+    // This Processor test does not use the NeeldeRule!
+    @ObjectUnderTest(postConstruct = true)
+    private A isConfiguredForPostConstructionButDoesNotContainMethod = new A();
 
-	// This Processor test does not use the NeeldeRule!
-	@ObjectUnderTest(postConstruct = true)
-	private B isConfiguredForPostConstruction = new B();
+    // This Processor test does not use the NeeldeRule!
+    @ObjectUnderTest(postConstruct = true)
+    private B isConfiguredForPostConstruction = new B();
 
-	// This Processor test does not use the NeeldeRule!
-	@ObjectUnderTest
-	private B isNotConfiguredForPostConstruction = new B();
+    // This Processor test does not use the NeeldeRule!
+    @ObjectUnderTest
+    private B isNotConfiguredForPostConstruction = new B();
 
-	@Before
-	public void setUp() {
-		assertNotNull(postConstructProcessor);
-	}
+    @Before
+    public void setUp() {
+        assertNotNull(postConstructProcessor);
+    }
 
-	@Test
-	public void shouldInitializeListOfPostConstructAnnotations() throws Exception {
-		assertFalse(postConstructProcessor.getPostConstructAnnotations().isEmpty());
-		assertTrue(postConstructProcessor.getPostConstructAnnotations().contains(PostConstruct.class));
-	}
+    @Test
+    public void shouldInitializeListOfPostConstructAnnotations() throws Exception {
+        assertFalse(postConstructProcessor.getPostConstructAnnotations().isEmpty());
+        assertTrue(postConstructProcessor.getPostConstructAnnotations().contains(PostConstruct.class));
+    }
 
-	@Test
-	public void shouldEvaluateAnnotationConfigPostConstruct() {
-		assertTrue(postConstructProcessor.isConfiguredForPostConstruct(getField("isConfiguredForPostConstruction")));
-		assertFalse(postConstructProcessor.isConfiguredForPostConstruct(getField("isNotConfiguredForPostConstruction")));
-	}
+    @Test
+    public void shouldEvaluateAnnotationConfigPostConstruct() {
+        assertTrue(postConstructProcessor.isConfiguredForPostConstruct(getField("isConfiguredForPostConstruction")));
+        assertFalse(postConstructProcessor.isConfiguredForPostConstruct(getField("isNotConfiguredForPostConstruction")));
+    }
 
-	private Field getField(final String name) {
-		return ReflectionUtil.getField(getClass(), name);
-	}
+    private Field getField(final String name) {
+        return ReflectionUtil.getField(getClass(), name);
+    }
 
-	@Test
-	public void shouldFilterNoMethodsForClassA() throws Exception {
-		assertTrue(postConstructProcessor.filterPostConstructMethods(isConfiguredForPostConstructionButDoesNotContainMethod).isEmpty());
-	}
+    @Test
+    public void shouldFilterNoMethodsForClassA() throws Exception {
+        assertTrue(postConstructProcessor.filterPostConstructMethods(
+                isConfiguredForPostConstructionButDoesNotContainMethod).isEmpty());
+    }
 
-	@Test
-	public void shouldFilterInitMethodForClassB() throws Exception {
-		final List<Method> postConstructMethods = postConstructProcessor.filterPostConstructMethods(isConfiguredForPostConstruction);
-		assertTrue(postConstructMethods.size() == 1);
-	}
+    @Test
+    public void shouldFilterInitMethodForClassB() throws Exception {
+        final List<Method> postConstructMethods = postConstructProcessor
+                .filterPostConstructMethods(isConfiguredForPostConstruction);
+        assertTrue(postConstructMethods.size() == 1);
+    }
 
-	@Test
-	public void shouldNotProcessInitForA() throws Exception {
-		postConstructProcessor.process(isConfiguredForPostConstructionButDoesNotContainMethod);
-		assertFalse(isConfiguredForPostConstructionButDoesNotContainMethod.postConstructed);
-	}
+    @Test
+    public void shouldNotProcessInitForA() throws Exception {
+        postConstructProcessor.process(isConfiguredForPostConstructionButDoesNotContainMethod);
+        assertFalse(isConfiguredForPostConstructionButDoesNotContainMethod.postConstructed);
+    }
 
-	@Test
-	public void shouldProcessInitForBIfConfigured() throws Exception {
-		// do not invoke
-		postConstructProcessor.process(getField("isNotConfiguredForPostConstruction"), isNotConfiguredForPostConstruction);
-		assertFalse(isNotConfiguredForPostConstruction.postConstructed);
+    @Test
+    public void shouldProcessInitForBIfConfigured() throws Exception {
+        // do not invoke
+        postConstructProcessor.process(getField("isNotConfiguredForPostConstruction"),
+                isNotConfiguredForPostConstruction);
+        assertFalse(isNotConfiguredForPostConstruction.postConstructed);
 
-		// do invoke
-		postConstructProcessor.process(getField("isConfiguredForPostConstruction"), isConfiguredForPostConstruction);
-		assertTrue(isConfiguredForPostConstruction.postConstructed);
-	}
+        // do invoke
+        postConstructProcessor.process(getField("isConfiguredForPostConstruction"), isConfiguredForPostConstruction);
+        assertTrue(isConfiguredForPostConstruction.postConstructed);
+    }
 
 }

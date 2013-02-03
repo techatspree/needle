@@ -19,7 +19,7 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 public class PostConstructProcessor {
 
 	/**
-	 * internal Container of all Annotations that trigger invokation
+	 * internal Container of all Annotations that trigger invocation
 	 */
 	private final List<Class<? extends Annotation>> postConstructAnnotations = new ArrayList<Class<? extends Annotation>>();
 
