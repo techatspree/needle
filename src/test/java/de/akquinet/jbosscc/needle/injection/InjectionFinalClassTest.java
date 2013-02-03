@@ -1,6 +1,6 @@
 package de.akquinet.jbosscc.needle.injection;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,19 +10,16 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class InjectionFinalClassTest {
 
-	@Rule
-	public NeedleRule needleRule = new NeedleRule();
+    @Rule
+    public NeedleRule needleRule = new NeedleRule();
 
-	@ObjectUnderTest
-	private InjectionFinalClass testClass;
+    @ObjectUnderTest
+    private InjectionFinalClass testClass;
 
-
-	@Test
-	public void testFinal() throws Exception {
-		Assert.assertNull(testClass.getString());
+    @Test
+    public void testFinal() throws Exception {
+        assertNull(testClass.getString());
 
     }
-
-
 
 }

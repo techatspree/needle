@@ -2,7 +2,8 @@ package de.akquinet.jbosscc.needle.mock;
 
 import java.util.Map;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -21,18 +22,18 @@ public class MockitoProviderTest {
 
 		Mockito.when(mapMock.get(key)).thenReturn(value);
 
-		Assert.assertEquals(value, mapMock.get(key));
+		assertEquals(value, mapMock.get(key));
 
 	}
 
 	@Test
 	public void testCreateMockComponent_Final() throws Exception {
-		Assert.assertNull(mockitoProvider.createMockComponent(String.class));
+		assertNull(mockitoProvider.createMockComponent(String.class));
 	}
 
 	@Test
 	public void testCreateMockComponent_isPrimitive() throws Exception {
-		Assert.assertNull(mockitoProvider.createMockComponent(int.class));
+		assertNull(mockitoProvider.createMockComponent(int.class));
 	}
 
 }

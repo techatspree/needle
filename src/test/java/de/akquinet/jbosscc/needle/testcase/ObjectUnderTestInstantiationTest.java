@@ -8,7 +8,6 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 
 public class ObjectUnderTestInstantiationTest extends NeedleTestcase {
 
-	@SuppressWarnings("unused")
 	@ObjectUnderTest
 	private ObjectUnderTestBean objectUnderTest;
 

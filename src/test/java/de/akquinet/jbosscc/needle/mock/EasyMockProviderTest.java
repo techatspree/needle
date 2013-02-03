@@ -1,6 +1,8 @@
 package de.akquinet.jbosscc.needle.mock;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.easymock.EasyMock;
 import org.junit.Rule;
@@ -16,63 +18,61 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class EasyMockProviderTest {
 
-	@Rule
-	public final NeedleRule needleRule = new NeedleRule();
+    @Rule
+    public final NeedleRule needleRule = new NeedleRule();
 
-	@ObjectUnderTest(implementation = MyComponentBean.class)
-	private MyComponent component;
+    @ObjectUnderTest(implementation = MyComponentBean.class)
+    private MyComponent component;
 
-	private EasyMockProvider mockProvider = (EasyMockProvider) needleRule.getMockProvider();
+    private EasyMockProvider mockProvider = (EasyMockProvider) needleRule.getMockProvider();
 
-	@Test
-	public void testNiceMock() throws Exception {
-		String testMock = component.testMock();
-		Assert.assertNull(testMock);
-	}
+    @Test
+    public void testNiceMock() throws Exception {
+        String testMock = component.testMock();
+        assertNull(testMock);
+    }
 
-	@Test
-	public void testStricMock() throws Exception {
-		MyEjbComponent myEjbComponentMock = (MyEjbComponent) needleRule.getInjectedObject(MyEjbComponent.class);
-		Assert.assertNotNull(myEjbComponentMock);
+    @Test
+    public void testStricMock() throws Exception {
+        MyEjbComponent myEjbComponentMock = (MyEjbComponent) needleRule.getInjectedObject(MyEjbComponent.class);
+        assertNotNull(myEjbComponentMock);
 
-		EasyMock.resetToStrict(myEjbComponentMock);
+        EasyMock.resetToStrict(myEjbComponentMock);
 
-		EasyMock.expect(myEjbComponentMock.doSomething()).andReturn("Hello World");
+        EasyMock.expect(myEjbComponentMock.doSomething()).andReturn("Hello World");
 
-		mockProvider.replayAll();
-		String testMock = component.testMock();
+        mockProvider.replayAll();
+        String testMock = component.testMock();
 
-		Assert.assertEquals("Hello World", testMock);
+        assertEquals("Hello World", testMock);
 
-		mockProvider.verifyAll();
-	}
+        mockProvider.verifyAll();
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void testResetToStric_Mocks() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void testResetToStric_Mocks() throws Exception {
 
-		User userMock = mockProvider.createMock(User.class);
-		UserDao userDaoMock = mockProvider.createMock(UserDao.class);
-		mockProvider.resetToStrict(userMock, userDaoMock);
-		userMock.getId();
+        User userMock = mockProvider.createMock(User.class);
+        UserDao userDaoMock = mockProvider.createMock(UserDao.class);
+        mockProvider.resetToStrict(userMock, userDaoMock);
+        userMock.getId();
 
-		userDaoMock.getUser();
+        userDaoMock.getUser();
 
-		mockProvider.replayAll();
+        mockProvider.replayAll();
 
-		mockProvider.verifyAll();
-	}
+        mockProvider.verifyAll();
+    }
 
+    @Test(expected = IllegalStateException.class)
+    public void testResetToStric_Mock() throws Exception {
 
-	@Test(expected = IllegalStateException.class)
-	public void testResetToStric_Mock() throws Exception {
+        User userMock = mockProvider.resetToStrict(mockProvider.createMock(User.class));
 
-		User userMock = mockProvider.resetToStrict(mockProvider.createMock(User.class));
+        userMock.getId();
 
-		userMock.getId();
+        mockProvider.replayAll();
 
-
-		mockProvider.replayAll();
-
-		mockProvider.verifyAll();
-	}
+        mockProvider.verifyAll();
+    }
 }

@@ -1,6 +1,9 @@
 package de.akquinet.jbosscc.needle.reflection;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.lang.annotation.Annotation;
@@ -11,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -51,17 +52,17 @@ public class ReflectionUtilTest {
 	@Test
 	public void testAllAnnotatedFields() throws Exception {
 	    final Map<Class<? extends Annotation>, List<Field>> allAnnotatedFields = ReflectionUtil.getAllAnnotatedFields(MyComponentBean.class);
-	    Assert.assertEquals(4, allAnnotatedFields.size());
+	    assertEquals(4, allAnnotatedFields.size());
 
 	    List<Field> list = allAnnotatedFields.get(Resource.class);
-	    Assert.assertEquals(3,list.size());
+	    assertEquals(3,list.size());
 
     }
 
 	@Test
 	public void testInvokeMethod() throws Exception {
 		String invokeMethod = (String) ReflectionUtil.invokeMethod(this, "test");
-		Assert.assertEquals("Hello World", invokeMethod);
+		assertEquals("Hello World", invokeMethod);
 	}
 
 	@Test
@@ -69,40 +70,40 @@ public class ReflectionUtilTest {
 		Address address = new Address();
 		address.setId(1L);
 
-		Assert.assertEquals(1L, ReflectionUtil.getFieldValue(address, Address.class, "id"));
+		assertEquals(1L, ReflectionUtil.getFieldValue(address, Address.class, "id"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetFieldValue_Exception() throws Exception {
 		Address address = new Address();
 
-		Assert.assertEquals(1L, ReflectionUtil.getFieldValue(address, Address.class, "notexisting"));
+		assertEquals(1L, ReflectionUtil.getFieldValue(address, Address.class, "notexisting"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetFieldValue_ByField_Exception() throws Exception {
 
-		Assert.assertEquals(1L, ReflectionUtil.getFieldValue(null, ReflectionUtil.getField(Address.class, "id")));
+		assertEquals(1L, ReflectionUtil.getFieldValue(null, ReflectionUtil.getField(Address.class, "id")));
 	}
 
 	@Test
 	public void testGetField_NoSuchField() throws Exception {
-		Assert.assertNull(ReflectionUtil.getField(String.class, "fieldName"));
+		assertNull(ReflectionUtil.getField(String.class, "fieldName"));
 	}
 
 	@Test
 	public void testGetField_DerivedClass() throws Exception {
-		Assert.assertNotNull(ReflectionUtil.getField(DerivedClass.class, "aPrivateField"));
+		assertNotNull(ReflectionUtil.getField(DerivedClass.class, "aPrivateField"));
 	}
 
 	@Test
 	public void testGetMethodAndInvoke() throws Exception {
 		Method method = ReflectionUtil.getMethod(DerivedClass.class, "testGetMethod", String.class, int.class,
 		        Object.class);
-		Assert.assertNotNull(method);
+		assertNotNull(method);
 
 		Object result = ReflectionUtil.invokeMethod(method, new DerivedClass(), "Hello", 1, "");
-		Assert.assertEquals("Hello", result.toString());
+		assertEquals("Hello", result.toString());
 
 	}
 
@@ -110,7 +111,7 @@ public class ReflectionUtilTest {
 	public void testGetMethod() throws Exception {
 		List<Method> methods = ReflectionUtil.getMethods(DerivedClass.class);
 
-		Assert.assertEquals(13, methods.size());
+		assertEquals(13, methods.size());
 
 	}
 
@@ -123,26 +124,26 @@ public class ReflectionUtilTest {
 	public void testGetAllFieldsAssinableFrom() throws Exception {
 		List<Field> allFieldsAssinableFromBoolean = ReflectionUtil.getAllFieldsAssinableFrom(Boolean.class,
 		        DerivedClass.class);
-		Assert.assertEquals(1, allFieldsAssinableFromBoolean.size());
+		assertEquals(1, allFieldsAssinableFromBoolean.size());
 
 		List<Field> allFieldsAssinableFromList = ReflectionUtil.getAllFieldsAssinableFrom(List.class,
 		        DerivedClass.class);
-		Assert.assertEquals(2, allFieldsAssinableFromList.size());
+		assertEquals(2, allFieldsAssinableFromList.size());
 
 		List<Field> allFieldsAssinableFromCollection = ReflectionUtil.getAllFieldsAssinableFrom(Collection.class,
 		        DerivedClass.class);
-		Assert.assertEquals(2, allFieldsAssinableFromCollection.size());
+		assertEquals(2, allFieldsAssinableFromCollection.size());
 
 		List<Field> allFieldsAssinableFromString = ReflectionUtil.getAllFieldsAssinableFrom(String.class,
 		        DerivedClass.class);
-		Assert.assertEquals(2, allFieldsAssinableFromString.size());
+		assertEquals(2, allFieldsAssinableFromString.size());
 	}
 
 	@Test
 	public void testCreateInstance() throws Exception {
-		Assert.assertNotNull(ReflectionUtil.createInstance(MockitoProvider.class));
+		assertNotNull(ReflectionUtil.createInstance(MockitoProvider.class));
 
-		Assert.assertEquals("Hello", ReflectionUtil.createInstance(String.class, "Hello"));
+		assertEquals("Hello", ReflectionUtil.createInstance(String.class, "Hello"));
 	}
 
 	@Test(expected = Exception.class)
@@ -165,11 +166,11 @@ public class ReflectionUtilTest {
 
 		Object resultPrimatives = ReflectionUtil.invokeMethod(derivedClass, "testInvokeWithPrimitive", intValue,
 		        floatValue, charValue, booleanValue, longValue, byteValue, shortValue, doubleValue);
-		Assert.assertEquals(true, resultPrimatives);
+		assertEquals(true, resultPrimatives);
 
 		Object resultObjects = ReflectionUtil.invokeMethod(derivedClass, "testInvokeWithObjects", intValue, floatValue,
 		        charValue, booleanValue, longValue, byteValue, shortValue, doubleValue);
-		Assert.assertEquals(true, resultObjects);
+		assertEquals(true, resultObjects);
 	}
 
 	@Test
@@ -187,11 +188,11 @@ public class ReflectionUtilTest {
 
 		Object resultPrimatives = ReflectionUtil.invokeMethod(derivedClass, "testInvokeWithPrimitive", intValue,
 		        floatValue, charValue, booleanValue, longValue, byteValue, shortValue, doubleValue);
-		Assert.assertEquals(true, resultPrimatives);
+		assertEquals(true, resultPrimatives);
 
 		Object resultObjects = ReflectionUtil.invokeMethod(derivedClass, "testInvokeWithObjects", intValue, floatValue,
 		        charValue, booleanValue, longValue, byteValue, shortValue, doubleValue);
-		Assert.assertEquals(true, resultObjects);
+		assertEquals(true, resultObjects);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

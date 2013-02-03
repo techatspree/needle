@@ -1,9 +1,10 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.lang.annotation.Annotation;
-import java.util.Set;
 
-import junit.framework.Assert;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -14,22 +15,22 @@ import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
 
 public class NeedleConfigurationTest {
 
-	@Test
-	public void testGetMockProviderClass_Default() throws Exception {
-		Assert.assertEquals(EasyMockProvider.class.getName(), NeedleConfiguration.getMockProviderClassName());
-	}
+    @Test
+    public void testGetMockProviderClass_Default() throws Exception {
+        assertEquals(EasyMockProvider.class.getName(), NeedleConfiguration.getMockProviderClassName());
+    }
 
-	@Test
-	public void testDBOperationClassName_NoDefaults() throws Exception {
-		Assert.assertEquals(HSQLDeleteOperation.class.getName(), NeedleConfiguration.getDBOperationClassName());
-	}
+    @Test
+    public void testDBOperationClassName_NoDefaults() throws Exception {
+        assertEquals(HSQLDeleteOperation.class.getName(), NeedleConfiguration.getDBOperationClassName());
+    }
 
-	@Test
-	public void testGetCustomInjectionAnnotations() throws Exception {
-		Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
-		Assert.assertEquals(2, customInjectionAnnotations.size());
-		Assert.assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation1.class));
-		Assert.assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation2.class));
-	}
+    @Test
+    public void testGetCustomInjectionAnnotations() throws Exception {
+        Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
+        assertEquals(2, customInjectionAnnotations.size());
+        assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation1.class));
+        assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation2.class));
+    }
 
 }

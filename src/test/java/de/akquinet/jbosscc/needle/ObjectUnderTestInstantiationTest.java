@@ -9,15 +9,12 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class ObjectUnderTestInstantiationTest {
 
-	@SuppressWarnings("unused")
 	@ObjectUnderTest
 	private MyEjbComponent ejbComponent;
 
-	@SuppressWarnings("unused")
 	@ObjectUnderTest
 	private PrivateConstructorClass privateConstructorClass;
 
-	@SuppressWarnings("unused")
 	@ObjectUnderTest
 	private NoArgsConstructorClass noArgsConstructorClass;
 

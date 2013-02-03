@@ -1,9 +1,9 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import static org.junit.Assert.assertSame;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.Assert;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class InjectionPriorityTest {
 
   @Test
   public void testInjectionProviderPriority() throws Exception {
-    Assert.assertSame(map, component.getMap());
+    assertSame(map, component.getMap());
   }
 
 }

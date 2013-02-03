@@ -2,8 +2,10 @@ package de.akquinet.jbosscc.needle.db;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
@@ -18,7 +20,7 @@ public class DatabaseTestcaseConfigurationTest {
 	public void testEntityManager_Close() throws Exception {
 		DatabaseTestcaseConfiguration databaseRuleConfiguration = new DatabaseTestcaseConfiguration("TestDataModel");
 		EntityManager entityManager = databaseRuleConfiguration.getEntityManager();
-		Assert.assertNotNull(entityManager);
+		assertNotNull(entityManager);
 
 		entityManager.close();
 	}
@@ -30,26 +32,26 @@ public class DatabaseTestcaseConfigurationTest {
 		JdbcConfiguration jdbcConfiguration = (JdbcConfiguration) ReflectionUtil.invokeMethod(
 		        databaseRuleConfiguration, "getEntityManagerFactoryProperties");
 
-		Assert.assertNotNull(jdbcConfiguration);
+		assertNotNull(jdbcConfiguration);
 	}
 
 
 	@Test
 	public void testLookupDBOperationClassClass_HSQLDeleteOperation() throws Exception {
 		Class<? extends AbstractDBOperation> dbDialectClass = DatabaseTestcaseConfiguration.lookupDBOperationClass(HSQLDeleteOperation.class.getName());
-		Assert.assertEquals(HSQLDeleteOperation.class, dbDialectClass);
+		assertEquals(HSQLDeleteOperation.class, dbDialectClass);
 	}
 
 	@Test
 	public void testLookupDBOperationClassClass_UnknownClass() throws Exception {
 		Class<? extends AbstractDBOperation> dbDialectClass = DatabaseTestcaseConfiguration.lookupDBOperationClass("unknowm");
-		Assert.assertNull(dbDialectClass);
+		assertNull(dbDialectClass);
 	}
 
 	@Test
 	public void testLookupDBOperationClassClass_Null() throws Exception {
 		Class<? extends AbstractDBOperation> dbDialectClass = DatabaseTestcaseConfiguration.lookupDBOperationClass(null);
-		Assert.assertNull(dbDialectClass);
+		assertNull(dbDialectClass);
 	}
 
 
@@ -58,12 +60,12 @@ public class DatabaseTestcaseConfigurationTest {
 		DatabaseTestcaseConfiguration configuration = new DatabaseTestcaseConfiguration();
 		AbstractDBOperation operation = configuration.createDBOperation(ExecuteScriptOperation.class);
 
-		Assert.assertTrue(operation instanceof ExecuteScriptOperation);
+		assertTrue(operation instanceof ExecuteScriptOperation);
 	}
 
 	@Test
 	public void testCreateDBOperation_Null() throws Exception {
 		DatabaseTestcaseConfiguration configuration = new DatabaseTestcaseConfiguration();
-		Assert.assertNull(configuration.createDBOperation(null));
+		assertNull(configuration.createDBOperation(null));
 	}
 }

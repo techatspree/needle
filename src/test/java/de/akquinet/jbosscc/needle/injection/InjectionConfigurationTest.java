@@ -1,6 +1,9 @@
 package de.akquinet.jbosscc.needle.injection;
 
-import junit.framework.Assert;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -12,23 +15,23 @@ public class InjectionConfigurationTest {
 
 	@Test
 	public void testLookupMockProviderClass() throws Exception {
-		Assert.assertNotNull(MockitoProvider.class.getName());
+		assertNotNull(MockitoProvider.class.getName());
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void testLookupMockProviderClass_WithUnknownClass() throws Exception {
-		Assert.assertNull(InjectionConfiguration.lookupMockProviderClass("unknown"));
+		assertNull(InjectionConfiguration.lookupMockProviderClass("unknown"));
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void testLookupMockProviderClass_Null() throws Exception {
-		Assert.assertNull(InjectionConfiguration.lookupMockProviderClass(null));
+		assertNull(InjectionConfiguration.lookupMockProviderClass(null));
 	}
 
 	@Test
 	public void testCreateMockProvider() throws Exception {
 		InjectionConfiguration injectionConfiguration = new InjectionConfiguration();
 		MockProvider mockProvider = injectionConfiguration.createMockProvider();
-		Assert.assertTrue(mockProvider instanceof EasyMockProvider);
+		assertTrue(mockProvider instanceof EasyMockProvider);
 	}
 }

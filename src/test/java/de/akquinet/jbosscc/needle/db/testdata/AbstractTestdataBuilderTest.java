@@ -1,10 +1,12 @@
 package de.akquinet.jbosscc.needle.db.testdata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import javax.persistence.EntityManager;
-
-import junit.framework.Assert;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,14 +26,14 @@ public class AbstractTestdataBuilderTest {
 
 		List<Address> loadAllObjects = databaseRule.getTransactionHelper().loadAllObjects(Address.class);
 
-		Assert.assertEquals(1, loadAllObjects.size());
+		assertEquals(1, loadAllObjects.size());
 	}
 
 	@Test
 	public void testHasEntityManager() throws Exception {
 
-		Assert.assertFalse(new AddressTestDataBuilder().hasEntityManager());
-		Assert.assertTrue(new AddressTestDataBuilder(databaseRule.getEntityManager()).hasEntityManager());
+		assertFalse(new AddressTestDataBuilder().hasEntityManager());
+		assertTrue(new AddressTestDataBuilder(databaseRule.getEntityManager()).hasEntityManager());
 
 	}
 
@@ -42,9 +44,9 @@ public class AbstractTestdataBuilderTest {
 
 	@Test
 	public void testGetId() throws Exception {
-		Assert.assertEquals(0, new AddressTestDataBuilder().getId());
-		Assert.assertEquals(1, new AddressTestDataBuilder().getId());
-		Assert.assertEquals(2, new AddressTestDataBuilder().getId());
+		assertEquals(0, new AddressTestDataBuilder().getId());
+		assertEquals(1, new AddressTestDataBuilder().getId());
+		assertEquals(2, new AddressTestDataBuilder().getId());
 	}
 
 	@Test(expected = RuntimeException.class)
