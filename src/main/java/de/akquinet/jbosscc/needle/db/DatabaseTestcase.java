@@ -143,6 +143,8 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
         if (operation != null) {
             operation.tearDownOperation();
         }
+        
+        getEntityManager().clear();
     }
 
     /**
