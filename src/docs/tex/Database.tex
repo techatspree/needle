@@ -99,9 +99,10 @@ A common issue in unit tests that access a real database is their effect on the 
 They usually expect a certain state at the beginning and alter it at runtime which of course will affect other tests.
 To address that problem optional Database operations can be executed before and after test execution, in order to clean up or set up data. 
 
-There are two implementations:
+There are the following implementations:
 \begin{enumerate}
 \item \verb|de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation| \\ Execute sql scripts during test setup and tear down. A before.sql and after.sql script must be provided on the classpath.
+\item \verb|de.akquinet.jbosscc.needle.db.operation.h2.H2DeleteOperation| \\ Deletes all rows of all tables of the h2 database.
 \item \verb|de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation| \\ Deletes all rows of all tables of the hsql database.
 \end{enumerate}
 
@@ -216,4 +217,41 @@ final User user = new UserTestdataBuilder(databaseRule.getEntityManager()).withU
 
 \begin{lstlisting}[language={JAVA},caption=Build an transient User object]
 final User user = new UserTestdataBuilder().withUsername("user").build()
+\end{lstlisting}
+
+\section{Injectable database resources}
+
+In combination with the NeedleRule, the following resources are injectable by the DatabaseTestcase.
+
+\begin{enumerate}
+\item EntityManager
+\item EntityManagerFactory
+\item EntityTransaction
+\item TransactionHelper
+\end{enumerate}
+
+Example:
+
+\begin{lstlisting}[language={JAVA},caption=Injectable database resources]
+public class UserDaoTest{
+    
+    @Rule
+    public NeedleRule needleRule = new NeedleRule().withOuter(new DatabaseRule());
+    
+   //  Alternative:
+   // 
+   //  @Rule
+   //  public DatabaseRule dbRule = new DatabaseRule()
+   //  @Rule
+   //  public NeedleRule needleRule = new NeedleRule(dbRule);
+   
+
+    @Inject
+    private EntityManager entityManager;
+
+    @Inject
+    private EntityTransaction entityTransaction;
+
+    //…
+}
 \end{lstlisting}

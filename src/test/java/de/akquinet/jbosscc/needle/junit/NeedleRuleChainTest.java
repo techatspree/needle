@@ -25,7 +25,7 @@ public class NeedleRuleChainTest {
     public void testDtabaseRuleInjection() throws Exception {
         assertNotNull(entityManager);
     }
-    
+
     @Test
     public void testMockCreation() throws Exception {
         assertNotNull(runnableMock);
