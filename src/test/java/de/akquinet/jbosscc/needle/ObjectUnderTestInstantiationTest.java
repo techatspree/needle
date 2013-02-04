@@ -9,40 +9,39 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class ObjectUnderTestInstantiationTest {
 
-	@ObjectUnderTest
-	private MyEjbComponent ejbComponent;
+    @ObjectUnderTest
+    private MyEjbComponent ejbComponent;
 
-	@ObjectUnderTest
-	private PrivateConstructorClass privateConstructorClass;
+    @ObjectUnderTest
+    private PrivateConstructorClass privateConstructorClass;
 
-	@ObjectUnderTest
-	private NoArgsConstructorClass noArgsConstructorClass;
+    @ObjectUnderTest
+    private NoArgsConstructorClass noArgsConstructorClass;
 
-	@Test(expected = ObjectUnderTestInstantiationException.class)
-	public void testInterfaceInstantiation() throws Exception {
+    @Test(expected = ObjectUnderTestInstantiationException.class)
+    public void testInterfaceInstantiation() throws Exception {
 
-		NeedleTestcase needleTestcase = new NeedleTestcase() {
-		};
+        setInstanceIfNotNull("ejbComponent");
+    }
 
-		Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField("ejbComponent");
-		ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, this);
-	}
+    @Test(expected = ObjectUnderTestInstantiationException.class)
+    public void testNoArgConstuctorInstantiation() throws Exception {
+        setInstanceIfNotNull("noArgsConstructorClass");
+    }
 
-	@Test(expected = ObjectUnderTestInstantiationException.class)
-	public void testNoArgConstuctorInstantiation() throws Exception {
-		NeedleTestcase needleTestcase = new NeedleTestcase() {
-		};
+    @Test(expected = ObjectUnderTestInstantiationException.class)
+    public void testNoPublicConstuctorInstantiation() throws Exception {
+        setInstanceIfNotNull("privateConstructorClass");
+    }
 
-		Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField("noArgsConstructorClass");
-		ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, this);
-	}
+    private void setInstanceIfNotNull(final String fieldName) throws Exception {
+        NeedleTestcase needleTestcase = new NeedleTestcase() {
+        };
 
-	@Test(expected = ObjectUnderTestInstantiationException.class)
-	public void testNoPublicConstuctorInstantiation() throws Exception {
-		NeedleTestcase needleTestcase = new NeedleTestcase() {
-		};
+        Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField(fieldName);
+        ObjectUnderTest objectUnderTestAnnotation = field.getAnnotation(ObjectUnderTest.class);
 
-		Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField("privateConstructorClass");
-		ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, this);
-	}
+        ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, objectUnderTestAnnotation, this);
+
+    }
 }

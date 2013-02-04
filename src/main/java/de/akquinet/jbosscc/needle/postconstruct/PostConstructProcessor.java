@@ -1,99 +1,94 @@
 package de.akquinet.jbosscc.needle.postconstruct;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.akquinet.jbosscc.needle.ObjectUnderTestInstantiationException;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
- * Handles execution of postConstruction methods of instances marked with @ObjectUnderTest(postProcess=true)
+ * Handles execution of postConstruction methods of instances marked with
+ * {@link ObjectUnderTest#postConstruct()}
+ * 
+ * <p>
+ * Note: Behavior in an inheritance hierarchy is not defined by the common
+ * annotations specification
+ * </p>
  * 
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
+ * @author Heinz Wilming, akquinet AG (heinz.wilming@akquinet.de)
  * 
  */
 public class PostConstructProcessor {
 
-	/**
-	 * internal Container of all Annotations that trigger invocation
-	 */
-	private final List<Class<? extends Annotation>> postConstructAnnotations = new ArrayList<Class<? extends Annotation>>();
+    /**
+     * internal Container of all Annotations that trigger invocation
+     */
+    private final Set<Class<?>> postConstructAnnotations;
 
-	/**
-	 * initializes list of annotations via {@link ReflectionUtil#forName(String)}
-	 * 
-	 * @param postConstructFQNs
-	 */
-	@SuppressWarnings("unchecked")
-	public PostConstructProcessor(final String... postConstructFQNs) {
-		for (final String postConstructFQN : postConstructFQNs) {
-			final Class<? extends Annotation> postConstructClass = (Class<? extends Annotation>) ReflectionUtil.forName(postConstructFQN);
-			if (postConstructClass != null) {
-				postConstructAnnotations.add(postConstructClass);
-			}
-		}
-	}
+    public PostConstructProcessor(final Set<Class<?>> postConstructAnnotations) {
+        this.postConstructAnnotations = new HashSet<Class<?>>(postConstructAnnotations);
+    }
 
-	public List<Class<? extends Annotation>> getPostConstructAnnotations() {
-		return postConstructAnnotations;
-	}
+    /**
+     * calls process(instance) only if field is marked with
+     * 
+     * @ObjectUNderTest(postConstruct=true), else ignored
+     * 
+     * @param objectUnderTestField
+     * @param instance
+     * @throws ObjectUnderTestInstantiationException
+     */
+    public void process(final ObjectUnderTest objectUnderTestAnnotation, final Object instance)
+            throws ObjectUnderTestInstantiationException {
+        if (objectUnderTestAnnotation != null && objectUnderTestAnnotation.postConstruct()) {
+            process(instance);
+        }
+    }
 
-	/**
-	 * calls process(instance) only if field is marked with @ObjectUNderTest(postProcess=true), else ignored
-	 * 
-	 * @param objectUnderTestField
-	 * @param instance
-	 * @throws ObjectUnderTestInstantiationException
-	 */
-	public void process(final Field objectUnderTestField, final Object instance) throws ObjectUnderTestInstantiationException {
-		if (isConfiguredForPostConstruct(objectUnderTestField)) {
-			process(instance);
-		}
-	}
+    /**
+     * invokes @PostConstruct annotated method
+     * 
+     * @param instance
+     * @throws ObjectUnderTestInstantiationException
+     */
+    private void process(final Object instance) throws ObjectUnderTestInstantiationException {
 
-	/**
-	 * invokes the annotated methods without validation of ObjectUnderTest-annotation
-	 * 
-	 * @param instance
-	 * @throws ObjectUnderTestInstantiationException
-	 */
-	void process(final Object instance) throws ObjectUnderTestInstantiationException {
-		for (final Method postConstructMethod : filterPostConstructMethods(instance)) {
-			try {
-				ReflectionUtil.invokeMethod(postConstructMethod, instance);
-			} catch (final Exception e) {
-				throw new ObjectUnderTestInstantiationException("error executing postConstruction method '" + postConstructMethod.getName() + "'", e);
-			}
-		}
-	}
+        List<Method> postConstructMethods = getPostConstructMethods(instance);
 
-	/**
-	 * @param instance
-	 * @return all instance methods that are marked as postConstruction methods
-	 */
-	public List<Method> filterPostConstructMethods(final Object instance) {
-		final List<Method> postConstructMethods = new ArrayList<Method>();
+        for (Method method : postConstructMethods) {
+            try {
+                ReflectionUtil.invokeMethod(method, instance);
+            } catch (final Exception e) {
+                throw new ObjectUnderTestInstantiationException("error executing postConstruction method '"
+                        + method.getName() + "'", e);
+            }
 
-		for (final Method method : ReflectionUtil.getMethods(instance.getClass())) {
-			for (final Class<? extends Annotation> postConstructAnnotation : postConstructAnnotations) {
-				if (method.getAnnotation(postConstructAnnotation) != null) {
-					postConstructMethods.add(method);
-				}
-			}
+        }
+    }
 
-		}
-		return postConstructMethods;
-	}
+    /**
+     * @param instance
+     * @return all instance methods that are marked as postConstruction methods
+     */
+    @SuppressWarnings("unchecked")
+    private List<Method> getPostConstructMethods(final Object instance) {
+        final List<Method> postConstructMethods = new ArrayList<Method>();
 
-	/**
-	 * @param objectUnderTestField
-	 * @return <code>true</code> if postConstruct is activated. Default is <code>false</code>
-	 */
-	public boolean isConfiguredForPostConstruct(final Field objectUnderTestField) {
-		return objectUnderTestField.getAnnotation(ObjectUnderTest.class).postConstruct();
-	}
+        for (final Class<?> postConstructAnnotation : postConstructAnnotations) {
+            for (final Method method : ReflectionUtil.getMethods(instance.getClass())) {
+                if (method.isAnnotationPresent((Class<Annotation>) postConstructAnnotation)) {
+                    postConstructMethods.add(method);
+                }
+            }
+
+        }
+        return postConstructMethods;
+    }
+
 }

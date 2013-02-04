@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -130,7 +132,7 @@ public final class ReflectionUtil {
     /**
      * 
      * @param class object
-     * @return list of method objects 
+     * @return list of method objects
      * 
      * @see Class#getMethods()
      */
@@ -370,6 +372,18 @@ public final class ReflectionUtil {
     public static Object invokeMethod(final Object object, final String methodName, final Object... arguments)
             throws Exception {
         return invokeMethod(object, object.getClass(), methodName, arguments);
+    }
+
+    public static Set<Class<?>> getClasses(final String... classNames) {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        for (String className : classNames) {
+            final Class<?> classObject = forName(className);
+
+            if (classObject != null) {
+                classes.add(classObject);
+            }
+        }
+        return classes;
     }
 
     /**

@@ -1,15 +1,12 @@
 package de.akquinet.jbosscc.needle.postconstruct;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
+import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
 
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,36 +15,38 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
  * 
- * 
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
  * 
  */
 public class PostConstructProcessorTest {
 
-    public static final String POSTCONSTRUCT_NAME = "javax.annotation.PostConstruct";
+    Runnable runnableMock = EasyMock.createStrictMock(Runnable.class);
 
     /**
      * a dummy class without init()
      */
-    public static class A {
-
-        protected boolean postConstructed = false;
-
+    public class A {
     }
 
     /**
      * a dummy class with init()
      */
-    public static class B extends A {
+    public class B extends A {
 
         @PostConstruct
         public void init() {
-            postConstructed = true;
+            runnableMock.run();
         }
 
     }
 
-    private final PostConstructProcessor postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_NAME);
+    private static final HashSet<Class<?>> ANNOTATIONS = new HashSet<Class<?>>();
+
+    static {
+        ANNOTATIONS.add(PostConstruct.class);
+    }
+
+    private final PostConstructProcessor postConstructProcessor = new PostConstructProcessor(ANNOTATIONS);
 
     // This Processor test does not use the NeeldeRule!
     @ObjectUnderTest(postConstruct = true)
@@ -67,50 +66,35 @@ public class PostConstructProcessorTest {
     }
 
     @Test
-    public void shouldInitializeListOfPostConstructAnnotations() throws Exception {
-        assertFalse(postConstructProcessor.getPostConstructAnnotations().isEmpty());
-        assertTrue(postConstructProcessor.getPostConstructAnnotations().contains(PostConstruct.class));
+    public void testWithoutPostConstructMethod() throws Exception {
+        EasyMock.replay(runnableMock);
+        postConstructProcessor.process(
+                getObjectUnderTestAnnotation("isConfiguredForPostConstructionButDoesNotContainMethod"),
+                isConfiguredForPostConstructionButDoesNotContainMethod);
+        EasyMock.verify(runnableMock);
     }
 
     @Test
-    public void shouldEvaluateAnnotationConfigPostConstruct() {
-        assertTrue(postConstructProcessor.isConfiguredForPostConstruct(getField("isConfiguredForPostConstruction")));
-        assertFalse(postConstructProcessor.isConfiguredForPostConstruct(getField("isNotConfiguredForPostConstruction")));
-    }
+    public void testWithPostConstructMethod() throws Exception {
+        runnableMock.run();
+        EasyMock.replay(runnableMock);
+        postConstructProcessor.process(getObjectUnderTestAnnotation("isConfiguredForPostConstruction"),
+                isConfiguredForPostConstruction);
+        EasyMock.verify(runnableMock);
 
-    private Field getField(final String name) {
-        return ReflectionUtil.getField(getClass(), name);
     }
-
+    
     @Test
-    public void shouldFilterNoMethodsForClassA() throws Exception {
-        assertTrue(postConstructProcessor.filterPostConstructMethods(
-                isConfiguredForPostConstructionButDoesNotContainMethod).isEmpty());
-    }
-
-    @Test
-    public void shouldFilterInitMethodForClassB() throws Exception {
-        final List<Method> postConstructMethods = postConstructProcessor
-                .filterPostConstructMethods(isConfiguredForPostConstruction);
-        assertTrue(postConstructMethods.size() == 1);
-    }
-
-    @Test
-    public void shouldNotProcessInitForA() throws Exception {
-        postConstructProcessor.process(isConfiguredForPostConstructionButDoesNotContainMethod);
-        assertFalse(isConfiguredForPostConstructionButDoesNotContainMethod.postConstructed);
-    }
-
-    @Test
-    public void shouldProcessInitForBIfConfigured() throws Exception {
-        // do not invoke
-        postConstructProcessor.process(getField("isNotConfiguredForPostConstruction"),
+    public void testWithPostConstructMethod_NotConfigured() throws Exception {
+        EasyMock.replay(runnableMock);
+        postConstructProcessor.process(
+                getObjectUnderTestAnnotation("isNotConfiguredForPostConstruction"),
                 isNotConfiguredForPostConstruction);
-        assertFalse(isNotConfiguredForPostConstruction.postConstructed);
+        EasyMock.verify(runnableMock);
+    }
 
-        // do invoke
-        postConstructProcessor.process(getField("isConfiguredForPostConstruction"), isConfiguredForPostConstruction);
-        assertTrue(isConfiguredForPostConstruction.postConstructed);
+    private ObjectUnderTest getObjectUnderTestAnnotation(final String fieldname) {
+        return ReflectionUtil.getField(getClass(), fieldname).getAnnotation(ObjectUnderTest.class);
     }
 
 }

@@ -98,10 +98,11 @@ public abstract class NeedleTestcase {
 
         for (final Field field : fields) {
             LOG.debug("found field {}", field.getName());
+            final ObjectUnderTest objectUnderTestAnnotation = field.getAnnotation(ObjectUnderTest.class);
             try {
-                final Object instance = setInstanceIfNotNull(field, test);
+                final Object instance = setInstanceIfNotNull(field, objectUnderTestAnnotation, test);
                 initInstance(instance);
-                configuration.getPostConstructProcessor().process(field, instance);
+                configuration.getPostConstructProcessor().process(objectUnderTestAnnotation, instance);
             } catch (final InstantiationException e) {
                 LOG.error(e.getMessage(), e);
             } catch (final IllegalAccessException e) {
@@ -203,8 +204,9 @@ public abstract class NeedleTestcase {
 
     }
 
-    private Object setInstanceIfNotNull(final Field field, final Object test) throws Exception {
-        final ObjectUnderTest objectUnderTestAnnotation = field.getAnnotation(ObjectUnderTest.class);
+    private Object setInstanceIfNotNull(final Field field, final ObjectUnderTest objectUnderTestAnnotation,
+            final Object test) throws Exception {
+
         final String id = objectUnderTestAnnotation.id().equals("") ? field.getName() : objectUnderTestAnnotation.id();
         Object instance = ReflectionUtil.getFieldValue(test, field);
 
