@@ -5,7 +5,7 @@
 	<groupId>de.akquinet.jbosscc</groupId>
 	<artifactId>jbosscc-needle</artifactId>
 	<url>http://needle.spree.de</url>
-	<version>2.2</version>
+	<version>2.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Needle</name>
 
@@ -30,7 +30,7 @@
 		<connection>scm:git:git@github.com:akquinet/needle.git</connection>
 		<url>git@github.com:akquinet/needle.git</url>
 		<developerConnection>scm:git:git@github.com:akquinet/needle.git</developerConnection>
-	  <tag>jbosscc-needle-2.2</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<developers>
