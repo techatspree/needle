@@ -1,4 +1,4 @@
-package de.akquinet.jbosscc.needle.junit;
+package de.akquinet.jbosscc.needle.junit.testrule;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -8,13 +8,15 @@ import org.junit.runners.model.Statement;
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 /**
  * JUnit {@link TestRule} for the initialization of the test. The Rule processes
  * and initializes all fields annotated with {@link ObjectUnderTest}.
  * <p/>
- * This is an updated Rule to reflect the API change (MethodRule vs. TestRule) in junit. Using this TestRule
- * implementation has the drawback that the calling test-instance has to be passed when the Rule is created, since the
+ * This is an updated Rule to reflect the API change (MethodRule vs. TestRule)
+ * in junit. Using this TestRule implementation has the drawback that the
+ * calling test-instance has to be passed when the Rule is created, since the
  * new junit api does not pass the caller to the statement execution.<br/>
  * Using this Rule enables the {@link RuleChain}s feature of junit >= 4.10.
  * 
@@ -48,14 +50,10 @@ public class NeedleTestRule extends NeedleTestcase implements TestRule {
     private final Object testInstance;
 
     /**
-     * @param testInstance - target of injection
-     */
-    public NeedleTestRule(final Object testInstance) {
-        this.testInstance = testInstance;
-    }
-
-    /**
-     * @param testInstance - target of injection
+     * @param testInstance
+     *            - target of injection
+     * @param injectionProvider
+     *            - optional custom injection provider
      * @see NeedleTestcase#NeedleTestcase(InjectionProvider...)
      */
     public NeedleTestRule(final Object testInstance, final InjectionProvider<?>... injectionProvider) {
@@ -70,6 +68,7 @@ public class NeedleTestRule extends NeedleTestcase implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 initTestcase(testInstance);
+                base.evaluate();
             }
         };
     }

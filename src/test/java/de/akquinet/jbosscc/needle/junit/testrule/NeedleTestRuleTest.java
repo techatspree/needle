@@ -1,16 +1,15 @@
-package de.akquinet.jbosscc.needle.junit;
+package de.akquinet.jbosscc.needle.junit.testrule;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
+import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.junit.testrule.NeedleTestRule;
 
 public class NeedleTestRuleTest {
 
@@ -34,18 +33,18 @@ public class NeedleTestRuleTest {
     @Rule
     public final NeedleTestRule needle = new NeedleTestRule(this);
 
-    @Before
-    public void setUp() throws Exception {
-        doNothing().when(runnerMock).run();
-    }
-
     @Test
     public void shouldCreateClassAndExecute() {
         assertNotNull(dummyTarget);
         assertNotNull(runnerMock);
 
+        EasyMock.resetToStrict(runnerMock);
+        runnerMock.run();
+
+        EasyMock.replay(runnerMock);
         dummyTarget.execute();
-        verify(runnerMock).run();
+
+        EasyMock.verify(runnerMock);
 
     }
 

@@ -59,8 +59,7 @@ Needle URLs
 
 Needle Home Page:		http://needle.spree.de/
 Downloads:              https://sourceforge.net/projects/jbosscc-needle/
-Forums:                 https://sourceforge.net/projects/jbosscc-needle/forums
 Source Code:            https://github.com/akquinet/needle
-Issue Tracking:         https://sourceforge.net/tracker/?group_id=306915
+Issue Tracking:         https://github.com/akquinet/needle/issues
 
 ================================================================================

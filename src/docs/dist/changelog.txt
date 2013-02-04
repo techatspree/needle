@@ -1,6 +1,14 @@
 Needle Changelog
 ====================
 
+Release Notes - Needle - Version 2.2
+
+** Bug
+	* #7 Multiple mock creation for InjectionTargets with same type
+	
+** Feature Request
+	* #6 junit update to 4.11 and TestRule implementation
+	* #5 Call @PostConstruct on @ObjectUnderTest Instances
 
 Release Notes - Needle - Version 2.1
 
@@ -16,5 +24,7 @@ Release Notes - Needle - Version 2.1
 ** Task
     * [3489127] - Documentation improvement
     * [3489128] - Needle examples
+    
+    
 
 

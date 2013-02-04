@@ -11,6 +11,29 @@ developer may of course instantiate the field herself, too.
 Multiple fields can be annotated with the \verb|@ObjectUnderTest| annotation. The annotation can optionally be configured with the implementation of the type and an id.
 The id may be used for additional injections (explained later). When an object under test is already instantiated, only the dependency injection will be done.
 
+\subsection{PostConstruct lifecycle callback}
+\label{sec:PostConstruct}
+
+During the object under test instantiation it is possible to execute lifecycle methods annotated with PostConstruct. The PostConstruct annotation is used on a method that needs to be executed after dependency injection is done to perform any initialization. By default lifecycle methods are ignored. The execution can be activated by the annotation @ObjectUnderTest.
+
+\begin{lstlisting}[language={JAVA},caption=PostConstruct]
+@Statelesspublic class UserDao {   @PostConstruct   public void init(){      ...   }}
+\end{lstlisting}
+
+\begin{lstlisting}[language={JAVA},caption=PostConstruct Testcase]public class UserDaoTest {   @Rule
+   public NeedleRule needleRule = new NeedleRule();
+
+   @ObjectUnderTest(postConstruct = true)
+   private UserDao userDao;
+
+   @Test
+   public void test(){
+      ...
+   }	}
+\end{lstlisting}
+
+Note: The behavior in an inheritance hierarchy is not defined by the common annotations specification.
+
 \section{Injection}
 \label{sec:Injection}
 

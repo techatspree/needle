@@ -16,7 +16,7 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
  * {@link ObjectUnderTest#postConstruct()}
  * 
  * <p>
- * Note: Behavior in an inheritance hierarchy is not defined by the common
+ * Note: Behaviour in an inheritance hierarchy is not defined by the common
  * annotations specification
  * </p>
  * 

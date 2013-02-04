@@ -37,7 +37,6 @@ Needle is licensed under GNU Lesser General Public License (LGPL) version 2.1 or
 
 * Needle Home Page:	http://needle.spree.de/
 * Downloads:				https://sourceforge.net/projects/jbosscc-needle/
-* Forums:					https://sourceforge.net/projects/jbosscc-needle/forums
 * Source Code:			https://github.com/akquinet/needle
 * Issue Tracking:			https://github.com/akquinet/needle/issues
 
