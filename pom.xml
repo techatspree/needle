@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.akquinet.jbosscc</groupId>
@@ -26,11 +27,10 @@
 		</license>
 	</licenses>
 
-
 	<scm>
-		<connection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</connection>
-		<developerConnection>scm:svn:https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</developerConnection>
-		<url>https://jbosscc-needle.svn.sourceforge.net/svnroot/jbosscc-needle/trunk</url>
+		<connection>scm:git:git@github.com:akquinet/needle.git</connection>
+		<url>git@github.com:akquinet/needle.git</url>
+		<developerConnection>scm:git:git@github.com:akquinet/needle.git</developerConnection>
 	</scm>
 
 	<developers>
@@ -62,8 +62,8 @@
 	</organization>
 
 	<issueManagement>
-		<system>http://sourceforge.net/</system>
-		<url>https://sourceforge.net/tracker/?group_id=306915</url>
+		<system>https://github.com/</system>
+		<url>https://github.com/akquinet/needle/issues</url>
 	</issueManagement>
 
 	<properties>
@@ -486,7 +486,7 @@
 											<tex4htCommandArg />
 											<tex4htCommandArg>-interaction=nonstopmode
 												--src-specials
-                                    </tex4htCommandArg>
+											</tex4htCommandArg>
 										</tex4htCommandArgs>
 									</settings>
 								</configuration>

@@ -23,8 +23,8 @@ as well as the execution of unit tests.**
 
 * Provide Utilities for Reflection, e.g. for private method invocation or field access
 
-* Needle can be used with JUnit or TestNG.
-* It supports EasyMock and Mockito out-of-the-box.
+* Needle can be used with [JUnit](http://www.junit.org/) or [TestNG](http://testng.org/).
+* It supports [EasyMock](http://www.easymock.org/) and [Mockito](http://code.google.com/p/mockito/) out-of-the-box.
 
 
 
@@ -39,5 +39,5 @@ Needle is licensed under GNU Lesser General Public License (LGPL) version 2.1 or
 * Downloads:				https://sourceforge.net/projects/jbosscc-needle/
 * Forums:					https://sourceforge.net/projects/jbosscc-needle/forums
 * Source Code:			https://github.com/akquinet/needle
-* Issue Tracking:			https://sourceforge.net/tracker/?group_id=306915
+* Issue Tracking:			https://github.com/akquinet/needle/issues
 
