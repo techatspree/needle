@@ -5,10 +5,15 @@ Release Notes - Needle - Version 2.2
 
 ** Bug
 	* #7 Multiple mock creation for InjectionTargets with same type
+	* #9 EntityManager not cleared after db operation
 	
 ** Feature Request
+	* #8 trim configuration properties
 	* #6 junit update to 4.11 and TestRule implementation
 	* #5 Call @PostConstruct on @ObjectUnderTest Instances
+	* #3 small improvements 
+	* #2 it should be possible to let needle inject the transaction into the test case
+	* #1 JavaDoc fixes
 
 Release Notes - Needle - Version 2.1
 
