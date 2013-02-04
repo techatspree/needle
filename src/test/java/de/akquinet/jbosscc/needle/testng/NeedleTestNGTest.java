@@ -1,7 +1,9 @@
 package de.akquinet.jbosscc.needle.testng;
 
 import javax.ejb.SessionContext;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -14,62 +16,75 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 
 public class NeedleTestNGTest extends AbstractNeedleTestcase {
 
-
-	public NeedleTestNGTest() {
-		super(new DatabaseTestcase("TestDataModel"));
-	}
-
-	@ObjectUnderTest
-	private MyComponentBean componentBean;
-
-	@InjectIntoMany
-	@ObjectUnderTest(implementation = MyEjbComponentBean.class)
-	private MyEjbComponent ejbComponent;
-
-	private MyComponentBean componentBean1 = new MyComponentBean();
-
-	@ObjectUnderTest
-	private MyComponentBean componentBean2 = componentBean1;
-
-	@Test
-	public void testBasicInjection() throws Exception {
-		Assert.assertNotNull(componentBean);
-		Assert.assertNotNull(componentBean.getEntityManager());
-		Assert.assertNotNull(componentBean.getMyEjbComponent());
-
-		MyEjbComponent mock = (MyEjbComponent) getInjectedObject(MyEjbComponent.class);
-
-		Assert.assertNotNull(mock);
-	}
-
-	@Test
-	public void testResourceMock() throws Exception {
-		SessionContext sessionContextMock = (SessionContext) getInjectedObject(SessionContext.class);
-		Assert.assertNotNull(sessionContextMock);
-
-		Assert.assertNotNull(getInjectedObject("queue1"));
-		Assert.assertNotNull(getInjectedObject("queue2"));
-	}
-
-	@Test
-	public void testInjectInto() throws Exception {
-		Assert.assertNotNull(ejbComponent);
-		Assert.assertEquals(ejbComponent, componentBean.getMyEjbComponent());
-	}
-
-	@Test
-	public void testInitInstance() throws Exception {
-		Assert.assertEquals(componentBean1, componentBean2);
-	}
-
-
-	@Test
-	public void testGetEntityManager() throws Exception {
-	    EntityManager entityManager = getEntityManager();
-	    Assert.assertNotNull(entityManager);
+    public NeedleTestNGTest() {
+        super(new DatabaseTestcase("TestDataModel"));
     }
 
+    @ObjectUnderTest
+    private MyComponentBean componentBean;
 
+    @InjectIntoMany
+    @ObjectUnderTest(implementation = MyEjbComponentBean.class)
+    private MyEjbComponent ejbComponent;
 
+    private MyComponentBean componentBean1 = new MyComponentBean();
+
+    @ObjectUnderTest
+    private MyComponentBean componentBean2 = componentBean1;
+
+    @Inject
+    private EntityManager entityManager;
+
+    @Inject
+    private EntityTransaction entityTransaction;
+
+    @Test
+    public void testBasicInjection() throws Exception {
+        Assert.assertNotNull(componentBean);
+        Assert.assertNotNull(componentBean.getEntityManager());
+        Assert.assertNotNull(componentBean.getMyEjbComponent());
+
+        MyEjbComponent mock = (MyEjbComponent) getInjectedObject(MyEjbComponent.class);
+
+        Assert.assertNotNull(mock);
+    }
+
+    @Test
+    public void testResourceMock() throws Exception {
+        SessionContext sessionContextMock = (SessionContext) getInjectedObject(SessionContext.class);
+        Assert.assertNotNull(sessionContextMock);
+
+        Assert.assertNotNull(getInjectedObject("queue1"));
+        Assert.assertNotNull(getInjectedObject("queue2"));
+    }
+
+    @Test
+    public void testInjectInto() throws Exception {
+        Assert.assertNotNull(ejbComponent);
+        Assert.assertEquals(ejbComponent, componentBean.getMyEjbComponent());
+    }
+
+    @Test
+    public void testInitInstance() throws Exception {
+        Assert.assertEquals(componentBean1, componentBean2);
+    }
+
+    @Test
+    public void testGetEntityManager() throws Exception {
+        EntityManager entityManager = getEntityManager();
+        Assert.assertNotNull(entityManager);
+    }
+
+    @Test
+    public void testEntityManagerInjection() throws Exception {
+        Assert.assertNotNull(entityManager);
+        EntityManager entityManager = getEntityManager();
+        Assert.assertSame(this.entityManager, entityManager);
+    }
+
+    @Test
+    public void testEntityTransactionInjection() throws Exception {
+        Assert.assertNotNull(entityTransaction);
+    }
 
 }

@@ -69,7 +69,6 @@ public abstract class NeedleTestcase {
         addInjectionProvider(injectionProvider);
     }
 
-    @Deprecated
     protected final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
         configuration.addInjectionProvider(injectionProvider);
     }
