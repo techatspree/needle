@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.db.operation.hsql;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -42,7 +43,10 @@ public class HSQLDeleteOperation extends AbstractDBOperation {
 		Statement statement = null;
 
 		try {
-			statement = getConnection().createStatement();
+		    Connection connection = getConnection();
+		    
+			statement = connection.createStatement();
+			
 
 			disableReferentialIntegrity(statement);
 			List<String> tableNames = getTableNames(getConnection());
@@ -67,6 +71,7 @@ public class HSQLDeleteOperation extends AbstractDBOperation {
 
 				closeConnection();
 			} catch (Exception e) {
+			    rollback();
 				LOG.error(e.getMessage(), e);
 			}
 		}

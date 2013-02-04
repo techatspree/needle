@@ -20,9 +20,25 @@
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
 
 		</properties>
+	</persistence-unit>
 
+	<persistence-unit name="H2TestDataModel"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
+		<class>de.akquinet.jbosscc.needle.db.Person</class>
+		<class>de.akquinet.jbosscc.needle.db.Address</class>
 
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+			<property name="javax.persistence.jdbc.user" value="sa" />
+			<property name="javax.persistence.jdbc.password" value="" />
+
+			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+
+		</properties>
 	</persistence-unit>
 </persistence>
 
