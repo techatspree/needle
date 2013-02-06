@@ -1,4 +1,3 @@
-
 Need(le) for Speed - Effective Unit Testing for Java EE
 ================================
 
@@ -39,4 +38,10 @@ Needle is licensed under GNU Lesser General Public License (LGPL) version 2.1 or
 * Downloads:				https://sourceforge.net/projects/jbosscc-needle/
 * Source Code:			https://github.com/akquinet/needle
 * Issue Tracking:			https://github.com/akquinet/needle/issues
+
+**Release Nodes**
+
+Version 2.2 - https://github.com/akquinet/needle/issues?milestone=1&state=closed
+
+Previous Versions - https://github.com/akquinet/needle/blob/master/src/docs/dist/changelog.txt
 
