@@ -1,3 +1,5 @@
+[![Build Status](https://needle.ci.cloudbees.com/job/Needle/badge/icon)](https://needle.ci.cloudbees.com/job/Needle/)
+
 Need(le) for Speed - Effective Unit Testing for Java EE
 ================================
 [@NeedleProject](https://twitter.com/NeedleProject)
