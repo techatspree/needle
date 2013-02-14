@@ -16,7 +16,9 @@
 	</parent>
 
 	<description>
-        Needle is a lightweight framework for testing Java EE components outside of the container in isolation. It reduces the test setup code by analysing dependencies and automatic injection of mock objects. It will thus maximize the speed of development as well as the execution of unit tests.
+        Needle is a lightweight framework for testing Java EE components outside of the container in isolation. 
+        It reduces the test setup code by analysing dependencies and automatic injection of mock objects. 
+        It will thus maximize the speed of development as well as the execution of unit tests.
     </description>
 
 	<licenses>
@@ -30,8 +32,8 @@
 		<connection>scm:git:git@github.com:akquinet/needle.git</connection>
 		<url>git@github.com:akquinet/needle.git</url>
 		<developerConnection>scm:git:git@github.com:akquinet/needle.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<developers>
 		<developer>
@@ -54,6 +56,13 @@
 			<email>heinz (dot) wilming (at) akquinet.de</email>
 			<organization>akquinet AG</organization>
 		</developer>
+		
+		<developer>
+			<id>jangalinski</id>
+			<name>Jan Galinski</name>
+			<email>jan (dot) galinski (at) holisticon.de</email>
+			<organization>Holisticon AG</organization>
+		</developer>
 	</developers>
 
 	<organization>
@@ -68,31 +77,25 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<slf4j.version>1.6.4</slf4j.version>
 	</properties>
 
-
 	<dependencies>
+		<!-- logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.6.1</version>
+			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.0.Final</version>
-			<optional>true</optional>
-		</dependency>
-
-
+		<!-- testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -108,19 +111,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.6.0.Final</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
 			<version>3.1</version>
 			<optional>true</optional>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -129,10 +124,18 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- jpa/persistence -->
 		<dependency>
-			<groupId>javax.ejb</groupId>
-			<artifactId>ejb-api</artifactId>
-			<version>3.0</version>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.6.0.Final</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -142,21 +145,12 @@
 			<version>1.1</version>
 			<optional>true</optional>
 		</dependency>
-
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
-			<optional>true</optional>
-		</dependency>
-
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>2.2.8</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -164,7 +158,20 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- JEE -->
+		<dependency>
+			<groupId>javax.ejb</groupId>
+			<artifactId>ejb-api</artifactId>
+			<version>3.0</version>
+			<optional>true</optional>
+		</dependency>
 
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.spec.javax.xml.rpc</groupId>
