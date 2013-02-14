@@ -1,10 +1,15 @@
+[![Build Status](https://needle.ci.cloudbees.com/job/Needle/badge/icon)](https://needle.ci.cloudbees.com/job/Needle/)
+
 Need(le) for Speed - Effective Unit Testing for Java EE
 ================================
+[@NeedleProject](https://twitter.com/NeedleProject)
 
 **Needle is a lightweight framework for testing Java EE components outside of the
 container in isolation. It reduces the test setup code by analysing dependencies and
 automatic injection of mock objects. It will thus maximize the speed of development
 as well as the execution of unit tests.**
+
+![Needle Coffee Cups](http://needle.spree.de/public/images/needle-coffeecups-380px.jpg)
 
 
 **Core Features:**
