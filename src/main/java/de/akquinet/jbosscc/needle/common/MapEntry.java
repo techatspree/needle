@@ -2,28 +2,27 @@ package de.akquinet.jbosscc.needle.common;
 
 public class MapEntry<K, V> implements java.util.Map.Entry<K, V> {
 
-	private K key;
-	private V value;
+    private K key;
+    private V value;
 
-	public MapEntry(K key, V value) {
-	    super();
-	    this.key = key;
-	    this.value = value;
+    public MapEntry(final K key, final V value) {
+        this.key = key;
+        this.value = value;
     }
 
-	@Override
-	public K getKey() {
-		return key;
-	}
+    @Override
+    public K getKey() {
+        return key;
+    }
 
-	@Override
-	public V getValue() {
-		return value;
-	}
+    @Override
+    public V getValue() {
+        return value;
+    }
 
-	@Override
-	public V setValue(Object value) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public V setValue(final Object value) {
+        throw new UnsupportedOperationException();
+    }
 
 }
