@@ -17,6 +17,12 @@ public class NeedleConfigurationTest {
 
     private final NeedleConfiguration needleConfiguration = NeedleConfiguration.get();
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenConfigurationIsInitializedMoreThenOnce() throws Exception {
+        NeedleConfiguration.init();
+        NeedleConfiguration.init();
+    }
+
     @Test
     public void testGetMockProviderClass_Default() throws Exception {
         assertEquals(EasyMockProvider.class.getName(), needleConfiguration.getMockProviderClassName());
