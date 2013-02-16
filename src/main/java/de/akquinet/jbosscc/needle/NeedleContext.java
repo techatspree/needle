@@ -12,50 +12,49 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class NeedleContext {
 
-	private final Object test;
-	private final Map<String, Object> objectUnderTestMap = new HashMap<String, Object>();
-	private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
+    private final Object test;
+    private final Map<String, Object> objectUnderTestMap = new HashMap<String, Object>();
+    private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
-	private final Map<Class<? extends Annotation>, List<Field>> annotatedTestcaseFieldMap;
+    private final Map<Class<? extends Annotation>, List<Field>> annotatedTestcaseFieldMap;
 
-	public NeedleContext(final Object test) {
-		super();
-		this.test = test;
-		annotatedTestcaseFieldMap = ReflectionUtil.getAllAnnotatedFields(test.getClass());
-	}
+    public NeedleContext(final Object test) {
+        this.test = test;
+        annotatedTestcaseFieldMap = ReflectionUtil.getAllAnnotatedFields(test.getClass());
+    }
 
-	public Object getTest() {
-		return test;
-	}
+    public Object getTest() {
+        return test;
+    }
 
-	@SuppressWarnings("unchecked")
-	public <X> X getInjectedObject(final Object key) {
-		return (X) injectedObjectMap.get(key);
-	}
+    @SuppressWarnings("unchecked")
+    public <X> X getInjectedObject(final Object key) {
+        return (X)injectedObjectMap.get(key);
+    }
 
-	public Collection<Object> getInjectedObjects() {
-		return injectedObjectMap.values();
-	}
+    public Collection<Object> getInjectedObjects() {
+        return injectedObjectMap.values();
+    }
 
-	public void addInjectedObject(final Object key, final Object instance) {
-		injectedObjectMap.put(key, instance);
-	}
+    public void addInjectedObject(final Object key, final Object instance) {
+        injectedObjectMap.put(key, instance);
+    }
 
-	public Object getObjectUnderTest(String id) {
-		return objectUnderTestMap.get(id);
-	}
+    public Object getObjectUnderTest(final String id) {
+        return objectUnderTestMap.get(id);
+    }
 
-	public void addObjectUnderTest(final String id, final Object instance) {
-		objectUnderTestMap.put(id, instance);
-	}
+    public void addObjectUnderTest(final String id, final Object instance) {
+        objectUnderTestMap.put(id, instance);
+    }
 
-	public Collection<Object> getObjectsUnderTest() {
-		return objectUnderTestMap.values();
-	}
+    public Collection<Object> getObjectsUnderTest() {
+        return objectUnderTestMap.values();
+    }
 
-	public List<Field> getAnnotatedTestcaseFields(final Class<? extends Annotation> annotationClass){
-		final List<Field> value = annotatedTestcaseFieldMap.get(annotationClass);
-		return value != null ? value : new ArrayList<Field>();
-	}
+    public List<Field> getAnnotatedTestcaseFields(final Class<? extends Annotation> annotationClass) {
+        final List<Field> value = annotatedTestcaseFieldMap.get(annotationClass);
+        return value != null ? value : new ArrayList<Field>();
+    }
 
 }
