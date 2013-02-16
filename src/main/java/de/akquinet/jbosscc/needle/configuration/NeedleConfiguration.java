@@ -60,8 +60,12 @@ public final class NeedleConfiguration {
     private final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses;
     private final Set<Class<Annotation>> customInjectionAnnotations;
 
+    /**
+     * @see #NeedleConfiguration(Map)
+     * @param resourceName - properties file to load, default is "needle.properties"
+     */
     private NeedleConfiguration(final String resourceName) {
-        this(new ConfigurationLoader(resourceName).getConfigProperties());
+        this(ConfigurationLoader.loadResourceAndDefault(resourceName));
     }
 
     private NeedleConfiguration(final Map<String, String> configurationProperties) {
@@ -69,7 +73,6 @@ public final class NeedleConfiguration {
         this.customInjectionAnnotations = lookupClasses(CUSTOM_INJECTION_ANNOTATIONS_KEY);
         this.customInjectionProviderClasses = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
         LOG.info("Needle Configuration: {}", toString());
-
     }
 
     /**
