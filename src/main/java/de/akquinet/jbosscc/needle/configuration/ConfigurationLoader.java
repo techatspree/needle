@@ -3,7 +3,6 @@ package de.akquinet.jbosscc.needle.configuration;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -51,14 +50,33 @@ public final class ConfigurationLoader {
         return configProperties.containsKey(key);
     }
 
-    static Map<String, String> loadResourceAndDefault(final String name) {
-        final Map<String, String> result = new HashMap<String, String>();
+    private static Map<String, String> loadDefaults() {
+        final Map<String, String> defaults = new HashMap<String, String>();
 
+        try {
+            final ResourceBundle defaultResourceBundle = ResourceBundle.getBundle(DEFAULT_CONFIGURATION_FILENAME);
+            for (final String key : defaultResourceBundle.keySet()) {
+                addKeyValuePair(defaults, key, defaultResourceBundle.getString(key));
+            }
+
+            final URL url = ConfigurationLoader.class.getResource("/" + DEFAULT_CONFIGURATION_FILENAME + ".properties");
+            LOG.debug("loaded default Needle config from: {}", url);
+        }
+        catch (final Exception e1) {
+            LOG.error("should never happen", e1);
+
+            throw new RuntimeException("should never happen", e1);
+        }
+        return defaults;
+    }
+
+    public static Map<String, String> loadResourceAndDefault(final String name) {
+
+        final Map<String, String> result = loadDefaults();
         try {
             final ResourceBundle customBundle = ResourceBundle.getBundle(name);
 
-            for (final Enumeration<String> keys = customBundle.getKeys(); keys.hasMoreElements();) {
-                final String key = keys.nextElement();
+            for (final String key : customBundle.keySet()) {
                 addKeyValuePair(result, key, customBundle.getString(key));
             }
 
@@ -67,26 +85,6 @@ public final class ConfigurationLoader {
         }
         catch (final Exception e) {
             LOG.debug("found no custom configuration");
-        }
-
-        try {
-
-            final ResourceBundle defaultResourceBundle = ResourceBundle.getBundle(DEFAULT_CONFIGURATION_FILENAME);
-
-            for (final Enumeration<String> keys = defaultResourceBundle.getKeys(); keys.hasMoreElements();) {
-                final String key = keys.nextElement();
-                if (!result.containsKey(key)) {
-                    addKeyValuePair(result, key, defaultResourceBundle.getString(key));
-                }
-            }
-
-            final URL url = NeedleConfiguration.class.getResource("/" + DEFAULT_CONFIGURATION_FILENAME + ".properties");
-            LOG.debug("loaded default Needle config from: {}", url);
-        }
-        catch (final Exception e1) {
-            LOG.error("should never happen", e1);
-
-            throw new RuntimeException("should never happen", e1);
         }
 
         return result;
