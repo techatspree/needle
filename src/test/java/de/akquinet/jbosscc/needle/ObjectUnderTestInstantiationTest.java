@@ -7,6 +7,7 @@ import org.junit.Test;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
+@SuppressWarnings("unused")
 public class ObjectUnderTestInstantiationTest {
 
     @ObjectUnderTest
@@ -35,11 +36,10 @@ public class ObjectUnderTestInstantiationTest {
     }
 
     private void setInstanceIfNotNull(final String fieldName) throws Exception {
-        NeedleTestcase needleTestcase = new NeedleTestcase() {
-        };
+        final NeedleTestcase needleTestcase = new NeedleTestcase() {};
 
-        Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField(fieldName);
-        ObjectUnderTest objectUnderTestAnnotation = field.getAnnotation(ObjectUnderTest.class);
+        final Field field = ObjectUnderTestInstantiationTest.class.getDeclaredField(fieldName);
+        final ObjectUnderTest objectUnderTestAnnotation = field.getAnnotation(ObjectUnderTest.class);
 
         ReflectionUtil.invokeMethod(needleTestcase, "setInstanceIfNotNull", field, objectUnderTestAnnotation, this);
 
