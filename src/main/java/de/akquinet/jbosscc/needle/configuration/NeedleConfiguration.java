@@ -1,7 +1,10 @@
 package de.akquinet.jbosscc.needle.configuration;
 
+import static de.akquinet.jbosscc.needle.common.Preconditions.checkState;
+
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -13,61 +16,60 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
  * Loads an holds the configuration of needle.
- * 
  * Needle configuration can be defined in <b>needle.properties</b> files
- * anywhere in the classpath.
+ * anywhere in the classpath. If required, the user can provide a custom resource name.
  */
 public final class NeedleConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
+    static final String ALREADY_INITITIALIZED = "NeedleConfiguration.INSTANCE is already inititialized!";
 
-    private static final ConfigurationLoader CONFIGURATION_LOADER = new ConfigurationLoader();
+    private static NeedleConfiguration INSTANCE = null;
 
-    static final String JDBC_URL_KEY = "jdbc.url";
-    static final String JDBC_DRIVER_KEY = "jdbc.driver";
-    static final String JDBC_USER_KEY = "jdbc.user";
-    static final String JDBC_PASSWORD_KEY = "jdbc.password";
-
-    static final String DB_OPERATION_KEY = "db.operation";
-
-    static final String PERSISTENCEUNIT_NAME_KEY = "persistenceUnit.name";
-
-    static final String MOCK_PROVIDER_KEY = "mock.provider";
-
-    static final String HIBERNATE_CFG_FILENAME_KEY = "hibernate.cfg.filename";
-
-    static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
-
-    static final Set<Class<Annotation>> CUSTOM_INJECTION_ANNOTATIONS = lookupClasses(CUSTOM_INJECTION_ANNOTATIONS_KEY);
-
-    static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
-
-    static final Set<Class<InjectionProvider<?>>> CUSTOM_INJECTION_PROVIDER_CLASSES = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
-
-    static final String JDBC_URL = CONFIGURATION_LOADER.getProperty(JDBC_URL_KEY);
-
-    static final String JDBC_DRIVER = CONFIGURATION_LOADER.getProperty(JDBC_DRIVER_KEY);
-
-    static final String JDBC_USER = CONFIGURATION_LOADER.getProperty(JDBC_USER_KEY);
-
-    static final String JDBC_PASSWORD = CONFIGURATION_LOADER.getProperty(JDBC_PASSWORD_KEY);
-
-    static final String DB_OPERATION_CLASS_NAME = CONFIGURATION_LOADER.getProperty(DB_OPERATION_KEY);
-
-    static final String MOCK_PROVIDER_CLASS_NAME = CONFIGURATION_LOADER.getProperty(MOCK_PROVIDER_KEY);
-
-    static {
-        StringBuilder builder = new StringBuilder();
-        builder.append("\nPU_NAME=").append(getPersistenceunitName());
-        builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
-        builder.append("\nDB_OPERATION=").append(getDBOperationClassName());
-        builder.append("\nMOCK_PROVIDER=").append(getMockProviderClassName());
-
-        LOG.info("Needle Configuration: {}", builder.toString());
+    public static NeedleConfiguration init() {
+        return init(ConfigurationLoader.CUSTOM_CONFIGURATION_FILENAME);
     }
 
-    private NeedleConfiguration() {
-        super();
+    public static NeedleConfiguration init(final String resourceName) {
+        checkState(INSTANCE == null, ALREADY_INITITIALIZED);
+        INSTANCE = new NeedleConfiguration(resourceName);
+        return get();
+    }
+
+    public static NeedleConfiguration get() {
+        if (INSTANCE == null) {
+            LOG.info("NeedleConfiguration.INSTANCE is null. Initializing with default: init()");
+            INSTANCE = init();
+        }
+        return INSTANCE;
+    }
+
+    public static final String MOCK_PROVIDER_KEY = "mock.provider";
+    public static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
+    public static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
+    public static final String DB_OPERATION_KEY = "db.operation";
+    public static final String PERSISTENCEUNIT_NAME_KEY = "persistenceUnit.name";
+    public static final String JDBC_URL_KEY = "jdbc.url";
+    public static final String JDBC_DRIVER_KEY = "jdbc.driver";
+    public static final String JDBC_USER_KEY = "jdbc.user";
+    public static final String JDBC_PASSWORD_KEY = "jdbc.password";
+    public static final String HIBERNATE_CFG_FILENAME_KEY = "hibernate.cfg.filename";
+
+    private final Map<String, String> configurationProperties;
+
+    private final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses;
+    private final Set<Class<Annotation>> customInjectionAnnotations;
+
+    private NeedleConfiguration(final String resourceName) {
+        this(new ConfigurationLoader(resourceName).getConfigProperties());
+    }
+
+    private NeedleConfiguration(final Map<String, String> configurationProperties) {
+        this.configurationProperties = configurationProperties;
+        this.customInjectionAnnotations = lookupClasses(CUSTOM_INJECTION_ANNOTATIONS_KEY);
+        this.customInjectionProviderClasses = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+        LOG.info("Needle Configuration: {}", toString());
+
     }
 
     /**
@@ -75,8 +77,8 @@ public final class NeedleConfiguration {
      * 
      * @return jpa persistence unit name
      */
-    public static String getPersistenceunitName() {
-        return CONFIGURATION_LOADER.getProperty(PERSISTENCEUNIT_NAME_KEY);
+    public String getPersistenceunitName() {
+        return configurationProperties.get(PERSISTENCEUNIT_NAME_KEY);
     }
 
     /**
@@ -84,8 +86,8 @@ public final class NeedleConfiguration {
      * 
      * @return name of hibernate.cfg file
      */
-    public static String getHibernateCfgFilename() {
-        return CONFIGURATION_LOADER.getProperty(HIBERNATE_CFG_FILENAME_KEY);
+    public String getHibernateCfgFilename() {
+        return configurationProperties.get(HIBERNATE_CFG_FILENAME_KEY);
     }
 
     /**
@@ -93,24 +95,24 @@ public final class NeedleConfiguration {
      * 
      * @return database operation class name or null
      */
-    public static String getDBOperationClassName() {
-        return DB_OPERATION_CLASS_NAME;
+    public String getDBOperationClassName() {
+        return configurationProperties.get(DB_OPERATION_KEY);
     }
 
-    public static String getJdbcUrl() {
-        return JDBC_URL;
+    public String getJdbcUrl() {
+        return configurationProperties.get(JDBC_URL_KEY);
     }
 
-    public static String getJdbcDriver() {
-        return JDBC_DRIVER;
+    public String getJdbcDriver() {
+        return configurationProperties.get(JDBC_DRIVER_KEY);
     }
 
-    public static String getJdbcUser() {
-        return JDBC_USER;
+    public String getJdbcUser() {
+        return configurationProperties.get(JDBC_USER_KEY);
     }
 
-    public static String getJdbcPassword() {
-        return JDBC_PASSWORD;
+    public String getJdbcPassword() {
+        return configurationProperties.get(JDBC_PASSWORD_KEY);
     }
 
     /**
@@ -118,8 +120,8 @@ public final class NeedleConfiguration {
      * 
      * @return mock provider class name or null
      */
-    public static String getMockProviderClassName() {
-        return MOCK_PROVIDER_CLASS_NAME;
+    public String getMockProviderClassName() {
+        return configurationProperties.get(MOCK_PROVIDER_KEY);
     }
 
     /**
@@ -128,8 +130,8 @@ public final class NeedleConfiguration {
      * 
      * @return a {@link Set} of {@link Annotation} classes
      */
-    public static Set<Class<Annotation>> getCustomInjectionAnnotations() {
-        return CUSTOM_INJECTION_ANNOTATIONS;
+    public Set<Class<Annotation>> getCustomInjectionAnnotations() {
+        return customInjectionAnnotations;
     }
 
     /**
@@ -137,12 +139,12 @@ public final class NeedleConfiguration {
      * 
      * @return a {@link Set} of {@link InjectionProvider} classes
      */
-    public static Set<Class<InjectionProvider<?>>> getCustomInjectionProviderClasses() {
-        return CUSTOM_INJECTION_PROVIDER_CLASSES;
+    public Set<Class<InjectionProvider<?>>> getCustomInjectionProviderClasses() {
+        return customInjectionProviderClasses;
     }
 
-    private static <T> Set<Class<T>> lookupClasses(final String key) {
-        final String classesList = CONFIGURATION_LOADER.containsKey(key) ? CONFIGURATION_LOADER.getProperty(key) : "";
+    private <T> Set<Class<T>> lookupClasses(final String key) {
+        final String classesList = configurationProperties.containsKey(key) ? configurationProperties.get(key) : "";
 
         final Set<Class<T>> result = new HashSet<Class<T>>();
         final StringTokenizer tokenizer = new StringTokenizer(classesList, ",");
@@ -153,18 +155,32 @@ public final class NeedleConfiguration {
                 token = tokenizer.nextToken();
 
                 @SuppressWarnings("unchecked")
-                final Class<T> clazz = (Class<T>) ReflectionUtil.forName(token);
+                final Class<T> clazz = (Class<T>)ReflectionUtil.forName(token);
 
                 if (clazz != null) {
                     result.add(clazz);
-                } else {
+                }
+                else {
                     LOG.warn("could not load class {}", token);
                 }
-            } catch (Exception e) {
+            }
+            catch (final Exception e) {
                 LOG.warn("could not load class " + token, e);
             }
         }
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("\nPU_NAME=").append(getPersistenceunitName());
+        builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
+        builder.append("\nDB_OPERATION=").append(getDBOperationClassName());
+        builder.append("\nMOCK_PROVIDER=").append(getMockProviderClassName());
+
+        return builder.toString();
+    }
+
 }
