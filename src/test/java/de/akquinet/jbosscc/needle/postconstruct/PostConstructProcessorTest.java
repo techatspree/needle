@@ -14,19 +14,17 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
- * 
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
- * 
  */
 public class PostConstructProcessorTest {
 
-    Runnable runnableMock = EasyMock.createStrictMock(Runnable.class);
+    private Runnable runnableMock = EasyMock.createStrictMock(Runnable.class);
+    private Runnable secondRunnableMock = EasyMock.createStrictMock(Runnable.class);
 
     /**
      * a dummy class without init()
      */
-    public class A {
-    }
+    public class A {}
 
     /**
      * a dummy class with init()
@@ -36,6 +34,18 @@ public class PostConstructProcessorTest {
         @PostConstruct
         public void init() {
             runnableMock.run();
+        }
+
+    }
+
+    /**
+     * a dummy class with init()
+     */
+    public class C extends B {
+
+        @PostConstruct
+        public void initC() {
+            secondRunnableMock.run();
         }
 
     }
@@ -60,6 +70,10 @@ public class PostConstructProcessorTest {
     @ObjectUnderTest
     private B isNotConfiguredForPostConstruction = new B();
 
+    // This Processor test does not use the NeeldeRule!
+    @ObjectUnderTest(postConstruct = true)
+    private C instanceAndParentClassHavePostconstructMethods = new C();
+
     @Before
     public void setUp() {
         assertNotNull(postConstructProcessor);
@@ -83,7 +97,7 @@ public class PostConstructProcessorTest {
         EasyMock.verify(runnableMock);
 
     }
-    
+
     @Test
     public void testWithPostConstructMethod_NotConfigured() throws Exception {
         EasyMock.replay(runnableMock);
@@ -91,6 +105,17 @@ public class PostConstructProcessorTest {
                 getObjectUnderTestAnnotation("isNotConfiguredForPostConstruction"),
                 isNotConfiguredForPostConstruction);
         EasyMock.verify(runnableMock);
+    }
+
+    @Test
+    public void shouldCallPostConstructOnInstanceAndParent() throws Exception {
+        runnableMock.run();
+        secondRunnableMock.run();
+        EasyMock.replay(runnableMock, secondRunnableMock);
+
+        postConstructProcessor.process(getObjectUnderTestAnnotation("instanceAndParentClassHavePostconstructMethods"),
+                instanceAndParentClassHavePostconstructMethods);
+        EasyMock.verify(runnableMock, secondRunnableMock);
     }
 
     private ObjectUnderTest getObjectUnderTestAnnotation(final String fieldname) {
