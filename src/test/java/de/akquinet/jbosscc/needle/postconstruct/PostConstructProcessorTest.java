@@ -39,7 +39,7 @@ public class PostConstructProcessorTest {
     }
 
     /**
-     * a dummy class with init()
+     * used to test postconstruct hierarchy
      */
     public class C extends B {
 
