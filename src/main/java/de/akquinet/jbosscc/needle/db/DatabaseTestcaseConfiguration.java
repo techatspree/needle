@@ -17,116 +17,121 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 final class DatabaseTestcaseConfiguration {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcaseConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseTestcaseConfiguration.class);
 
-	/**
-	 * The name of a JDBC driver key to use to connect to the database.
-	 */
-	private static final String JDBC_DRIVER_KEY = "javax.persistence.jdbc.driver";
+    /**
+     * The name of a JDBC driver key to use to connect to the database.
+     */
+    private static final String JDBC_DRIVER_KEY = "javax.persistence.jdbc.driver";
 
-	/**
-	 * The JDBC connection url key to use to connect to the database.
-	 */
-	private static final String JDBC_URL_KEY = "javax.persistence.jdbc.url";
+    /**
+     * The JDBC connection url key to use to connect to the database.
+     */
+    private static final String JDBC_URL_KEY = "javax.persistence.jdbc.url";
 
-	/**
-	 * The JDBC connection user name key.
-	 */
-	private static final String JDBC_USER_KEY = "javax.persistence.jdbc.user";
+    /**
+     * The JDBC connection user name key.
+     */
+    private static final String JDBC_USER_KEY = "javax.persistence.jdbc.user";
 
-	/**
-	 * The JDBC connection password key.
-	 */
-	private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
+    /**
+     * The JDBC connection password key.
+     */
+    private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
 
-	private static final Class<? extends AbstractDBOperation> DB_OPERATION_CLASS = lookupDBOperationClass(NeedleConfiguration
-	        .getDBOperationClassName());
+    private final NeedleConfiguration needleConfiguration = NeedleConfiguration.get();
 
-	private final AbstractDBOperation dbOperation;
+    private final AbstractDBOperation dbOperation;
 
-	private final PersistenceConfigurationFactory configuration;
+    private final PersistenceConfigurationFactory configuration;
 
-	private DatabaseTestcaseConfiguration(final PersistenceConfigurationFactory configuratiorn) {
-		this.configuration = configuratiorn;
-		dbOperation = createDBOperation(DB_OPERATION_CLASS);
-	}
+    private DatabaseTestcaseConfiguration(final PersistenceConfigurationFactory configuratiorn) {
+        this.configuration = configuratiorn;
+        this.dbOperation = createDBOperation(lookupDBOperationClass(needleConfiguration.getDBOperationClassName()));
+    }
 
-	DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
-		this(new PersistenceConfigurationFactory(clazzes));
+    DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
+        this(new PersistenceConfigurationFactory(clazzes));
 
-	}
+    }
 
-	DatabaseTestcaseConfiguration(final String persistenceUnitName) {
-		this(new PersistenceConfigurationFactory(persistenceUnitName));
+    DatabaseTestcaseConfiguration(final String persistenceUnitName) {
+        this(new PersistenceConfigurationFactory(persistenceUnitName));
 
-	}
+    }
 
-	DatabaseTestcaseConfiguration() {
-		this(NeedleConfiguration.getPersistenceunitName());
-	}
+    DatabaseTestcaseConfiguration() {
+        this(NeedleConfiguration.get().getPersistenceunitName());
+    }
 
-	EntityManager getEntityManager() {
-		return configuration.getEntityManager();
-	}
+    EntityManager getEntityManager() {
+        return configuration.getEntityManager();
+    }
 
-	EntityManagerFactory getEntityManagerFactory() {
-		return configuration.getEntityManagerFactory();
-	}
+    EntityManagerFactory getEntityManagerFactory() {
+        return configuration.getEntityManagerFactory();
+    }
 
-	DBOperation getDBOperation() {
-		return dbOperation;
-	}
+    DBOperation getDBOperation() {
+        return dbOperation;
+    }
 
-	AbstractDBOperation createDBOperation(final Class<? extends AbstractDBOperation> dbOperationClass) {
+    AbstractDBOperation createDBOperation(final Class<? extends AbstractDBOperation> dbOperationClass) {
 
-		if (dbOperationClass != null) {
-			try {
-				return ReflectionUtil.createInstance(dbOperationClass, getJdbcComfiguration());
-			} catch (Exception e) {
-				LOG.warn("could not create a new instance of configured db operation {}, {}", dbOperationClass, e.getMessage());
-				LOG.debug(e.getMessage(), e);
-			}
-		} else {
-			LOG.info("no db operation configured");
-		}
+        if (dbOperationClass != null) {
+            try {
+                return ReflectionUtil.createInstance(dbOperationClass, getJdbcComfiguration());
+            }
+            catch (final Exception e) {
+                LOG.warn("could not create a new instance of configured db operation {}, {}", dbOperationClass, e.getMessage());
+                LOG.debug(e.getMessage(), e);
+            }
+        }
+        else {
+            LOG.info("no db operation configured");
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
-		try {
-			if (dbOperation != null) {
-				return (Class<? extends AbstractDBOperation>) Class.forName(dbOperation);
-			}
+    @SuppressWarnings("unchecked")
+    static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
+        try {
+            if (dbOperation != null) {
+                return (Class<? extends AbstractDBOperation>)Class.forName(dbOperation);
+            }
 
-		} catch (Exception e) {
-			LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
-		}
+        }
+        catch (final Exception e) {
+            LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private JdbcConfiguration getJdbcComfiguration() throws Exception {
-		if (NeedleConfiguration.getJdbcDriver() != null && NeedleConfiguration.getJdbcUrl() != null) {
-			return new JdbcConfiguration(NeedleConfiguration.getJdbcUrl(), NeedleConfiguration.getJdbcDriver(),
-			        NeedleConfiguration.getJdbcUser(), NeedleConfiguration.getJdbcPassword());
-		}
+    private JdbcConfiguration getJdbcComfiguration() throws Exception {
+        if (needleConfiguration.getJdbcDriver() != null && needleConfiguration.getJdbcUrl() != null) {
+            return new JdbcConfiguration(needleConfiguration.getJdbcUrl(),
+                    needleConfiguration.getJdbcDriver(),
+                    needleConfiguration.getJdbcUser(),
+                    needleConfiguration.getJdbcPassword());
+        }
 
-		return getEntityManagerFactoryProperties();
+        return getEntityManagerFactoryProperties();
 
-	}
+    }
 
-	private JdbcConfiguration getEntityManagerFactoryProperties() throws Exception {
-		try {
-			final Map<String, Object> properties = getEntityManagerFactory().getProperties();
+    private JdbcConfiguration getEntityManagerFactoryProperties() throws Exception {
+        try {
+            final Map<String, Object> properties = getEntityManagerFactory().getProperties();
 
-			return new JdbcConfiguration((String) properties.get(JDBC_URL_KEY),
-			        (String) properties.get(JDBC_DRIVER_KEY), (String) properties.get(JDBC_USER_KEY),
-			        (String) properties.get(JDBC_PASSWORD_KEY));
-		} catch (Exception e) {
-			throw new Exception("error while loading jdbc configuration properties form EntityManagerFactory", e);
-		}
-	}
+            return new JdbcConfiguration((String)properties.get(JDBC_URL_KEY),
+                    (String)properties.get(JDBC_DRIVER_KEY), (String)properties.get(JDBC_USER_KEY),
+                    (String)properties.get(JDBC_PASSWORD_KEY));
+        }
+        catch (final Exception e) {
+            throw new Exception("error while loading jdbc configuration properties form EntityManagerFactory", e);
+        }
+    }
 
 }

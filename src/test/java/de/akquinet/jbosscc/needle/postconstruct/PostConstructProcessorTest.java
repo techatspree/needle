@@ -1,8 +1,12 @@
 package de.akquinet.jbosscc.needle.postconstruct;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -14,19 +18,17 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
- * 
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
- * 
  */
 public class PostConstructProcessorTest {
 
-    Runnable runnableMock = EasyMock.createStrictMock(Runnable.class);
+    private Runnable runnableMock = EasyMock.createStrictMock(Runnable.class);
+    private Runnable secondRunnableMock = EasyMock.createStrictMock(Runnable.class);
 
     /**
      * a dummy class without init()
      */
-    public class A {
-    }
+    public class A {}
 
     /**
      * a dummy class with init()
@@ -34,14 +36,25 @@ public class PostConstructProcessorTest {
     public class B extends A {
 
         @PostConstruct
-        public void init() {
+        protected void init() {
             runnableMock.run();
         }
 
     }
 
-    private static final HashSet<Class<?>> ANNOTATIONS = new HashSet<Class<?>>();
+    /**
+     * used to test postconstruct hierarchy
+     */
+    public class C extends B {
 
+        @PostConstruct
+        public void initC() {
+            secondRunnableMock.run();
+        }
+
+    }
+
+    private static final HashSet<Class<?>> ANNOTATIONS = new HashSet<Class<?>>();
     static {
         ANNOTATIONS.add(PostConstruct.class);
     }
@@ -59,6 +72,10 @@ public class PostConstructProcessorTest {
     // This Processor test does not use the NeeldeRule!
     @ObjectUnderTest
     private B isNotConfiguredForPostConstruction = new B();
+
+    // This Processor test does not use the NeeldeRule!
+    @ObjectUnderTest(postConstruct = true)
+    private C instanceAndParentClassHavePostconstructMethods = new C();
 
     @Before
     public void setUp() {
@@ -83,7 +100,7 @@ public class PostConstructProcessorTest {
         EasyMock.verify(runnableMock);
 
     }
-    
+
     @Test
     public void testWithPostConstructMethod_NotConfigured() throws Exception {
         EasyMock.replay(runnableMock);
@@ -91,6 +108,23 @@ public class PostConstructProcessorTest {
                 getObjectUnderTestAnnotation("isNotConfiguredForPostConstruction"),
                 isNotConfiguredForPostConstruction);
         EasyMock.verify(runnableMock);
+    }
+
+    @Test
+    public void shouldCallPostConstructOnInstanceAndParent() throws Exception {
+        runnableMock.run();
+        secondRunnableMock.run();
+        EasyMock.replay(runnableMock, secondRunnableMock);
+
+        postConstructProcessor.process(getObjectUnderTestAnnotation("instanceAndParentClassHavePostconstructMethods"),
+                instanceAndParentClassHavePostconstructMethods);
+        EasyMock.verify(runnableMock, secondRunnableMock);
+    }
+
+    @Test
+    public void shouldFindTwoPostconstructMethodsForC() throws Exception {
+        final Set<Method> methods = postConstructProcessor.getPostConstructMethods(C.class);
+        assertThat(methods.size(), is(2));
     }
 
     private ObjectUnderTest getObjectUnderTestAnnotation(final String fieldname) {
