@@ -1,8 +1,12 @@
 package de.akquinet.jbosscc.needle.postconstruct;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -32,7 +36,7 @@ public class PostConstructProcessorTest {
     public class B extends A {
 
         @PostConstruct
-        public void init() {
+        protected void init() {
             runnableMock.run();
         }
 
@@ -51,7 +55,6 @@ public class PostConstructProcessorTest {
     }
 
     private static final HashSet<Class<?>> ANNOTATIONS = new HashSet<Class<?>>();
-
     static {
         ANNOTATIONS.add(PostConstruct.class);
     }
@@ -116,6 +119,12 @@ public class PostConstructProcessorTest {
         postConstructProcessor.process(getObjectUnderTestAnnotation("instanceAndParentClassHavePostconstructMethods"),
                 instanceAndParentClassHavePostconstructMethods);
         EasyMock.verify(runnableMock, secondRunnableMock);
+    }
+
+    @Test
+    public void shouldFindTwoPostconstructMethodsForC() throws Exception {
+        final Set<Method> methods = postConstructProcessor.getPostConstructMethods(C.class);
+        assertThat(methods.size(), is(2));
     }
 
     private ObjectUnderTest getObjectUnderTestAnnotation(final String fieldname) {
