@@ -2,9 +2,8 @@ package de.akquinet.jbosscc.needle.postconstruct;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import de.akquinet.jbosscc.needle.ObjectUnderTestInstantiationException;
@@ -12,34 +11,32 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
- * Handles execution of postConstruction methods of instances marked with
- * {@link ObjectUnderTest#postConstruct()}
- * 
+ * Handles execution of postConstruction methods of instances marked with {@link ObjectUnderTest#postConstruct()}
  * <p>
- * Note: Behavior in an inheritance hierarchy is not defined by the common
- * annotations specification
+ * Note: Behavior in an inheritance hierarchy is not defined by the common annotations specification
  * </p>
  * 
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
  * @author Heinz Wilming, akquinet AG (heinz.wilming@akquinet.de)
- * 
  */
 public class PostConstructProcessor {
 
     /**
      * internal Container of all Annotations that trigger invocation
      */
-    private final Set<Class<?>> postConstructAnnotations;
+    private final Set<Class<? extends Annotation>> postConstructAnnotations = new HashSet<Class<? extends Annotation>>();
 
+    @SuppressWarnings("unchecked")
     public PostConstructProcessor(final Set<Class<?>> postConstructAnnotations) {
-        this.postConstructAnnotations = new HashSet<Class<?>>(postConstructAnnotations);
+        for (final Class<?> annotation : postConstructAnnotations) {
+            this.postConstructAnnotations.add((Class<? extends Annotation>)annotation);
+        }
     }
 
     /**
      * calls process(instance) only if field is marked with
      * 
      * @ObjectUNderTest(postConstruct=true), else ignored
-     * 
      * @param objectUnderTestField
      * @param instance
      * @throws ObjectUnderTestInstantiationException
@@ -59,12 +56,13 @@ public class PostConstructProcessor {
      */
     private void process(final Object instance) throws ObjectUnderTestInstantiationException {
 
-        List<Method> postConstructMethods = getPostConstructMethods(instance);
+        final Set<Method> postConstructMethods = getPostConstructMethods(instance.getClass());
 
-        for (Method method : postConstructMethods) {
+        for (final Method method : postConstructMethods) {
             try {
                 ReflectionUtil.invokeMethod(method, instance);
-            } catch (final Exception e) {
+            }
+            catch (final Exception e) {
                 throw new ObjectUnderTestInstantiationException("error executing postConstruction method '"
                         + method.getName() + "'", e);
             }
@@ -76,19 +74,12 @@ public class PostConstructProcessor {
      * @param instance
      * @return all instance methods that are marked as postConstruction methods
      */
-    @SuppressWarnings("unchecked")
-    private List<Method> getPostConstructMethods(final Object instance) {
-        final List<Method> postConstructMethods = new ArrayList<Method>();
+    Set<Method> getPostConstructMethods(final Class<?> type) {
+        final Set<Method> postConstructMethods = new LinkedHashSet<Method>();
 
-        for (final Class<?> postConstructAnnotation : postConstructAnnotations) {
-            for (final Method method : ReflectionUtil.getMethods(instance.getClass())) {
-                if (method.isAnnotationPresent((Class<Annotation>) postConstructAnnotation)) {
-                    postConstructMethods.add(method);
-                }
-            }
-
+        for (final Class<? extends Annotation> postConstructAnnotation : postConstructAnnotations) {
+            postConstructMethods.addAll(ReflectionUtil.getAllMethodsWithAnnotation(type, postConstructAnnotation));
         }
         return postConstructMethods;
     }
-
 }

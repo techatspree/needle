@@ -13,48 +13,49 @@ import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 @Deprecated
 class EJB3Configuration implements PersistenceConfiguration {
 
-	private final EntityManagerFactory factory;
-	private final EntityManager entityManager;
+    private final EntityManagerFactory factory;
+    private final EntityManager entityManager;
 
-	/**
-	 * Creates an {@link EntityManagerFactory} and {@link EntityManager} for the
-	 * given entity classes by using the configured hibernate specific
-	 * configuration file (*cfg.xml).
-	 *
-	 * @param entityClasses
-	 *            the entity classes
-	 */
-	public EJB3Configuration(final Class<?>[] entityClasses) {
-		factory = createEntityManagerFactory(entityClasses);
-		entityManager = EntityManagerProxyFactory.createProxy(factory.createEntityManager());
-	}
+    /**
+     * Creates an {@link EntityManagerFactory} and {@link EntityManager} for the
+     * given entity classes by using the configured hibernate specific
+     * configuration file (*cfg.xml).
+     * 
+     * @param entityClasses
+     *        the entity classes
+     */
+    public EJB3Configuration(final Class<?>[] entityClasses) {
+        factory = createEntityManagerFactory(entityClasses);
+        entityManager = EntityManagerProxyFactory.createProxy(factory.createEntityManager());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public EntityManager getEntityManager() {
-		return entityManager;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public EntityManagerFactory getEntityManagerFactory() {
-		return factory;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EntityManagerFactory getEntityManagerFactory() {
+        return factory;
+    }
 
-	private static EntityManagerFactory createEntityManagerFactory(Class<?>[] entityClasses) {
-		final Ejb3Configuration cfg = new Ejb3Configuration();
+    private static EntityManagerFactory createEntityManagerFactory(final Class<?>[] entityClasses) {
+        final Ejb3Configuration cfg = new Ejb3Configuration();
 
-		// add a regular hibernate.cfg.xml
-		cfg.configure(NeedleConfiguration.getHibernateCfgFilename());
+        // add a regular hibernate.cfg.xml
+        cfg.configure(NeedleConfiguration.get().getHibernateCfgFilename());
 
-		for (Class<?> clazz : entityClasses) {
-			cfg.addAnnotatedClass(clazz);
-		}
+        for (final Class<?> clazz : entityClasses) {
+            cfg.addAnnotatedClass(clazz);
+        }
 
-		return cfg.buildEntityManagerFactory();
+        return cfg.buildEntityManagerFactory();
 
-	}
+    }
 }

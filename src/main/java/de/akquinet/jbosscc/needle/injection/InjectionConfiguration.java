@@ -20,10 +20,10 @@ import de.akquinet.jbosscc.needle.postconstruct.PostConstructProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public final class InjectionConfiguration {
+
     private static final Logger LOG = LoggerFactory.getLogger(InjectionConfiguration.class);
 
-    private static final Set<Class<?>> POSTCONSTRUCT_CLASSES = ReflectionUtil
-            .getClasses("javax.annotation.PostConstruct");
+    private static final Set<Class<?>> POSTCONSTRUCT_CLASSES = ReflectionUtil.getClasses("javax.annotation.PostConstruct");
 
     private static final Class<?> RESOURCE_CLASS = getClass("javax.annotation.Resource");
     private static final Class<?> INJECT_CLASS = getClass("javax.inject.Inject");
@@ -31,8 +31,9 @@ public final class InjectionConfiguration {
     private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
     private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
-    private static final Class<? extends MockProvider> MOCK_PROVIDER_CLASS = lookupMockProviderClass(NeedleConfiguration
-            .getMockProviderClassName());
+    private final NeedleConfiguration needleConfiguration = NeedleConfiguration.get();
+
+    private final Class<? extends MockProvider> mockProviderClass;
 
     // Default InjectionProvider for annotations
     private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
@@ -54,6 +55,7 @@ public final class InjectionConfiguration {
 
     @SuppressWarnings("unchecked")
     public InjectionConfiguration() {
+        mockProviderClass = lookupMockProviderClass(needleConfiguration.getMockProviderClassName());
         mockProvider = createMockProvider();
         postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
 
@@ -96,7 +98,7 @@ public final class InjectionConfiguration {
 
     @SuppressWarnings("unchecked")
     public <T extends MockProvider> T getMockProvider() {
-        return (T) mockProvider;
+        return (T)mockProvider;
     }
 
     public PostConstructProcessor getPostConstructProcessor() {
@@ -114,7 +116,7 @@ public final class InjectionConfiguration {
     }
 
     private void initGlobalInjectionAnnotation() {
-        final Set<Class<Annotation>> customInjectionAnnotations = NeedleConfiguration.getCustomInjectionAnnotations();
+        final Set<Class<Annotation>> customInjectionAnnotations = needleConfiguration.getCustomInjectionAnnotations();
 
         for (final Class<? extends Annotation> annotation : customInjectionAnnotations) {
             addInjectionAnnotation(annotation);
@@ -123,14 +125,14 @@ public final class InjectionConfiguration {
     }
 
     private void initGlobalInjectionProvider() {
-        final Set<Class<InjectionProvider<?>>> customInjectionProviders = NeedleConfiguration
-                .getCustomInjectionProviderClasses();
+        final Set<Class<InjectionProvider<?>>> customInjectionProviders = needleConfiguration.getCustomInjectionProviderClasses();
 
         for (final Class<InjectionProvider<?>> injectionProviderClass : customInjectionProviders) {
             try {
                 final InjectionProvider<?> injection = ReflectionUtil.createInstance(injectionProviderClass);
                 globalInjectionProviderList.add(0, injection);
-            } catch (final Exception e) {
+            }
+            catch (final Exception e) {
                 LOG.warn("could not create an instance of injection provider " + injectionProviderClass, e);
             }
         }
@@ -140,7 +142,7 @@ public final class InjectionConfiguration {
     @SuppressWarnings("unchecked")
     private void addInjectionAnnotation(final Class<?> clazz) {
         if (clazz.isAnnotation()) {
-            injectionAnnotationClasses.add((Class<? extends Annotation>) clazz);
+            injectionAnnotationClasses.add((Class<? extends Annotation>)clazz);
         }
     }
 
@@ -170,9 +172,10 @@ public final class InjectionConfiguration {
     @SuppressWarnings("unchecked")
     <T extends MockProvider> T createMockProvider() {
         try {
-            return (T) MOCK_PROVIDER_CLASS.newInstance();
-        } catch (final Exception e) {
-            throw new RuntimeException("could not create a new instance of mock provider " + MOCK_PROVIDER_CLASS, e);
+            return (T)mockProviderClass.newInstance();
+        }
+        catch (final Exception e) {
+            throw new RuntimeException("could not create a new instance of mock provider " + mockProviderClass, e);
         }
     }
 
@@ -181,9 +184,10 @@ public final class InjectionConfiguration {
 
         try {
             if (mockProviderClassName != null) {
-                return (Class<? extends MockProvider>) Class.forName(mockProviderClassName);
+                return (Class<? extends MockProvider>)Class.forName(mockProviderClassName);
             }
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             throw new RuntimeException("could not load mock provider class: '" + mockProviderClassName + "'", e);
         }
 
