@@ -3,10 +3,7 @@ package de.akquinet.jbosscc.needle.db.transaction;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,18 +12,18 @@ import de.akquinet.jbosscc.needle.db.Address;
 import de.akquinet.jbosscc.needle.db.Person;
 import de.akquinet.jbosscc.needle.db.PersonTestdataBuilder;
 import de.akquinet.jbosscc.needle.db.User;
+import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
 
 public class TransactionHelperTest {
 
-    private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
 
     private TransactionHelper objectUnderTest;
 
     @Before
     public void setup() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("TestDataModel");
-        entityManager = entityManagerFactory.createEntityManager();
+        PersistenceConfigurationFactory persistence = new PersistenceConfigurationFactory("TestDataModel");
+        entityManager = persistence.getEntityManager();
         objectUnderTest = new TransactionHelper(entityManager);
     }
 
@@ -60,16 +57,4 @@ public class TransactionHelperTest {
     public void testLoadAllObjects_WithUnknownEntity() throws Exception {
         objectUnderTest.persist(new Object());
     }
-
-    @After
-    public void tearDown() {
-        if (entityManager != null) {
-            entityManager.close();
-        }
-
-        if (entityManagerFactory != null) {
-            entityManagerFactory.close();
-        }
-    }
-
 }
