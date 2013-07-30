@@ -14,6 +14,7 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.akquinet.jbosscc.needle.NeedleContext;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -84,10 +85,12 @@ public class PostConstructProcessorTest {
 
     @Test
     public void testWithoutPostConstructMethod() throws Exception {
+        NeedleContext context = new NeedleContext(this);
+        ObjectUnderTest objectUnderTestAnnotation = getObjectUnderTestAnnotation("isConfiguredForPostConstructionButDoesNotContainMethod");
+        context.addObjectUnderTest(objectUnderTestAnnotation.id(), isConfiguredForPostConstructionButDoesNotContainMethod, objectUnderTestAnnotation);
+        
         EasyMock.replay(runnableMock);
-        postConstructProcessor.process(
-                getObjectUnderTestAnnotation("isConfiguredForPostConstructionButDoesNotContainMethod"),
-                isConfiguredForPostConstructionButDoesNotContainMethod);
+        postConstructProcessor.process(context);
         EasyMock.verify(runnableMock);
     }
 
@@ -95,8 +98,12 @@ public class PostConstructProcessorTest {
     public void testWithPostConstructMethod() throws Exception {
         runnableMock.run();
         EasyMock.replay(runnableMock);
-        postConstructProcessor.process(getObjectUnderTestAnnotation("isConfiguredForPostConstruction"),
-                isConfiguredForPostConstruction);
+        
+        NeedleContext context = new NeedleContext(this);
+        ObjectUnderTest objectUnderTestAnnotation = getObjectUnderTestAnnotation("isConfiguredForPostConstruction");
+        context.addObjectUnderTest(objectUnderTestAnnotation.id(), isConfiguredForPostConstruction, objectUnderTestAnnotation);
+        
+        postConstructProcessor.process(context);
         EasyMock.verify(runnableMock);
 
     }
@@ -104,9 +111,12 @@ public class PostConstructProcessorTest {
     @Test
     public void testWithPostConstructMethod_NotConfigured() throws Exception {
         EasyMock.replay(runnableMock);
-        postConstructProcessor.process(
-                getObjectUnderTestAnnotation("isNotConfiguredForPostConstruction"),
-                isNotConfiguredForPostConstruction);
+        
+        NeedleContext context = new NeedleContext(this);
+        ObjectUnderTest objectUnderTestAnnotation = getObjectUnderTestAnnotation("isNotConfiguredForPostConstruction");
+        context.addObjectUnderTest(objectUnderTestAnnotation.id(), isNotConfiguredForPostConstruction, objectUnderTestAnnotation);
+        
+        postConstructProcessor.process(context);
         EasyMock.verify(runnableMock);
     }
 
@@ -116,8 +126,12 @@ public class PostConstructProcessorTest {
         secondRunnableMock.run();
         EasyMock.replay(runnableMock, secondRunnableMock);
 
-        postConstructProcessor.process(getObjectUnderTestAnnotation("instanceAndParentClassHavePostconstructMethods"),
-                instanceAndParentClassHavePostconstructMethods);
+        NeedleContext context = new NeedleContext(this);
+        ObjectUnderTest objectUnderTestAnnotation = getObjectUnderTestAnnotation("instanceAndParentClassHavePostconstructMethods");
+        context.addObjectUnderTest(objectUnderTestAnnotation.id(), instanceAndParentClassHavePostconstructMethods, objectUnderTestAnnotation);
+       
+        
+        postConstructProcessor.process(context);
         EasyMock.verify(runnableMock, secondRunnableMock);
     }
 
