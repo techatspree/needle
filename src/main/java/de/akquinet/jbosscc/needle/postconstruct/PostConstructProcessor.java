@@ -6,14 +6,17 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import de.akquinet.jbosscc.needle.NeedleContext;
 import de.akquinet.jbosscc.needle.ObjectUnderTestInstantiationException;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
- * Handles execution of postConstruction methods of instances marked with {@link ObjectUnderTest#postConstruct()}
+ * Handles execution of postConstruction methods of instances marked with
+ * {@link ObjectUnderTest#postConstruct()}
  * <p>
- * Note: Behavior in an inheritance hierarchy is not defined by the common annotations specification
+ * Note: Behavior in an inheritance hierarchy is not defined by the common
+ * annotations specification
  * </p>
  * 
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
@@ -29,22 +32,28 @@ public class PostConstructProcessor {
     @SuppressWarnings("unchecked")
     public PostConstructProcessor(final Set<Class<?>> postConstructAnnotations) {
         for (final Class<?> annotation : postConstructAnnotations) {
-            this.postConstructAnnotations.add((Class<? extends Annotation>)annotation);
+            this.postConstructAnnotations.add((Class<? extends Annotation>) annotation);
         }
     }
 
     /**
-     * calls process(instance) only if field is marked with
+     * calls process(instance) for each object under test, only if field is
+     * marked with
      * 
      * @ObjectUNderTest(postConstruct=true), else ignored
-     * @param objectUnderTestField
-     * @param instance
+     * @param context
+     *            - the NeedleContext
      * @throws ObjectUnderTestInstantiationException
      */
-    public void process(final ObjectUnderTest objectUnderTestAnnotation, final Object instance)
-            throws ObjectUnderTestInstantiationException {
-        if (objectUnderTestAnnotation != null && objectUnderTestAnnotation.postConstruct()) {
-            process(instance);
+
+    public void process(final NeedleContext context) throws ObjectUnderTestInstantiationException {
+        Set<String> objectsUnderTestIds = context.getObjectsUnderTestIds();
+        for (String objectUnderTestId : objectsUnderTestIds) {
+            ObjectUnderTest objectUnderTestAnnotation = context.getObjectUnderTestAnnotation(objectUnderTestId);
+            if (objectUnderTestAnnotation != null && objectUnderTestAnnotation.postConstruct()) {
+                process(context.getObjectUnderTest(objectUnderTestId));
+            }
+
         }
     }
 
@@ -61,8 +70,7 @@ public class PostConstructProcessor {
         for (final Method method : postConstructMethods) {
             try {
                 ReflectionUtil.invokeMethod(method, instance);
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 throw new ObjectUnderTestInstantiationException("error executing postConstruction method '"
                         + method.getName() + "'", e);
             }

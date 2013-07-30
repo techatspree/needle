@@ -1,4 +1,4 @@
-[![Build Status](https://needle.ci.cloudbees.com/job/Needle/badge/icon)](https://needle.ci.cloudbees.com/job/Needle/)
+[![Build Status](https://buildhive.cloudbees.com/job/akquinet/job/needle/badge/icon)](https://buildhive.cloudbees.com/job/akquinet/job/needle/)
 
 Need(le) for Speed - Effective Unit Testing for Java EE
 ================================

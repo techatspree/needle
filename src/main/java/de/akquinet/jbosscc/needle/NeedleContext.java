@@ -7,13 +7,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class NeedleContext {
 
     private final Object test;
     private final Map<String, Object> objectUnderTestMap = new HashMap<String, Object>();
+    private final Map<String, ObjectUnderTest> objectUnderTestAnnotationMap = new HashMap<String, ObjectUnderTest>();
     private final Map<Object, Object> injectedObjectMap = new HashMap<Object, Object>();
 
     private final Map<Class<? extends Annotation>, List<Field>> annotatedTestcaseFieldMap;
@@ -35,6 +38,7 @@ public class NeedleContext {
     public Collection<Object> getInjectedObjects() {
         return injectedObjectMap.values();
     }
+    
 
     public void addInjectedObject(final Object key, final Object instance) {
         injectedObjectMap.put(key, instance);
@@ -43,13 +47,22 @@ public class NeedleContext {
     public Object getObjectUnderTest(final String id) {
         return objectUnderTestMap.get(id);
     }
+    
+    public ObjectUnderTest getObjectUnderTestAnnotation(final String id) {
+        return objectUnderTestAnnotationMap.get(id);
+    }
 
-    public void addObjectUnderTest(final String id, final Object instance) {
+    public void addObjectUnderTest(final String id, final Object instance, final ObjectUnderTest objectUnderTestAnnotation) {
         objectUnderTestMap.put(id, instance);
+        objectUnderTestAnnotationMap.put(id, objectUnderTestAnnotation);
     }
 
     public Collection<Object> getObjectsUnderTest() {
         return objectUnderTestMap.values();
+    }
+    
+    public Set<String> getObjectsUnderTestIds() {
+        return objectUnderTestMap.keySet();
     }
 
     public List<Field> getAnnotatedTestcaseFields(final Class<? extends Annotation> annotationClass) {

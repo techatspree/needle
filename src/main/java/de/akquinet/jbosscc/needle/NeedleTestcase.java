@@ -92,14 +92,12 @@ public abstract class NeedleTestcase {
         final List<Field> fields = context.getAnnotatedTestcaseFields(ObjectUnderTest.class);
 
         LOG.debug("found fields {}", fields);
-
         for (final Field field : fields) {
             LOG.debug("found field {}", field.getName());
             final ObjectUnderTest objectUnderTestAnnotation = field.getAnnotation(ObjectUnderTest.class);
             try {
                 final Object instance = setInstanceIfNotNull(field, objectUnderTestAnnotation, test);
                 initInstance(instance);
-                configuration.getPostConstructProcessor().process(objectUnderTestAnnotation, instance);
             }
             catch (final InstantiationException e) {
                 LOG.error(e.getMessage(), e);
@@ -112,7 +110,17 @@ public abstract class NeedleTestcase {
         mockAnnotationProcessor.process(context, configuration);
         injectionIntoAnnotationProcessor.process(context);
         testcaseInjectionProcessor.process(context, configuration);
+        beforePostConstruct();
+        configuration.getPostConstructProcessor().process(context);
 
+    }
+
+    
+
+    /**
+     * init mocks
+     */
+    protected void beforePostConstruct() {
     }
 
     /**
@@ -238,7 +246,7 @@ public abstract class NeedleTestcase {
             }
         }
 
-        context.addObjectUnderTest(id, instance);
+        context.addObjectUnderTest(id, instance, objectUnderTestAnnotation);
 
         return instance;
 

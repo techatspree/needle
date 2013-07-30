@@ -93,5 +93,4 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
         methodRuleChain.add(0, rule);
         return this;
     }
-
 }
