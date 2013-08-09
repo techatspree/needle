@@ -23,7 +23,7 @@ public final class Preconditions {
      * @param message
      *            text to use as exception message
      * @param parameters
-     *            optional paramaters used in
+     *            optional parameters used in
      *            {@link String#format(String, Object...)}
      */
     public static void checkState(final boolean condition, final String message, final Object... parameters) {
@@ -41,7 +41,7 @@ public final class Preconditions {
      * @param message
      *            text to use as exception message
      * @param parameters
-     *            optional paramaters used in
+     *            optional parameters used in
      *            {@link String#format(String, Object...)
 
      */
