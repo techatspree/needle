@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.inject.Named;
-import javax.inject.Qualifier;
 
 /**
  * Utility class for creating {@link InjectionProvider}s with default behavior.

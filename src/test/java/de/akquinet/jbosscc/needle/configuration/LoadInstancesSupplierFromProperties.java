@@ -13,6 +13,12 @@ import de.akquinet.jbosscc.needle.MyComponent;
 import de.akquinet.jbosscc.needle.injection.CustomMyComponentInjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.junit.testrule.NeedleTestRule;
 
+/**
+ * The needle-mockito properties file sets the custom.instances.supplier.classes
+ * property to {@link CustomMyComponentInjectionProviderInstancesSupplier}. The
+ * test verifies, that the component instance defined in the supplier is used
+ * for injection.
+ */
 public class LoadInstancesSupplierFromProperties {
 
     // load mockito resource and switch back to default after().
