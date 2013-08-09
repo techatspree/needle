@@ -44,17 +44,6 @@ public final class NeedleConfiguration {
         return INSTANCE;
     }
 
-    public static final String MOCK_PROVIDER_KEY = "mock.provider";
-    public static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
-    public static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
-    public static final String DB_OPERATION_KEY = "db.operation";
-    public static final String PERSISTENCEUNIT_NAME_KEY = "persistenceUnit.name";
-    public static final String JDBC_URL_KEY = "jdbc.url";
-    public static final String JDBC_DRIVER_KEY = "jdbc.driver";
-    public static final String JDBC_USER_KEY = "jdbc.user";
-    public static final String JDBC_PASSWORD_KEY = "jdbc.password";
-    public static final String HIBERNATE_CFG_FILENAME_KEY = "hibernate.cfg.filename";
-
     private final Map<String, String> configurationProperties;
 
     private final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses;
@@ -70,8 +59,8 @@ public final class NeedleConfiguration {
 
     private NeedleConfiguration(final Map<String, String> configurationProperties) {
         this.configurationProperties = configurationProperties;
-        this.customInjectionAnnotations = lookupClasses(CUSTOM_INJECTION_ANNOTATIONS_KEY);
-        this.customInjectionProviderClasses = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+        this.customInjectionAnnotations = lookupClasses(ConfigurationProperties.CUSTOM_INJECTION_ANNOTATIONS_KEY);
+        this.customInjectionProviderClasses = lookupClasses(ConfigurationProperties.CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
         LOG.info("Needle Configuration: {}", toString());
     }
 
@@ -81,7 +70,7 @@ public final class NeedleConfiguration {
      * @return jpa persistence unit name
      */
     public String getPersistenceunitName() {
-        return configurationProperties.get(PERSISTENCEUNIT_NAME_KEY);
+        return configurationProperties.get(ConfigurationProperties.PERSISTENCEUNIT_NAME_KEY);
     }
 
     /**
@@ -90,7 +79,7 @@ public final class NeedleConfiguration {
      * @return name of hibernate.cfg file
      */
     public String getHibernateCfgFilename() {
-        return configurationProperties.get(HIBERNATE_CFG_FILENAME_KEY);
+        return configurationProperties.get(ConfigurationProperties.HIBERNATE_CFG_FILENAME_KEY);
     }
 
     /**
@@ -99,23 +88,23 @@ public final class NeedleConfiguration {
      * @return database operation class name or null
      */
     public String getDBOperationClassName() {
-        return configurationProperties.get(DB_OPERATION_KEY);
+        return configurationProperties.get(ConfigurationProperties.DB_OPERATION_KEY);
     }
 
     public String getJdbcUrl() {
-        return configurationProperties.get(JDBC_URL_KEY);
+        return configurationProperties.get(ConfigurationProperties.JDBC_URL_KEY);
     }
 
     public String getJdbcDriver() {
-        return configurationProperties.get(JDBC_DRIVER_KEY);
+        return configurationProperties.get(ConfigurationProperties.JDBC_DRIVER_KEY);
     }
 
     public String getJdbcUser() {
-        return configurationProperties.get(JDBC_USER_KEY);
+        return configurationProperties.get(ConfigurationProperties.JDBC_USER_KEY);
     }
 
     public String getJdbcPassword() {
-        return configurationProperties.get(JDBC_PASSWORD_KEY);
+        return configurationProperties.get(ConfigurationProperties.JDBC_PASSWORD_KEY);
     }
 
     /**
@@ -124,7 +113,7 @@ public final class NeedleConfiguration {
      * @return mock provider class name or null
      */
     public String getMockProviderClassName() {
-        return configurationProperties.get(MOCK_PROVIDER_KEY);
+        return configurationProperties.get(ConfigurationProperties.MOCK_PROVIDER_KEY);
     }
 
     /**

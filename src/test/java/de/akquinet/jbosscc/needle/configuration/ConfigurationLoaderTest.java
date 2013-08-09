@@ -1,8 +1,8 @@
 package de.akquinet.jbosscc.needle.configuration;
 
-import static de.akquinet.jbosscc.needle.configuration.NeedleConfiguration.HIBERNATE_CFG_FILENAME_KEY;
-import static de.akquinet.jbosscc.needle.configuration.NeedleConfiguration.JDBC_URL_KEY;
-import static de.akquinet.jbosscc.needle.configuration.NeedleConfiguration.PERSISTENCEUNIT_NAME_KEY;
+import static de.akquinet.jbosscc.needle.configuration.ConfigurationProperties.HIBERNATE_CFG_FILENAME_KEY;
+import static de.akquinet.jbosscc.needle.configuration.ConfigurationProperties.JDBC_URL_KEY;
+import static de.akquinet.jbosscc.needle.configuration.ConfigurationProperties.PERSISTENCEUNIT_NAME_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
