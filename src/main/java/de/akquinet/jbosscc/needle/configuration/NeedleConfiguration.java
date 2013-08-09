@@ -3,16 +3,14 @@ package de.akquinet.jbosscc.needle.configuration;
 import static de.akquinet.jbosscc.needle.common.Preconditions.checkState;
 
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
-import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
+import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 
 /**
  * Loads an holds the configuration of needle.
@@ -47,6 +45,7 @@ public final class NeedleConfiguration {
     public static final String MOCK_PROVIDER_KEY = "mock.provider";
     public static final String CUSTOM_INJECTION_ANNOTATIONS_KEY = "custom.injection.annotations";
     public static final String CUSTOM_INJECTION_PROVIDER_CLASSES_KEY = "custom.injection.provider.classes";
+    public static final String CUSTOM_INSTANCES_SUPPLIER_CLASSES_KEY = "custom.instances.supplier.classes";
     public static final String DB_OPERATION_KEY = "db.operation";
     public static final String PERSISTENCEUNIT_NAME_KEY = "persistenceUnit.name";
     public static final String JDBC_URL_KEY = "jdbc.url";
@@ -59,6 +58,7 @@ public final class NeedleConfiguration {
 
     private final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses;
     private final Set<Class<Annotation>> customInjectionAnnotations;
+    private final Set<Class<InjectionProviderInstancesSupplier>> customInjectionProviderInstancesSupplierClasses;
 
     /**
      * @see #NeedleConfiguration(Map)
@@ -70,8 +70,12 @@ public final class NeedleConfiguration {
 
     private NeedleConfiguration(final Map<String, String> configurationProperties) {
         this.configurationProperties = configurationProperties;
-        this.customInjectionAnnotations = lookupClasses(CUSTOM_INJECTION_ANNOTATIONS_KEY);
-        this.customInjectionProviderClasses = lookupClasses(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+
+        final LookupCustomClasses lookupCustomClasses = new LookupCustomClasses(configurationProperties);
+        this.customInjectionAnnotations = lookupCustomClasses.apply(CUSTOM_INJECTION_ANNOTATIONS_KEY);
+        this.customInjectionProviderClasses = lookupCustomClasses.apply(CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+        this.customInjectionProviderInstancesSupplierClasses = lookupCustomClasses.apply(CUSTOM_INSTANCES_SUPPLIER_CLASSES_KEY);
+
         LOG.info("Needle Configuration: {}", toString());
     }
 
@@ -146,34 +150,10 @@ public final class NeedleConfiguration {
         return customInjectionProviderClasses;
     }
 
-    private <T> Set<Class<T>> lookupClasses(final String key) {
-        final String classesList = configurationProperties.containsKey(key) ? configurationProperties.get(key) : "";
-
-        final Set<Class<T>> result = new HashSet<Class<T>>();
-        final StringTokenizer tokenizer = new StringTokenizer(classesList, ",");
-
-        String token = null;
-        while (tokenizer.hasMoreElements()) {
-            try {
-                token = tokenizer.nextToken();
-
-                @SuppressWarnings("unchecked")
-                final Class<T> clazz = (Class<T>)ReflectionUtil.forName(token);
-
-                if (clazz != null) {
-                    result.add(clazz);
-                }
-                else {
-                    LOG.warn("could not load class {}", token);
-                }
-            }
-            catch (final Exception e) {
-                LOG.warn("could not load class " + token, e);
-            }
-        }
-
-        return result;
+    public Set<Class<InjectionProviderInstancesSupplier>> getCustomInjectionProviderInstancesSupplierClasses() {
+        return customInjectionProviderInstancesSupplierClasses;
     }
+
 
     @Override
     public String toString() {
@@ -185,5 +165,6 @@ public final class NeedleConfiguration {
 
         return builder.toString();
     }
+
 
 }
