@@ -4,9 +4,10 @@ import static de.akquinet.jbosscc.needle.common.Annotations.assertIsQualifier;
 import static de.akquinet.jbosscc.needle.common.Preconditions.checkArgument;
 
 import java.lang.annotation.Annotation;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.inject.Named;
-import javax.inject.Qualifier;
 
 /**
  * Utility class for creating {@link InjectionProvider}s with default behavior.
@@ -65,22 +66,93 @@ public final class InjectionProviders {
         return new QualifiedInstanceInjectionProvider<T>(qualifier, instance);
     }
 
+    /**
+     * Creates a new Set.
+     * 
+     * @param providers
+     *            vararg array of providers
+     * @return set containing providers
+     */
+    private static Set<InjectionProvider<?>> newProviderSet(final InjectionProvider<?>... providers) {
+        final Set<InjectionProvider<?>> result = new LinkedHashSet<InjectionProvider<?>>();
+
+        if (providers != null && providers.length > 0) {
+
+            for (final InjectionProvider<?> provider : providers) {
+                result.add(provider);
+            }
+
+        }
+        return result;
+    }
+
+    /**
+     * Creates a new Supplier.
+     * 
+     * @param providers
+     *            vararg array of providers
+     * @return new supplier
+     */
+    public static InjectionProviderInstancesSupplier supplierForInjectionProviders(final InjectionProvider<?>... providers) {
+        return new InjectionProviderInstancesSupplier() {
+
+            @Override
+            public Set<InjectionProvider<?>> get() {
+                return newProviderSet(providers);
+            }
+        };
+    }
+
+    /**
+     * Creates new supplier containing all providers in a new set.
+     * 
+     * @param suppliers
+     *            vararg array of existing suppliers
+     * @return new instance containing all providers
+     */
+    private static InjectionProviderInstancesSupplier mergeSuppliers(final InjectionProviderInstancesSupplier... suppliers) {
+        final Set<InjectionProvider<?>> result = new LinkedHashSet<InjectionProvider<?>>();
+
+        if (suppliers != null && suppliers.length > 0) {
+
+            for (final InjectionProviderInstancesSupplier supplier : suppliers) {
+                result.addAll(supplier.get());
+            }
+
+        }
+
+        return new InjectionProviderInstancesSupplier() {
+
+            @Override
+            public Set<InjectionProvider<?>> get() {
+                return result;
+            }
+        };
+    }
+
+    /**
+     * Create array of providers from given suppliers.
+     * 
+     * @param suppliers
+     *            vararg array of suppliers
+     * @return array of providers for use with vararg method
+     */
+    public static InjectionProvider<?>[] providersForInstancesSuppliers(final InjectionProviderInstancesSupplier... suppliers) {
+        final InjectionProviderInstancesSupplier supplier = mergeSuppliers(suppliers);
+        return supplier.get().toArray(new InjectionProvider<?>[supplier.get().size()]);
+    }
+
     private InjectionProviders() {
         // hide default constructor
     }
 
-    /**
-     * Helper to identify valid {@link Qualifier} annotations.
-     * 
-     * @param qualifier
-     *            the annotation to check
-     * @return <code>true</code> if annotation {@link Qualifier} is present
-     */
-    static boolean isValidQualifier(final Class<? extends Annotation> qualifier) {
-        checkArgument(qualifier != null, "qualifier must not be null!");
-        return qualifier.getAnnotation(Qualifier.class) != null;
-    }
 
+    /**
+     * Base class for all instance injection providers.
+     * 
+     * @param <T>
+     *            type of instance
+     */
     private abstract static class InstanceInjectionProvider<T> implements InjectionProvider<T> {
 
         protected final T instance;

@@ -17,10 +17,19 @@ The id may be used for additional injections (explained later). When an object u
 During the object under test instantiation it is possible to execute lifecycle methods annotated with PostConstruct. The PostConstruct annotation is used on a method that needs to be executed after dependency injection is done to perform any initialization. By default lifecycle methods are ignored. The execution can be activated by the annotation @ObjectUnderTest.
 
 \begin{lstlisting}[language={JAVA},caption=PostConstruct]
-@Statelesspublic class UserDao {   @PostConstruct   public void init(){      ...   }}
+@Stateless
+public class UserDao {
+
+   @PostConstruct
+   public void init(){
+      ...
+   }
+}
 \end{lstlisting}
 
-\begin{lstlisting}[language={JAVA},caption=PostConstruct Testcase]public class UserDaoTest {   @Rule
+\begin{lstlisting}[language={JAVA},caption=PostConstruct Testcase]
+public class UserDaoTest {
+   @Rule
    public NeedleRule needleRule = new NeedleRule();
 
    @ObjectUnderTest(postConstruct = true)
@@ -29,7 +38,8 @@ During the object under test instantiation it is possible to execute lifecycle m
    @Test
    public void test(){
       ...
-   }	}
+   }	
+}
 \end{lstlisting}
 
 Note: The behavior in an inheritance hierarchy is not defined by the common annotations specification.
@@ -120,6 +130,40 @@ public NeedleRule needleRule = new NeedleRule(new CurrentUserInjectionProvider()
 
 \begin{lstlisting}[language={JAVA},caption=Global custom injection provider]
 custom.injection.provider.classes=de.akquinet.CurrentUserInjectionProvider
+\end{lstlisting}
+
+If you need to configure multiple InjectionProviders at once, it is possible to use the InjectionProviderInstancesSupplier. It returns
+a Set of InjectionProviders.
+A custom injection provider supplier must implement the \verb|de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier| interface.
+
+\begin{lstlisting}[language={JAVA},caption=Injection Provider InstancesSupplier]
+public class FooBarInjectionProviderInstancesSupplier implements InjectionProviderInstancesSupplier {
+   private final Foo foo = new Foo();
+   private final Bar bar = new Bar();
+   
+   private final Set<InjectProvider<?>> providers = new HashSet<InjectionProvider<?>>();
+   
+   public FooBarInjectionProviderInstancesSupplier() {
+      providers.add(InjectionProviders.providerForInstance(foo));
+      providers.add(InjectionProviders.providerForInstance(bar));
+   }
+
+   @Override
+   public Set<InjectProvider<?>> get() {
+      return providers;
+   }
+}
+\end{lstlisting}
+
+A custom injection provider instances supplier can be provided for a specific test or also as a global provider (again in the \verb|needle.properties| file).
+
+\begin{lstlisting}[language={JAVA},caption=Custom injection supplier for a specific test]
+@Rule
+public NeedleRule needleRule = NeedleRuleBuilder.needleRule().addSupplier(new FooBarInjectionProviderInstancesSupplier());
+\end{lstlisting}
+
+\begin{lstlisting}[language={JAVA},caption=Global custom injection provider supplier]
+custom.intances.supplier.classes=de.akquinet.FooBarInjectionProviderInstancesSupplier
 \end{lstlisting}
 
 \section{Wiring of object dependencies}

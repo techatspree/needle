@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -44,6 +45,9 @@ public class PropertyBasedConfigurationFactory {
         final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses = lookupClasses(ConfigurationProperties.CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
         configuration.setCustomInjectionProviderClasses(customInjectionProviderClasses);
 
+        final Set<Class<InjectionProviderInstancesSupplier>> supplier = lookupClasses(ConfigurationProperties.CUSTOM_INSTANCES_SUPPLIER_CLASSES_KEY);
+        configuration.setCustomInjectionProviderInstancesSupplierClasses(supplier);
+
         configuration.setHibernateCfgFilename(configurationProperties
                 .get(ConfigurationProperties.HIBERNATE_CFG_FILENAME_KEY));
         configuration.setPersistenceunitName(configurationProperties
@@ -58,6 +62,7 @@ public class PropertyBasedConfigurationFactory {
         configuration.setJdbcDriver(configurationProperties.get(ConfigurationProperties.JDBC_DRIVER_KEY));
         configuration.setJdbcUser(configurationProperties.get(ConfigurationProperties.JDBC_USER_KEY));
         configuration.setJdbcPassword(configurationProperties.get(ConfigurationProperties.JDBC_PASSWORD_KEY));
+
         LOG.info("Needle Configuration: {}", configuration);
 
         return configuration;

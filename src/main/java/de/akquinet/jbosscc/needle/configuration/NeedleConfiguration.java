@@ -4,12 +4,14 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public final class NeedleConfiguration {
 
     private Set<Class<Annotation>> customInjectionAnnotations;
     private Set<Class<InjectionProvider<?>>> customInjectionProviderClasses;
+    private Set<Class<InjectionProviderInstancesSupplier>> customInjectionProviderInstancesSupplierClasses;
     private String persistenceunitName;
     private String hibernateCfgFilename;
     private Class<? extends MockProvider> mockProviderClass;
@@ -129,6 +131,14 @@ public final class NeedleConfiguration {
     public void setHibernateCfgFilename(final String hibernateCfgFilename) {
         this.hibernateCfgFilename = hibernateCfgFilename;
     }
+    
+    public Set<Class<InjectionProviderInstancesSupplier>> getCustomInjectionProviderInstancesSupplierClasses() {
+        return customInjectionProviderInstancesSupplierClasses;
+    }
+    
+    public void setCustomInjectionProviderInstancesSupplierClasses(final Set<Class<InjectionProviderInstancesSupplier>> supplier){
+        this.customInjectionProviderInstancesSupplierClasses = supplier;
+    } 
 
     @Override
     public String toString() {
@@ -136,8 +146,10 @@ public final class NeedleConfiguration {
         builder.append("\nPU_NAME=").append(getPersistenceunitName());
         builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
         builder.append("\nDB_OPERATION=").append(getDBOperationClassName());
-        builder.append("\nMOCK_PROVIDER=").append(mockProviderClass != null ? mockProviderClass.getName() : null);
+        builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
 
         return builder.toString();
     }
+
+    
 }

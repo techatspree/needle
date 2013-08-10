@@ -349,7 +349,6 @@ public abstract class NeedleTestcase {
     }
 
     private interface InjectionTargetInformationFactory {
-
         InjectionTargetInformation create(Class<?> parameterType, int parameterIndex);
     }
 

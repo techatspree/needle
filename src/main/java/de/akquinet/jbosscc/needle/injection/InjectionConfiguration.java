@@ -130,9 +130,9 @@ public final class InjectionConfiguration {
     }
 
     private void initGlobalInjectionProvider() {
+
         final Set<Class<InjectionProvider<?>>> customInjectionProviders = needleConfiguration
                 .getCustomInjectionProviderClasses();
-
         for (final Class<InjectionProvider<?>> injectionProviderClass : customInjectionProviders) {
             try {
                 final InjectionProvider<?> injection = ReflectionUtil.createInstance(injectionProviderClass);
@@ -140,6 +140,16 @@ public final class InjectionConfiguration {
             } catch (final Exception e) {
                 LOG.warn("could not create an instance of injection provider " + injectionProviderClass, e);
             }
+        }
+
+        for (final Class<InjectionProviderInstancesSupplier> supplierClass : needleConfiguration.getCustomInjectionProviderInstancesSupplierClasses()) {
+            try {
+                final InjectionProviderInstancesSupplier supplier = ReflectionUtil.createInstance(supplierClass);
+                globalInjectionProviderList.addAll(0, supplier.get());
+            } catch (final Exception e) {
+                LOG.warn("could not create an instance of injection provider instance supplier " + supplierClass, e);
+            }
+
         }
 
     }
