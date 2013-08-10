@@ -24,7 +24,7 @@ public class LookupCustomClassesTest {
         final Map<String, String> configurationProperties = createConfigurationProperties(KEY, String.class.getCanonicalName(), "foo.Bar", " ", null, Integer.class.getCanonicalName());
 
         final LookupCustomClasses lookupCustomClasses = new LookupCustomClasses(configurationProperties);
-        final Set<Class<Object>> providers = lookupCustomClasses.apply(KEY);
+        final Set<Class<Object>> providers = lookupCustomClasses.lookup(KEY);
 
         assertThat(providers.size(), is(2));
         assertTrue(providers.contains(String.class));

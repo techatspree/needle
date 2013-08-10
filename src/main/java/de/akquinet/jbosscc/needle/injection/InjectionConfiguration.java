@@ -57,6 +57,7 @@ public final class InjectionConfiguration {
         this(PropertyBasedConfigurationFactory.get(), PropertyBasedConfigurationFactory.get().getMockProviderClass());
     }
     
+    @SuppressWarnings("unchecked")
     public InjectionConfiguration(NeedleConfiguration needleConfiguration, final Class<? extends MockProvider> mockProviderClass) {
         this.needleConfiguration = needleConfiguration;
         mockProvider = createMockProvider(mockProviderClass);

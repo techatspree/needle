@@ -25,7 +25,7 @@ class LookupCustomClasses {
         this.configurationProperties = configurationProperties;
     }
 
-    public <T> Set<Class<T>> apply(final String key) {
+    public <T> Set<Class<T>> lookup(final String key) {
         final String classesList = configurationProperties.containsKey(key) ? configurationProperties.get(key) : "";
 
         final Set<Class<T>> result = new HashSet<Class<T>>();

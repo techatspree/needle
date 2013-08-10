@@ -31,7 +31,9 @@ public class PropertyBasedConfigurationFactory {
         return new PropertyBasedConfigurationFactory(resourceName).init();
     }
 
-    private Map<String, String> configurationProperties;
+    private final Map<String, String> configurationProperties;
+
+    private final LookupCustomClasses lookupCustomClasses;
 
     private PropertyBasedConfigurationFactory() {
         this(new ConfigurationLoader());
@@ -43,19 +45,20 @@ public class PropertyBasedConfigurationFactory {
 
     private PropertyBasedConfigurationFactory(final ConfigurationLoader configurationLoader) {
         configurationProperties = configurationLoader.getConfigProperties();
+        lookupCustomClasses = new LookupCustomClasses(configurationProperties);
     }
 
     private NeedleConfiguration init() {
 
         NeedleConfiguration configuration = new NeedleConfiguration();
 
-        final Set<Class<Annotation>> customInjectionAnnotations = lookupClasses(ConfigurationProperties.CUSTOM_INJECTION_ANNOTATIONS_KEY);
+        final Set<Class<Annotation>> customInjectionAnnotations = lookupCustomClasses.lookup(ConfigurationProperties.CUSTOM_INJECTION_ANNOTATIONS_KEY);
         configuration.setCustomInjectionAnnotations(customInjectionAnnotations);
 
-        final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses = lookupClasses(ConfigurationProperties.CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
+        final Set<Class<InjectionProvider<?>>> customInjectionProviderClasses = lookupCustomClasses.lookup(ConfigurationProperties.CUSTOM_INJECTION_PROVIDER_CLASSES_KEY);
         configuration.setCustomInjectionProviderClasses(customInjectionProviderClasses);
 
-        final Set<Class<InjectionProviderInstancesSupplier>> supplier = lookupClasses(ConfigurationProperties.CUSTOM_INSTANCES_SUPPLIER_CLASSES_KEY);
+        final Set<Class<InjectionProviderInstancesSupplier>> supplier = lookupCustomClasses.lookup(ConfigurationProperties.CUSTOM_INSTANCES_SUPPLIER_CLASSES_KEY);
         configuration.setCustomInjectionProviderInstancesSupplierClasses(supplier);
 
         configuration.setHibernateCfgFilename(configurationProperties
@@ -78,33 +81,7 @@ public class PropertyBasedConfigurationFactory {
         return configuration;
     }
 
-    private <T> Set<Class<T>> lookupClasses(final String key) {
-        final String classesList = configurationProperties.containsKey(key) ? configurationProperties.get(key) : "";
-
-        final Set<Class<T>> result = new HashSet<Class<T>>();
-        final StringTokenizer tokenizer = new StringTokenizer(classesList, ",");
-
-        String token = null;
-        while (tokenizer.hasMoreElements()) {
-            try {
-                token = tokenizer.nextToken();
-
-                @SuppressWarnings("unchecked")
-                final Class<T> clazz = (Class<T>) ReflectionUtil.forName(token);
-
-                if (clazz != null) {
-                    result.add(clazz);
-                } else {
-                    LOG.warn("could not load class {}", token);
-                }
-            } catch (final Exception e) {
-                LOG.warn("could not load class " + token, e);
-            }
-        }
-
-        return result;
-    }
-
+    
     @SuppressWarnings("unchecked")
     static Class<? extends MockProvider> lookupMockProviderClass(final String mockProviderClassName) {
 
