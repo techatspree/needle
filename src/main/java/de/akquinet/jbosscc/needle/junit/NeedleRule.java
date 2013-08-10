@@ -54,8 +54,8 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
         super(injectionProvider);
     }
     
-    NeedleRule(final InjectionConfiguration configuration){
-        super(configuration);
+    NeedleRule(final InjectionConfiguration configuration, final InjectionProvider<?>... injectionProvider){
+        super(configuration, injectionProvider);
     } 
 
     /**

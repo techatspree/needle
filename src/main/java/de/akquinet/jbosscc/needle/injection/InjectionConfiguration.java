@@ -124,7 +124,11 @@ public final class InjectionConfiguration {
 
     private void initGlobalInjectionAnnotation() {
         final Set<Class<Annotation>> customInjectionAnnotations = needleConfiguration.getCustomInjectionAnnotations();
-
+        addGlobalInjectionAnnotation(customInjectionAnnotations);
+    }
+    
+    
+    public void addGlobalInjectionAnnotation(final Set<Class<Annotation>> customInjectionAnnotations) {
         for (final Class<? extends Annotation> annotation : customInjectionAnnotations) {
             addInjectionAnnotation(annotation);
             globalInjectionProviderList.add(0, new DefaultMockInjectionProvider(annotation, getMockProvider()));

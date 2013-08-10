@@ -1,10 +1,8 @@
 package de.akquinet.jbosscc.needle.configuration;
 
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
-import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class PropertyBasedConfigurationFactory {
     private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
