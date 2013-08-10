@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation;
 import de.akquinet.jbosscc.needle.db.operation.JdbcConfiguration;
@@ -18,7 +19,8 @@ public class DatabaseTestcaseConfigurationTest {
 
     @Test(expected = RuntimeException.class)
     public void testEntityManager_Close() throws Exception {
-        DatabaseTestcaseConfiguration databaseRuleConfiguration = new DatabaseTestcaseConfiguration("TestDataModel");
+        DatabaseTestcaseConfiguration databaseRuleConfiguration = new DatabaseTestcaseConfiguration(
+                PropertyBasedConfigurationFactory.get(), "TestDataModel");
         EntityManager entityManager = databaseRuleConfiguration.getEntityManager();
         assertNotNull(entityManager);
 
@@ -27,7 +29,7 @@ public class DatabaseTestcaseConfigurationTest {
 
     @Test
     public void testGetEntityManagerFactoryProperties() throws Exception {
-        DatabaseTestcaseConfiguration databaseRuleConfiguration = new DatabaseTestcaseConfiguration();
+        DatabaseTestcaseConfiguration databaseRuleConfiguration = new DatabaseTestcaseConfiguration(PropertyBasedConfigurationFactory.get());
 
         JdbcConfiguration jdbcConfiguration = (JdbcConfiguration) ReflectionUtil.invokeMethod(
                 databaseRuleConfiguration, "getEntityManagerFactoryProperties");
@@ -58,7 +60,7 @@ public class DatabaseTestcaseConfigurationTest {
 
     @Test
     public void testCreateDBOperation() throws Exception {
-        DatabaseTestcaseConfiguration configuration = new DatabaseTestcaseConfiguration();
+        DatabaseTestcaseConfiguration configuration = new DatabaseTestcaseConfiguration(PropertyBasedConfigurationFactory.get());
         AbstractDBOperation operation = configuration.createDBOperation(ExecuteScriptOperation.class);
 
         assertTrue(operation instanceof ExecuteScriptOperation);
@@ -66,7 +68,7 @@ public class DatabaseTestcaseConfigurationTest {
 
     @Test
     public void testCreateDBOperation_Null() throws Exception {
-        DatabaseTestcaseConfiguration configuration = new DatabaseTestcaseConfiguration();
+        DatabaseTestcaseConfiguration configuration = new DatabaseTestcaseConfiguration(PropertyBasedConfigurationFactory.get());
         assertNull(configuration.createDBOperation(null));
     }
 }

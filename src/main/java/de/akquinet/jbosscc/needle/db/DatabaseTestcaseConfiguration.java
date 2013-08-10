@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
-import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
@@ -40,29 +39,31 @@ final class DatabaseTestcaseConfiguration {
      */
     private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
 
-    private final NeedleConfiguration needleConfiguration = PropertyBasedConfigurationFactory.get();
-
     private final AbstractDBOperation dbOperation;
 
     private final PersistenceConfigurationFactory configuration;
 
-    private DatabaseTestcaseConfiguration(final PersistenceConfigurationFactory configuratiorn) {
+    private NeedleConfiguration needleConfiguration;
+
+    private DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,  final PersistenceConfigurationFactory configuratiorn) {
+        this.needleConfiguration = needleConfiguration;
         this.configuration = configuratiorn;
         this.dbOperation = createDBOperation(lookupDBOperationClass(needleConfiguration.getDBOperationClassName()));
     }
 
-    DatabaseTestcaseConfiguration(final Class<?>... clazzes) {
-        this(new PersistenceConfigurationFactory(clazzes));
+    @Deprecated
+    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,final Class<?>... clazzes) {
+        this(needleConfiguration, new PersistenceConfigurationFactory(clazzes));
 
     }
 
-    DatabaseTestcaseConfiguration(final String persistenceUnitName) {
-        this(new PersistenceConfigurationFactory(persistenceUnitName));
+    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,final String persistenceUnitName) {
+        this(needleConfiguration, new PersistenceConfigurationFactory(persistenceUnitName));
 
     }
 
-    DatabaseTestcaseConfiguration() {
-        this(PropertyBasedConfigurationFactory.get().getPersistenceunitName());
+    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration) {
+        this(needleConfiguration, needleConfiguration.getPersistenceunitName());
     }
 
     EntityManager getEntityManager() {

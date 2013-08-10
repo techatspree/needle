@@ -4,6 +4,7 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
+import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 
@@ -61,6 +62,8 @@ public class DatabaseRule extends DatabaseTestcase implements MethodRule {
 	public DatabaseRule(final DBOperation dbOperation) {
 		super(dbOperation);
 	}
+	
+	
 
 	/**
 	 * @see de.akquinet.jbosscc.needle.db.DatabaseTestcase#DatabaseTestcase(String,
@@ -76,6 +79,11 @@ public class DatabaseRule extends DatabaseTestcase implements MethodRule {
 	public DatabaseRule(final String persistenceUnitName) {
 		super(persistenceUnitName);
 	}
+	
+	DatabaseRule(final NeedleConfiguration configuration) {
+	    super(configuration);
+    }
+	
 
 	@Override
 	public final Statement apply(final Statement base, FrameworkMethod method, Object target) {

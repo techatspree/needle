@@ -7,7 +7,7 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 
-public final class NeedleConfiguration {
+public final class NeedleConfiguration implements Cloneable {
 
     private Set<Class<Annotation>> customInjectionAnnotations;
     private Set<Class<InjectionProvider<?>>> customInjectionProviderClasses;
@@ -72,15 +72,15 @@ public final class NeedleConfiguration {
     public String getJdbcDriver() {
         return jdbcDriver;
     }
-    
+
     public void setJdbcDriver(final String jdbcDriver) {
-        this.jdbcDriver =jdbcDriver;
+        this.jdbcDriver = jdbcDriver;
     }
 
     public String getJdbcUser() {
         return jdbcUser;
     }
-    
+
     public void setJdbcUser(final String jdbcUser) {
         this.jdbcUser = jdbcUser;
     }
@@ -88,7 +88,7 @@ public final class NeedleConfiguration {
     public String getJdbcPassword() {
         return jdbcPassword;
     }
-    
+
     public void setJdbcPassword(final String jdbcPassword) {
         this.jdbcPassword = jdbcPassword;
     }
@@ -131,14 +131,15 @@ public final class NeedleConfiguration {
     public void setHibernateCfgFilename(final String hibernateCfgFilename) {
         this.hibernateCfgFilename = hibernateCfgFilename;
     }
-    
+
     public Set<Class<InjectionProviderInstancesSupplier>> getCustomInjectionProviderInstancesSupplierClasses() {
         return customInjectionProviderInstancesSupplierClasses;
     }
-    
-    public void setCustomInjectionProviderInstancesSupplierClasses(final Set<Class<InjectionProviderInstancesSupplier>> supplier){
+
+    public void setCustomInjectionProviderInstancesSupplierClasses(
+            final Set<Class<InjectionProviderInstancesSupplier>> supplier) {
         this.customInjectionProviderInstancesSupplierClasses = supplier;
-    } 
+    }
 
     @Override
     public String toString() {
@@ -151,5 +152,8 @@ public final class NeedleConfiguration {
         return builder.toString();
     }
 
-    
+    public NeedleConfiguration clone() throws CloneNotSupportedException {
+        return (NeedleConfiguration) super.clone();
+    }
+
 }

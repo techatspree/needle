@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
+import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
+import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.db.transaction.TransactionHelper;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
@@ -49,7 +51,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
      */
     public DatabaseTestcase() {
 
-        configuration = new DatabaseTestcaseConfiguration();
+        configuration = new DatabaseTestcaseConfiguration(PropertyBasedConfigurationFactory.get());
     }
 
     /**
@@ -77,7 +79,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
      * @see DBOperation
      */
     public DatabaseTestcase(final String persistenceUnitName) {
-        configuration = new DatabaseTestcaseConfiguration(persistenceUnitName);
+        configuration = new DatabaseTestcaseConfiguration(PropertyBasedConfigurationFactory.get(), persistenceUnitName);
     }
 
     /**
@@ -109,7 +111,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
      */
     @Deprecated
     public DatabaseTestcase(final Class<?>... clazzes) {
-        configuration = new DatabaseTestcaseConfiguration(clazzes);
+        configuration = new DatabaseTestcaseConfiguration(PropertyBasedConfigurationFactory.get(), clazzes);
     }
 
     /**
@@ -130,6 +132,12 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
         this(clazzes);
         this.dbOperation = dbOperation;
     }
+    
+    
+    protected DatabaseTestcase(final NeedleConfiguration needleConfiguration) {
+        configuration = new DatabaseTestcaseConfiguration(needleConfiguration, needleConfiguration.getPersistenceunitName());
+        
+    }
 
     /**
      * Execute tear down database operation, if configured.
@@ -143,7 +151,7 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
         if (operation != null) {
             operation.tearDownOperation();
         }
-        
+
         getEntityManager().clear();
     }
 

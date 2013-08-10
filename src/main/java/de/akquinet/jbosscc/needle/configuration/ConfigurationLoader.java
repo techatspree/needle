@@ -84,7 +84,7 @@ public final class ConfigurationLoader {
             LOG.info("loaded Needle config named {} from {}", name, url);
         }
         catch (final Exception e) {
-            LOG.debug("found no custom configuration");
+            LOG.warn(e.getMessage());
         }
 
         return result;
