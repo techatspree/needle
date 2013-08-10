@@ -1,9 +1,12 @@
 package de.akquinet.jbosscc.needle.junit;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.junit.rules.MethodRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,8 @@ public class NeedleRuleBuilder {
     private InjectionProvider<?>[] injectionProvider = {};
     private Class<?>[] withAnnotations = {};
     private String configFile;
+    
+    private List<MethodRule> methodRuleChain = new ArrayList<MethodRule>();
 
     private Set<InjectionProvider<?>> provider = new HashSet<InjectionProvider<?>>();
 
@@ -50,6 +55,11 @@ public class NeedleRuleBuilder {
             final Set<InjectionProvider<?>> provider = injectionProviderInstancesSupplier.get();
             this.provider.addAll(provider);
         }
+        return this;
+    }
+    
+    public NeedleRuleBuilder withOuter(final MethodRule rule){
+        methodRuleChain.add(0, rule);
         return this;
     }
 
@@ -87,7 +97,11 @@ public class NeedleRuleBuilder {
         InjectionProvider<?>[] providerArray = provider.toArray(new InjectionProvider<?>[provider.size()]); 
         
         injectionConfiguration.addInjectionProvider(providerArray);
-
-        return new NeedleRule(injectionConfiguration, injectionProvider);
+        NeedleRule needleRule = new NeedleRule(injectionConfiguration, injectionProvider);
+        
+        for (MethodRule rule : methodRuleChain) {
+            needleRule.withOuter(rule);
+        }
+        return needleRule;
     }
 }
