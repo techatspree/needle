@@ -9,6 +9,7 @@ import org.junit.runners.model.Statement;
 
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 
 /**
@@ -52,6 +53,10 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
     public NeedleRule(final InjectionProvider<?>... injectionProvider) {
         super(injectionProvider);
     }
+    
+    NeedleRule(final InjectionConfiguration configuration){
+        super(configuration);
+    } 
 
     /**
      * {@inheritDoc} Before evaluation of the base statement, the test instance

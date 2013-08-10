@@ -33,7 +33,7 @@ public final class InjectionConfiguration {
     private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
     private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
-    private final NeedleConfiguration needleConfiguration = PropertyBasedConfigurationFactory.get();
+    private final NeedleConfiguration needleConfiguration; 
 
     // Default InjectionProvider for annotations
     private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
@@ -54,12 +54,11 @@ public final class InjectionConfiguration {
     private final PostConstructProcessor postConstructProcessor;
 
     public InjectionConfiguration() {
-        this(PropertyBasedConfigurationFactory.get().getMockProviderClass());
+        this(PropertyBasedConfigurationFactory.get(), PropertyBasedConfigurationFactory.get().getMockProviderClass());
     }
-
-    @SuppressWarnings("unchecked")
-    public InjectionConfiguration(final Class<? extends MockProvider> mockProviderClass) {
-
+    
+    public InjectionConfiguration(NeedleConfiguration needleConfiguration, final Class<? extends MockProvider> mockProviderClass) {
+        this.needleConfiguration = needleConfiguration;
         mockProvider = createMockProvider(mockProviderClass);
 
         postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
@@ -76,8 +75,10 @@ public final class InjectionConfiguration {
         injectionProviderList.add(0, new MockProviderInjectionProvider(mockProvider));
 
         allInjectionProvider = Arrays.asList(testInjectionProvider, globalInjectionProviderList, injectionProviderList);
-
+        
     }
+
+
 
     private void addResource() {
 

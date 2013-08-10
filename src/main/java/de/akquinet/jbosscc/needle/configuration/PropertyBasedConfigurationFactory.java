@@ -17,8 +17,6 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 public class PropertyBasedConfigurationFactory {
     private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
 
-    private static final ConfigurationLoader CONFIGURATION_LOADER = new ConfigurationLoader();
-
     private static NeedleConfiguration CONFIGURATION = null;
 
     public static NeedleConfiguration get() {
@@ -29,10 +27,22 @@ public class PropertyBasedConfigurationFactory {
         return CONFIGURATION;
     }
 
+    public static NeedleConfiguration get(final String resourceName) {
+        return new PropertyBasedConfigurationFactory(resourceName).init();
+    }
+
     private Map<String, String> configurationProperties;
 
-    public PropertyBasedConfigurationFactory() {
-        configurationProperties = CONFIGURATION_LOADER.getConfigProperties();
+    private PropertyBasedConfigurationFactory() {
+        this(new ConfigurationLoader());
+    }
+
+    private PropertyBasedConfigurationFactory(final String resourceName) {
+        this(new ConfigurationLoader(resourceName));
+    }
+
+    private PropertyBasedConfigurationFactory(final ConfigurationLoader configurationLoader) {
+        configurationProperties = configurationLoader.getConfigProperties();
     }
 
     private NeedleConfiguration init() {

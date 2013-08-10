@@ -7,7 +7,6 @@ import org.junit.Test;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-@SuppressWarnings("unused")
 public class ObjectUnderTestInstantiationTest {
 
     @ObjectUnderTest

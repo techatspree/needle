@@ -55,7 +55,7 @@ public abstract class NeedleTestcase {
 
     private NeedleContext context;
 
-    private InjectionConfiguration configuration = new InjectionConfiguration();
+    private final InjectionConfiguration configuration; 
 
     private SpyAnnotationProcessor spyAnnotationProcessor;
 
@@ -68,6 +68,11 @@ public abstract class NeedleTestcase {
      * @see InjectionProvider
      */
     protected NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
+        this(new InjectionConfiguration(), injectionProvider);
+    }
+    
+    protected NeedleTestcase(final InjectionConfiguration configuration, final InjectionProvider<?>... injectionProvider) {
+        this.configuration = configuration;
         addInjectionProvider(injectionProvider);
     }
 
