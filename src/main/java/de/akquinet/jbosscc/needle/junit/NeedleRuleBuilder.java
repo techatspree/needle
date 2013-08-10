@@ -11,6 +11,7 @@ import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
+import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public class NeedleRuleBuilder {
@@ -21,6 +22,8 @@ public class NeedleRuleBuilder {
     private InjectionProvider<?>[] injectionProvider = {};
     private Class<?>[] withAnnotations = {};
     private String configFile;
+
+    private Set<InjectionProvider<?>> provider = new HashSet<InjectionProvider<?>>();
 
     public NeedleRuleBuilder with(final Class<? extends MockProvider> mockProviderClass) {
         this.withMockProviderClass = mockProviderClass;
@@ -39,6 +42,14 @@ public class NeedleRuleBuilder {
 
     public NeedleRuleBuilder add(Class<?>... annotations) {
         this.withAnnotations = annotations;
+        return this;
+    }
+
+    public NeedleRuleBuilder add(final InjectionProviderInstancesSupplier... supplier) {
+        for (InjectionProviderInstancesSupplier injectionProviderInstancesSupplier : supplier) {
+            final Set<InjectionProvider<?>> provider = injectionProviderInstancesSupplier.get();
+            this.provider.addAll(provider);
+        }
         return this;
     }
 
@@ -68,11 +79,15 @@ public class NeedleRuleBuilder {
     public NeedleRule build() {
         final NeedleConfiguration needleConfiguration = getNeedleConfiguration();
         final Class<? extends MockProvider> mockProviderClass = getMockProviderClass(needleConfiguration);
-        
-        InjectionConfiguration injectionConfiguration = new InjectionConfiguration(needleConfiguration, mockProviderClass);
-        
+
+        InjectionConfiguration injectionConfiguration = new InjectionConfiguration(needleConfiguration,
+                mockProviderClass);
+
         injectionConfiguration.addGlobalInjectionAnnotation(getCustomInjectionAnnotations());
+        InjectionProvider<?>[] providerArray = provider.toArray(new InjectionProvider<?>[provider.size()]); 
         
+        injectionConfiguration.addInjectionProvider(providerArray);
+
         return new NeedleRule(injectionConfiguration, injectionProvider);
     }
 }

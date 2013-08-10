@@ -9,7 +9,7 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 import de.akquinet.jbosscc.needle.junit.NeedleRuleBuilder;
 
-public class NeedleRuleBuilderWithCustomAnnotation {
+public class NeedleRuleBuilderWithCustomAnnotationTest {
 
     @Rule
     public NeedleRule needleRule = new NeedleRuleBuilder().add(TestBuilderQualifier.class).build();
