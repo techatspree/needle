@@ -3,6 +3,8 @@ package de.akquinet.jbosscc.needle.configuration;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
+import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
@@ -15,7 +17,7 @@ public final class NeedleConfiguration implements Cloneable {
     private String persistenceunitName;
     private String hibernateCfgFilename;
     private Class<? extends MockProvider> mockProviderClass;
-    private String dbOperationClassName;
+    private Class<? extends AbstractDBOperation> dbOperationClass;
     private String jdbcUrl;
     private String jdbcDriver;
     private String jdbcUser;
@@ -53,12 +55,12 @@ public final class NeedleConfiguration implements Cloneable {
      * 
      * @return database operation class name or null
      */
-    public String getDBOperationClassName() {
-        return dbOperationClassName;
+    public Class<? extends AbstractDBOperation> getDBOperationClass() {
+        return dbOperationClass;
     }
 
-    public void setDBOperationClassName(final String dbOperationClassName) {
-        this.dbOperationClassName = dbOperationClassName;
+    public void setDBOperationClass(final Class<? extends AbstractDBOperation> dbOperationClass) {
+        this.dbOperationClass = dbOperationClass;
     }
 
     public String getJdbcUrl() {
@@ -146,7 +148,7 @@ public final class NeedleConfiguration implements Cloneable {
         final StringBuilder builder = new StringBuilder();
         builder.append("\nPU_NAME=").append(getPersistenceunitName());
         builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
-        builder.append("\nDB_OPERATION=").append(getDBOperationClassName());
+        builder.append("\nDB_OPERATION=").append(getDBOperationClass());
         builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
 
         return builder.toString();

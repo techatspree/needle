@@ -45,25 +45,25 @@ final class DatabaseTestcaseConfiguration {
 
     private NeedleConfiguration needleConfiguration;
 
-    private DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,  final PersistenceConfigurationFactory configuratiorn) {
+    private DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,
+            final PersistenceConfigurationFactory configuratiorn) {
         this.needleConfiguration = needleConfiguration;
         this.configuration = configuratiorn;
-        this.dbOperation = createDBOperation(lookupDBOperationClass(needleConfiguration.getDBOperationClassName()));
+        this.dbOperation = createDBOperation(needleConfiguration.getDBOperationClass());
     }
 
     @Deprecated
-    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,final Class<?>... clazzes) {
+    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration, final Class<?>... clazzes) {
         this(needleConfiguration, new PersistenceConfigurationFactory(clazzes));
-
     }
-
-    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration,final String persistenceUnitName) {
-        this(needleConfiguration, new PersistenceConfigurationFactory(persistenceUnitName));
-
-    }
-
+    
     DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration) {
-        this(needleConfiguration, needleConfiguration.getPersistenceunitName());
+        this(needleConfiguration, new PersistenceConfigurationFactory(needleConfiguration.getPersistenceunitName()));
+    }
+
+
+    DatabaseTestcaseConfiguration(final NeedleConfiguration needleConfiguration, final String persistenceUnitName) {
+        this(needleConfiguration, new PersistenceConfigurationFactory(persistenceUnitName));
     }
 
     EntityManager getEntityManager() {
@@ -83,29 +83,13 @@ final class DatabaseTestcaseConfiguration {
         if (dbOperationClass != null) {
             try {
                 return ReflectionUtil.createInstance(dbOperationClass, getJdbcComfiguration());
+            } catch (final Exception e) {
+                LOG.warn("could not create a new instance of configured db operation {}, {}", dbOperationClass,
+                        e.getMessage());
+                LOG.error(e.getMessage(), e);
             }
-            catch (final Exception e) {
-                LOG.warn("could not create a new instance of configured db operation {}, {}", dbOperationClass, e.getMessage());
-                LOG.debug(e.getMessage(), e);
-            }
-        }
-        else {
+        } else {
             LOG.info("no db operation configured");
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
-        try {
-            if (dbOperation != null) {
-                return (Class<? extends AbstractDBOperation>)Class.forName(dbOperation);
-            }
-
-        }
-        catch (final Exception e) {
-            LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
         }
 
         return null;
@@ -113,10 +97,8 @@ final class DatabaseTestcaseConfiguration {
 
     private JdbcConfiguration getJdbcComfiguration() throws Exception {
         if (needleConfiguration.getJdbcDriver() != null && needleConfiguration.getJdbcUrl() != null) {
-            return new JdbcConfiguration(needleConfiguration.getJdbcUrl(),
-                    needleConfiguration.getJdbcDriver(),
-                    needleConfiguration.getJdbcUser(),
-                    needleConfiguration.getJdbcPassword());
+            return new JdbcConfiguration(needleConfiguration.getJdbcUrl(), needleConfiguration.getJdbcDriver(),
+                    needleConfiguration.getJdbcUser(), needleConfiguration.getJdbcPassword());
         }
 
         return getEntityManagerFactoryProperties();
@@ -127,11 +109,10 @@ final class DatabaseTestcaseConfiguration {
         try {
             final Map<String, Object> properties = getEntityManagerFactory().getProperties();
 
-            return new JdbcConfiguration((String)properties.get(JDBC_URL_KEY),
-                    (String)properties.get(JDBC_DRIVER_KEY), (String)properties.get(JDBC_USER_KEY),
-                    (String)properties.get(JDBC_PASSWORD_KEY));
-        }
-        catch (final Exception e) {
+            return new JdbcConfiguration((String) properties.get(JDBC_URL_KEY),
+                    (String) properties.get(JDBC_DRIVER_KEY), (String) properties.get(JDBC_USER_KEY),
+                    (String) properties.get(JDBC_PASSWORD_KEY));
+        } catch (final Exception e) {
             throw new Exception("error while loading jdbc configuration properties form EntityManagerFactory", e);
         }
     }

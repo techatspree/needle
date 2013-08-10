@@ -8,7 +8,7 @@ import org.junit.Test;
 import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 
-public class PropertyBasedInjectionConfigurationFactoryTest {
+public class InjectionConfigurationTest {
 
 	
 	@Test

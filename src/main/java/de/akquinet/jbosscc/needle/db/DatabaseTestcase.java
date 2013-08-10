@@ -132,11 +132,11 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
         this(clazzes);
         this.dbOperation = dbOperation;
     }
-    
-    
+
     protected DatabaseTestcase(final NeedleConfiguration needleConfiguration) {
-        configuration = new DatabaseTestcaseConfiguration(needleConfiguration, needleConfiguration.getPersistenceunitName());
-        
+        configuration = new DatabaseTestcaseConfiguration(needleConfiguration,
+                needleConfiguration.getPersistenceunitName());
+
     }
 
     /**

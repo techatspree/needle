@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation1;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation2;
@@ -27,7 +28,7 @@ public class PropertyBasedConfigurationFactoryTest {
 
     @Test
     public void testDBOperationClassName_NoDefaults() throws Exception {
-        assertEquals(HSQLDeleteOperation.class.getName(), needleConfiguration.getDBOperationClassName());
+        assertEquals(HSQLDeleteOperation.class, needleConfiguration.getDBOperationClass());
     }
 
     @Test
@@ -51,6 +52,27 @@ public class PropertyBasedConfigurationFactoryTest {
     @Test(expected = RuntimeException.class)
     public void testLookupMockProviderClass_Null() throws Exception {
         assertNull(PropertyBasedConfigurationFactory.lookupMockProviderClass(null));
+    }
+    
+    @Test
+    public void testLookupDBOperationClassClass_HSQLDeleteOperation() throws Exception {
+        Class<? extends AbstractDBOperation> dbDialectClass = PropertyBasedConfigurationFactory
+                .lookupDBOperationClass(HSQLDeleteOperation.class.getName());
+        assertEquals(HSQLDeleteOperation.class, dbDialectClass);
+    }
+
+    @Test
+    public void testLookupDBOperationClassClass_UnknownClass() throws Exception {
+        Class<? extends AbstractDBOperation> dbDialectClass = PropertyBasedConfigurationFactory
+                .lookupDBOperationClass("unknowm");
+        assertNull(dbDialectClass);
+    }
+
+    @Test
+    public void testLookupDBOperationClassClass_Null() throws Exception {
+        Class<? extends AbstractDBOperation> dbDialectClass = PropertyBasedConfigurationFactory
+                .lookupDBOperationClass(null);
+        assertNull(dbDialectClass);
     }
 
 

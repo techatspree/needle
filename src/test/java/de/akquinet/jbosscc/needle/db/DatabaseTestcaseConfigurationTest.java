@@ -1,18 +1,17 @@
 package de.akquinet.jbosscc.needle.db;
 
-import javax.persistence.EntityManager;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+
+import javax.persistence.EntityManager;
+
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.db.operation.ExecuteScriptOperation;
 import de.akquinet.jbosscc.needle.db.operation.JdbcConfiguration;
-import de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class DatabaseTestcaseConfigurationTest {
@@ -35,27 +34,6 @@ public class DatabaseTestcaseConfigurationTest {
                 databaseRuleConfiguration, "getEntityManagerFactoryProperties");
 
         assertNotNull(jdbcConfiguration);
-    }
-
-    @Test
-    public void testLookupDBOperationClassClass_HSQLDeleteOperation() throws Exception {
-        Class<? extends AbstractDBOperation> dbDialectClass = DatabaseTestcaseConfiguration
-                .lookupDBOperationClass(HSQLDeleteOperation.class.getName());
-        assertEquals(HSQLDeleteOperation.class, dbDialectClass);
-    }
-
-    @Test
-    public void testLookupDBOperationClassClass_UnknownClass() throws Exception {
-        Class<? extends AbstractDBOperation> dbDialectClass = DatabaseTestcaseConfiguration
-                .lookupDBOperationClass("unknowm");
-        assertNull(dbDialectClass);
-    }
-
-    @Test
-    public void testLookupDBOperationClassClass_Null() throws Exception {
-        Class<? extends AbstractDBOperation> dbDialectClass = DatabaseTestcaseConfiguration
-                .lookupDBOperationClass(null);
-        assertNull(dbDialectClass);
     }
 
     @Test
