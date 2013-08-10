@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.common.MapEntry;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
+import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.postconstruct.PostConstructProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
@@ -23,7 +24,8 @@ public final class InjectionConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(InjectionConfiguration.class);
 
-    private static final Set<Class<?>> POSTCONSTRUCT_CLASSES = ReflectionUtil.getClasses("javax.annotation.PostConstruct");
+    private static final Set<Class<?>> POSTCONSTRUCT_CLASSES = ReflectionUtil
+            .getClasses("javax.annotation.PostConstruct");
 
     private static final Class<?> RESOURCE_CLASS = getClass("javax.annotation.Resource");
     private static final Class<?> INJECT_CLASS = getClass("javax.inject.Inject");
@@ -31,9 +33,7 @@ public final class InjectionConfiguration {
     private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
     private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
 
-    private final NeedleConfiguration needleConfiguration = NeedleConfiguration.get();
-
-    private final Class<? extends MockProvider> mockProviderClass;
+    private final NeedleConfiguration needleConfiguration = PropertyBasedConfigurationFactory.get();
 
     // Default InjectionProvider for annotations
     private final List<InjectionProvider<?>> injectionProviderList = new ArrayList<InjectionProvider<?>>();
@@ -53,10 +53,15 @@ public final class InjectionConfiguration {
 
     private final PostConstructProcessor postConstructProcessor;
 
-    @SuppressWarnings("unchecked")
     public InjectionConfiguration() {
-        mockProviderClass = lookupMockProviderClass(needleConfiguration.getMockProviderClassName());
-        mockProvider = createMockProvider();
+        this(PropertyBasedConfigurationFactory.get().getMockProviderClass());
+    }
+
+    @SuppressWarnings("unchecked")
+    public InjectionConfiguration(final Class<? extends MockProvider> mockProviderClass) {
+
+        mockProvider = createMockProvider(mockProviderClass);
+
         postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
 
         add(INJECT_CLASS);
@@ -98,7 +103,7 @@ public final class InjectionConfiguration {
 
     @SuppressWarnings("unchecked")
     public <T extends MockProvider> T getMockProvider() {
-        return (T)mockProvider;
+        return (T) mockProvider;
     }
 
     public PostConstructProcessor getPostConstructProcessor() {
@@ -125,14 +130,14 @@ public final class InjectionConfiguration {
     }
 
     private void initGlobalInjectionProvider() {
-        final Set<Class<InjectionProvider<?>>> customInjectionProviders = needleConfiguration.getCustomInjectionProviderClasses();
+        final Set<Class<InjectionProvider<?>>> customInjectionProviders = needleConfiguration
+                .getCustomInjectionProviderClasses();
 
         for (final Class<InjectionProvider<?>> injectionProviderClass : customInjectionProviders) {
             try {
                 final InjectionProvider<?> injection = ReflectionUtil.createInstance(injectionProviderClass);
                 globalInjectionProviderList.add(0, injection);
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 LOG.warn("could not create an instance of injection provider " + injectionProviderClass, e);
             }
         }
@@ -142,7 +147,7 @@ public final class InjectionConfiguration {
     @SuppressWarnings("unchecked")
     private void addInjectionAnnotation(final Class<?> clazz) {
         if (clazz.isAnnotation()) {
-            injectionAnnotationClasses.add((Class<? extends Annotation>)clazz);
+            injectionAnnotationClasses.add((Class<? extends Annotation>) clazz);
         }
     }
 
@@ -170,27 +175,12 @@ public final class InjectionConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    <T extends MockProvider> T createMockProvider() {
+    <T extends MockProvider> T createMockProvider(final Class<? extends MockProvider> mockProviderClass) {
         try {
-            return (T)mockProviderClass.newInstance();
-        }
-        catch (final Exception e) {
+            return (T) mockProviderClass.newInstance();
+        } catch (final Exception e) {
             throw new RuntimeException("could not create a new instance of mock provider " + mockProviderClass, e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static Class<? extends MockProvider> lookupMockProviderClass(final String mockProviderClassName) {
-
-        try {
-            if (mockProviderClassName != null) {
-                return (Class<? extends MockProvider>)Class.forName(mockProviderClassName);
-            }
-        }
-        catch (final Exception e) {
-            throw new RuntimeException("could not load mock provider class: '" + mockProviderClassName + "'", e);
-        }
-
-        throw new RuntimeException("no mock provider configured");
-    }
 }

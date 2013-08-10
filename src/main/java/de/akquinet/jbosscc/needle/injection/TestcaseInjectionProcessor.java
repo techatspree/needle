@@ -15,7 +15,7 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public class TestcaseInjectionProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestcaseInjectionProcessor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TestcaseInjectionProcessor.class);
 
     public void process(final NeedleContext context, final InjectionConfiguration configuration) {
         final Set<Class<? extends Annotation>> supportedAnnotations = configuration.getSupportedAnnotations();

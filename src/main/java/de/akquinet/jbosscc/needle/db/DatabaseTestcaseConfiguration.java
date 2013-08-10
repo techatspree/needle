@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
+import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.configuration.PersistenceConfigurationFactory;
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
@@ -39,7 +40,7 @@ final class DatabaseTestcaseConfiguration {
      */
     private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
 
-    private final NeedleConfiguration needleConfiguration = NeedleConfiguration.get();
+    private final NeedleConfiguration needleConfiguration = PropertyBasedConfigurationFactory.get();
 
     private final AbstractDBOperation dbOperation;
 
@@ -61,7 +62,7 @@ final class DatabaseTestcaseConfiguration {
     }
 
     DatabaseTestcaseConfiguration() {
-        this(NeedleConfiguration.get().getPersistenceunitName());
+        this(PropertyBasedConfigurationFactory.get().getPersistenceunitName());
     }
 
     EntityManager getEntityManager() {

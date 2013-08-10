@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -95,7 +96,7 @@ public class PostConstructAfterInjectionTest {
 	private EasyMockProvider mockProvider;
 
 	@Before
-	public final void initMocks() {
+	public void initMocks() {
 		dummyB = needleRule.getInjectedObject(PostConstructDummyB.class);
 		EasyMock.expect(dummyB.isPostConstructCalledForDummy()).andReturn(true).anyTimes();
 		mockProvider.replayAll();

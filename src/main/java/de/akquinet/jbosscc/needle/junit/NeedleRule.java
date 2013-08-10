@@ -63,7 +63,7 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
         for (MethodRule rule : methodRuleChain) {
             appliedStatement = rule.apply(appliedStatement, method, target);
         }
-        
+
         return statement(appliedStatement, target);
 
     }

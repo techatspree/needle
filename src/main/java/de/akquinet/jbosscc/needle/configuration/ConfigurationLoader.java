@@ -70,7 +70,7 @@ public final class ConfigurationLoader {
         return defaults;
     }
 
-    public static Map<String, String> loadResourceAndDefault(final String name) {
+    static Map<String, String> loadResourceAndDefault(final String name) {
 
         final Map<String, String> result = loadDefaults();
         try {
@@ -100,7 +100,7 @@ public final class ConfigurationLoader {
         target.put(key, trimmedValue);
     }
 
-    public Map<String, String> getConfigProperties() {
+    Map<String, String> getConfigProperties() {
         return configProperties;
     }
 

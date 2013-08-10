@@ -6,6 +6,7 @@ import javax.persistence.EntityManagerFactory;
 import org.hibernate.ejb.Ejb3Configuration;
 
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
+import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 
 /**
  * Allows a fine configuration of an {@link EntityManagerFactory}.
@@ -49,7 +50,7 @@ class EJB3Configuration implements PersistenceConfiguration {
         final Ejb3Configuration cfg = new Ejb3Configuration();
 
         // add a regular hibernate.cfg.xml
-        cfg.configure(NeedleConfiguration.get().getHibernateCfgFilename());
+        cfg.configure(PropertyBasedConfigurationFactory.get().getHibernateCfgFilename());
 
         for (final Class<?> clazz : entityClasses) {
             cfg.addAnnotatedClass(clazz);

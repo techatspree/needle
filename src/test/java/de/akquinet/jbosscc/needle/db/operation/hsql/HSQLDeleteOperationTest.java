@@ -81,7 +81,7 @@ public class HSQLDeleteOperationTest {
 
 			Statement st = hsqlDeleteOperation.getConnection().createStatement();
 			int executeUpdate = st.executeUpdate("update " + Address.TABLE_NAME + " set person_id = 2");
-			Assert.assertEquals(executeUpdate, 1);
+			Assert.assertEquals(1, executeUpdate);
 			st.close();
 			hsqlDeleteOperation.commit();
 		} finally {

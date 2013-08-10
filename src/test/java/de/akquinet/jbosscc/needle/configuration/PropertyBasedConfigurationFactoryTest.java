@@ -1,6 +1,8 @@
 package de.akquinet.jbosscc.needle.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.annotation.Annotation;
@@ -12,20 +14,15 @@ import de.akquinet.jbosscc.needle.db.operation.hsql.HSQLDeleteOperation;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation1;
 import de.akquinet.jbosscc.needle.injection.CustomInjectionAnnotation2;
 import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
+import de.akquinet.jbosscc.needle.mock.MockitoProvider;
 
-public class NeedleConfigurationTest {
+public class PropertyBasedConfigurationFactoryTest {
 
-    private final NeedleConfiguration needleConfiguration = NeedleConfiguration.get();
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionWhenConfigurationIsInitializedMoreThenOnce() throws Exception {
-        NeedleConfiguration.init();
-        NeedleConfiguration.init();
-    }
+    private final NeedleConfiguration needleConfiguration = PropertyBasedConfigurationFactory.get();
 
     @Test
     public void testGetMockProviderClass_Default() throws Exception {
-        assertEquals(EasyMockProvider.class.getName(), needleConfiguration.getMockProviderClassName());
+        assertEquals(EasyMockProvider.class, needleConfiguration.getMockProviderClass());
     }
 
     @Test
@@ -40,5 +37,21 @@ public class NeedleConfigurationTest {
         assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation1.class));
         assertTrue(customInjectionAnnotations.contains(CustomInjectionAnnotation2.class));
     }
+    
+    @Test
+    public void testLookupMockProviderClass() throws Exception {
+        assertNotNull(PropertyBasedConfigurationFactory.lookupMockProviderClass(MockitoProvider.class.getName()));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testLookupMockProviderClass_WithUnknownClass() throws Exception {
+        assertNull(PropertyBasedConfigurationFactory.lookupMockProviderClass("unknown"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testLookupMockProviderClass_Null() throws Exception {
+        assertNull(PropertyBasedConfigurationFactory.lookupMockProviderClass(null));
+    }
+
 
 }

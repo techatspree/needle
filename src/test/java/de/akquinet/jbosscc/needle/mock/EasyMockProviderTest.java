@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import javax.inject.Inject;
+
 import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +26,8 @@ public class EasyMockProviderTest {
     @ObjectUnderTest(implementation = MyComponentBean.class)
     private MyComponent component;
 
-    private EasyMockProvider mockProvider = (EasyMockProvider) needleRule.getMockProvider();
+    @Inject
+    private EasyMockProvider mockProvider; 
 
     @Test
     public void testNiceMock() throws Exception {
