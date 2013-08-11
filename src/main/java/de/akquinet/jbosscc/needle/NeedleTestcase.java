@@ -163,7 +163,7 @@ public abstract class NeedleTestcase {
                 public InjectionTargetInformation create(final Class<?> parameterType, final int parameterIndex) {
 
                     return new InjectionTargetInformation(parameterType, method,
-                            method.getParameterAnnotations()[parameterIndex]);
+                            method.getGenericParameterTypes()[parameterIndex], method.getParameterAnnotations()[parameterIndex]);
                 }
             };
             final Object[] arguments = createArguments(parameterTypes, injectionTargetInformationFactory);
@@ -302,7 +302,7 @@ public abstract class NeedleTestcase {
                 @Override
                 public InjectionTargetInformation create(final Class<?> parameterType, final int parameterIndex) {
                     return new InjectionTargetInformation(parameterType, constructor,
-                            constructor.getParameterAnnotations()[parameterIndex]);
+                            constructor.getGenericParameterTypes()[parameterIndex], constructor.getParameterAnnotations()[parameterIndex]);
                 }
             };
 

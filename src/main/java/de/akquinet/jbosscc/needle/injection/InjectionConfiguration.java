@@ -29,6 +29,7 @@ public final class InjectionConfiguration {
 
     private static final Class<?> RESOURCE_CLASS = getClass("javax.annotation.Resource");
     private static final Class<?> INJECT_CLASS = getClass("javax.inject.Inject");
+    private static final Class<?> CDI_INSTANCE_CLASS = getClass("javax.enterprise.inject.Instance");
     private static final Class<?> EJB_CLASS = getClass("javax.ejb.EJB");
     private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
     private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
@@ -64,6 +65,7 @@ public final class InjectionConfiguration {
 
         postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
 
+        addCdiInstance();
         add(INJECT_CLASS);
         add(EJB_CLASS);
         add(PERSISTENCE_CONTEXT_CLASS);
@@ -86,6 +88,14 @@ public final class InjectionConfiguration {
         if (RESOURCE_CLASS != null) {
             addInjectionAnnotation(RESOURCE_CLASS);
             injectionProviderList.add(new ResourceMockInjectionProvider(mockProvider));
+        }
+    }
+    
+    private void addCdiInstance() {
+
+        if (CDI_INSTANCE_CLASS != null) {
+//            addInjectionAnnotation(RESOURCE_CLASS);
+            injectionProviderList.add(new CDIInstanceInjectionProvider(CDI_INSTANCE_CLASS, mockProvider));
         }
     }
 
