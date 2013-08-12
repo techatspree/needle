@@ -1,5 +1,7 @@
 package de.akquinet.jbosscc.needle.junit;
 
+import static org.junit.Assert.*;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,5 +21,13 @@ public class NeedleRuleBuilderTest {
     public void testWithDefaultMockProvider() throws Exception {
         NeedleRule needleRule = new NeedleRuleBuilder().build();
         Assert.assertTrue(needleRule.getMockProvider() instanceof EasyMockProvider);
+    }
+
+    @Test
+    public void shouldReturnConcreteBuilderInstance() throws Exception {
+        AbstractNeedleRuleBuilder<NeedleRuleBuilder, NeedleRule> builder = new NeedleRuleBuilder();
+        builder.with("needle").withOuter(null);
+        NeedleRule rule = builder.build();
+
     }
 }

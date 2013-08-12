@@ -41,10 +41,9 @@ import de.akquinet.jbosscc.needle.injection.InjectionProvider;
  */
 public class NeedleRule extends NeedleTestcase implements MethodRule {
 
-    private List<MethodRule> methodRuleChain = new ArrayList<MethodRule>();
+    private final List<MethodRule> methodRuleChain = new ArrayList<MethodRule>();
 
     public NeedleRule() {
-        super();
     }
 
     /**

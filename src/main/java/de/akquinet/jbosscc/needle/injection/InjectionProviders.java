@@ -4,6 +4,7 @@ import static de.akquinet.jbosscc.needle.common.Annotations.assertIsQualifier;
 import static de.akquinet.jbosscc.needle.common.Preconditions.checkArgument;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -141,6 +142,19 @@ public final class InjectionProviders {
         final InjectionProviderInstancesSupplier supplier = mergeSuppliers(suppliers);
         return supplier.get().toArray(new InjectionProvider<?>[supplier.get().size()]);
     }
+
+    @SuppressWarnings("serial")
+    public static Set<InjectionProvider<?>> providersToSet(final InjectionProvider<?>... providers) {
+        return new HashSet<InjectionProvider<?>>() {
+            {
+                for (InjectionProvider<?> provider : providers) {
+                    add(provider);
+                }
+            }
+        };
+
+    }
+
 
     private InjectionProviders() {
         // hide default constructor

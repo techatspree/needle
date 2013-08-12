@@ -48,7 +48,7 @@ public class PropertyBasedConfigurationFactory {
 
     private NeedleConfiguration init() {
 
-        NeedleConfiguration configuration = new NeedleConfiguration();
+        final NeedleConfiguration configuration = new NeedleConfiguration();
 
         final Set<Class<Annotation>> customInjectionAnnotations = lookupCustomClasses
                 .lookup(ConfigurationProperties.CUSTOM_INJECTION_ANNOTATIONS_KEY);
@@ -109,7 +109,7 @@ public class PropertyBasedConfigurationFactory {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Class<T> lookupClass(Class<T> type, final String className) throws ClassNotFoundException {
+    private static <T> Class<T> lookupClass(final Class<T> type, final String className) throws ClassNotFoundException {
         return (Class<T>) Class.forName(className);
 
     }

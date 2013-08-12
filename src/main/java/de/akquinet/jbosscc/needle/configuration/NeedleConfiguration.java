@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
-import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
@@ -154,6 +153,7 @@ public final class NeedleConfiguration implements Cloneable {
         return builder.toString();
     }
 
+    @Override
     public NeedleConfiguration clone() throws CloneNotSupportedException {
         return (NeedleConfiguration) super.clone();
     }
