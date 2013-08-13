@@ -45,7 +45,7 @@ public final class ReflectionUtil {
         new DerivedClassIterator(clazz) {
 
             @Override
-            protected void handleClass(final Class<?> clazz) {
+            protected boolean handleClass(final Class<?> clazz) {
                 final Field[] fields = clazz.getDeclaredFields();
 
                 for (final Field field : fields) {
@@ -53,6 +53,7 @@ public final class ReflectionUtil {
                         result.add(field);
                     }
                 }
+                return true;
 
             }
         }.iterate();
@@ -67,13 +68,14 @@ public final class ReflectionUtil {
         new DerivedClassIterator(clazz) {
 
             @Override
-            protected void handleClass(final Class<?> clazz) {
+            protected boolean handleClass(final Class<?> clazz) {
 
                 for (final Method method : clazz.getDeclaredMethods()) {
                     if (method.isAnnotationPresent(annotation)) {
                         result.add(method);
                     }
                 }
+                return true;
 
             }
         }.iterate();
@@ -110,7 +112,7 @@ public final class ReflectionUtil {
         new DerivedClassIterator(clazz) {
 
             @Override
-            protected void handleClass(final Class<?> clazz) {
+            protected boolean handleClass(final Class<?> clazz) {
                 final Field[] fields = clazz.getDeclaredFields();
 
                 for (final Field field : fields) {
@@ -118,6 +120,7 @@ public final class ReflectionUtil {
                         result.add(field);
                     }
                 }
+                return true;
 
             }
         }.iterate();
@@ -139,10 +142,11 @@ public final class ReflectionUtil {
         new DerivedClassIterator(clazz) {
 
             @Override
-            protected void handleClass(final Class<?> clazz) {
+            protected boolean handleClass(final Class<?> clazz) {
                 final Field[] fields = clazz.getDeclaredFields();
 
                 Collections.addAll(result, fields);
+                return true;
 
             }
         }.iterate();
@@ -194,20 +198,24 @@ public final class ReflectionUtil {
      */
     public static void setFieldValue(final Object object, final String fieldName, final Object value) {
 
-        new DerivedClassIterator(object.getClass()) {
+        final boolean success = new DerivedClassIterator(object.getClass()) {
 
             @Override
-            protected void handleClass(final Class<?> clazz) {
+            protected boolean handleClass(final Class<?> clazz) {
                 try {
                     setFieldValue(object, clazz, fieldName, value);
-                    return;
+                    return true;
                 } catch (final NoSuchFieldException e) {
-                    LOG.warn("could not set field " + fieldName + " value " + value, e);
-                }
+                    LOG.debug("could not set field " + fieldName + " value " + value, e);
 
+                }
+                return false;
             }
         }.iterate();
 
+        if (!success) {
+            LOG.warn("could not set field " + fieldName + " value " + value);
+        }
     }
 
     /**
@@ -331,13 +339,14 @@ public final class ReflectionUtil {
         new DerivedClassIterator(clazz) {
 
             @Override
-            protected void handleClass(final Class<?> clazz) {
+            protected boolean handleClass(final Class<?> clazz) {
                 try {
                     result.add(clazz.getDeclaredMethod(methodName, parameterTypes));
-                    return;
+                    return true;
                 } catch (final Exception e) {
                     // do nothing
                 }
+                return false;
 
             }
         }.iterate();
