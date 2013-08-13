@@ -21,7 +21,6 @@ public class NeedleRuleBuilder extends AbstractNeedleRuleBuilder<NeedleRuleBuild
         return this;
     }
 
-
     @Override
     protected NeedleRule build(InjectionConfiguration injectionConfiguration, InjectionProvider<?>... injectionProvider) {
         NeedleRule needleRule = new NeedleRule(injectionConfiguration, injectionProvider);
