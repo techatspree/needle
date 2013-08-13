@@ -27,6 +27,7 @@
 			work with JBoss EAP 6. It requires you have access to the JBoss EAP 6 maven
 			repository. -->
 		<!-- <javaee6.web.spec.version>3.0.0.Beta1-redhat-1</javaee6.web.spec.version> -->
+		<needle.version>2.3-SNAPSHOT</needle.version>
 	</properties>
 
 	<dependencyManagement>
@@ -148,7 +149,7 @@
 		<dependency>
 			<groupId>de.akquinet.jbosscc</groupId>
 			<artifactId>jbosscc-needle</artifactId>
-			<version>2.1</version>
+			<version>${needle.version}</version>
 			<scope>test</scope>
 		</dependency>
 

@@ -3,10 +3,8 @@ package de.akquinet.jbosscc.needle.configuration;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
-import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public final class NeedleConfiguration implements Cloneable {
 
@@ -15,8 +13,8 @@ public final class NeedleConfiguration implements Cloneable {
     private Set<Class<InjectionProviderInstancesSupplier>> customInjectionProviderInstancesSupplierClasses;
     private String persistenceunitName;
     private String hibernateCfgFilename;
-    private Class<? extends MockProvider> mockProviderClass;
-    private Class<? extends AbstractDBOperation> dbOperationClass;
+    private String mockProviderClassName;
+    private String dbOperationClassName;
     private String jdbcUrl;
     private String jdbcDriver;
     private String jdbcUser;
@@ -54,12 +52,12 @@ public final class NeedleConfiguration implements Cloneable {
      * 
      * @return database operation class name or null
      */
-    public Class<? extends AbstractDBOperation> getDBOperationClass() {
-        return dbOperationClass;
+    public String getDBOperationClassName() {
+        return dbOperationClassName;
     }
 
-    public void setDBOperationClass(final Class<? extends AbstractDBOperation> dbOperationClass) {
-        this.dbOperationClass = dbOperationClass;
+    public void setDBOperationClassName(final String dbOperationClassName) {
+        this.dbOperationClassName = dbOperationClassName;
     }
 
     public String getJdbcUrl() {
@@ -95,16 +93,16 @@ public final class NeedleConfiguration implements Cloneable {
     }
 
     /**
-     * Returns the configured mock provider class
+     * Returns the name of the configured mock provider class
      * 
      * @return mock provider class name or null
      */
-    public Class<? extends MockProvider> getMockProviderClass() {
-        return mockProviderClass;
+    public String getMockProviderClassName() {
+        return mockProviderClassName;
     }
 
-    public void setMockProviderClass(final Class<? extends MockProvider> mockProviderClass) {
-        this.mockProviderClass = mockProviderClass;
+    public void setMockProviderClassName(final String mockProviderClassName) {
+        this.mockProviderClassName = mockProviderClassName;
     }
 
     /**
@@ -147,8 +145,8 @@ public final class NeedleConfiguration implements Cloneable {
         final StringBuilder builder = new StringBuilder();
         builder.append("\nPU_NAME=").append(getPersistenceunitName());
         builder.append("\nCFG_FILE=").append(getHibernateCfgFilename());
-        builder.append("\nDB_OPERATION=").append(getDBOperationClass());
-        builder.append("\nMOCK_PROVIDER=").append(getMockProviderClass());
+        builder.append("\nDB_OPERATION=").append(getDBOperationClassName());
+        builder.append("\nMOCK_PROVIDER=").append(getMockProviderClassName());
 
         return builder.toString();
     }

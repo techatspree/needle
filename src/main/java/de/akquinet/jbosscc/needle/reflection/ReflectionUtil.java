@@ -163,13 +163,13 @@ public final class ReflectionUtil {
      * Changing the value of a given field.
      * 
      * @param object
-     *        -- target object of injection
+     *            -- target object of injection
      * @param clazz
-     *        -- type of argument object
+     *            -- type of argument object
      * @param fieldName
-     *        -- name of field whose value is to be set
+     *            -- name of field whose value is to be set
      * @param value
-     *        -- object that is injected
+     *            -- object that is injected
      */
     public static void setFieldValue(final Object object, final Class<?> clazz, final String fieldName,
             final Object value) throws NoSuchFieldException {
@@ -177,8 +177,7 @@ public final class ReflectionUtil {
 
         try {
             setField(field, object, value);
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             LOG.error(e.getMessage(), e);
         }
     }
@@ -187,11 +186,11 @@ public final class ReflectionUtil {
      * Changing the value of a given field.
      * 
      * @param object
-     *        -- target object of injection
+     *            -- target object of injection
      * @param fieldName
-     *        -- name of field whose value is to be set
+     *            -- name of field whose value is to be set
      * @param value
-     *        -- object that is injected
+     *            -- object that is injected
      */
     public static void setFieldValue(final Object object, final String fieldName, final Object value) {
 
@@ -202,8 +201,7 @@ public final class ReflectionUtil {
                 try {
                     setFieldValue(object, clazz, fieldName, value);
                     return;
-                }
-                catch (final NoSuchFieldException e) {
+                } catch (final NoSuchFieldException e) {
                     LOG.warn("could not set field " + fieldName + " value " + value, e);
                 }
 
@@ -216,11 +214,11 @@ public final class ReflectionUtil {
      * Get the value of a given field on a given object via reflection.
      * 
      * @param object
-     *        -- target object of field access
+     *            -- target object of field access
      * @param clazz
-     *        -- type of argument object
+     *            -- type of argument object
      * @param fieldName
-     *        -- name of the field
+     *            -- name of the field
      * @return -- the value of the represented field in object; primitive values
      *         are wrapped in an appropriate object before being returned
      */
@@ -228,8 +226,7 @@ public final class ReflectionUtil {
         try {
             final Field field = clazz.getDeclaredField(fieldName);
             return getFieldValue(object, field);
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new IllegalArgumentException("Could not get field value: " + fieldName, e);
         }
     }
@@ -238,9 +235,9 @@ public final class ReflectionUtil {
      * Get the value of a given field on a given object via reflection.
      * 
      * @param object
-     *        -- target object of field access
+     *            -- target object of field access
      * @param field
-     *        -- target field
+     *            -- target field
      * @return -- the value of the represented field in object; primitive values
      *         are wrapped in an appropriate object before being returned
      */
@@ -251,8 +248,7 @@ public final class ReflectionUtil {
             }
 
             return field.get(object);
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new IllegalArgumentException("Could not get field value: " + field, e);
         }
     }
@@ -261,9 +257,9 @@ public final class ReflectionUtil {
      * Get the value of a given field on a given object via reflection.
      * 
      * @param object
-     *        -- target object of field access
+     *            -- target object of field access
      * @param fieldName
-     *        -- name of the field
+     *            -- name of the field
      * @return -- the value of the represented field in object; primitive values
      *         are wrapped in an appropriate object before being returned
      */
@@ -276,16 +272,16 @@ public final class ReflectionUtil {
      * reflection.
      * 
      * @param object
-     *        -- target object of invocation
+     *            -- target object of invocation
      * @param clazz
-     *        -- type of argument object
+     *            -- type of argument object
      * @param methodName
-     *        -- name of method to be invoked
+     *            -- name of method to be invoked
      * @param arguments
-     *        -- arguments for method invocation
+     *            -- arguments for method invocation
      * @return -- method object to which invocation is actually dispatched
      * @throws Exception
-     *         - operation exception
+     *             - operation exception
      */
     public static Object invokeMethod(final Object object, final Class<?> clazz, final String methodName,
             final Object... arguments) throws Exception {
@@ -317,12 +313,11 @@ public final class ReflectionUtil {
             }
 
             return method.invoke(instance, arguments);
-        }
-        catch (final Exception exc) {
+        } catch (final Exception exc) {
             LOG.warn("Error invoking method: " + method.getName(), exc);
             final Throwable cause = exc.getCause();
             if (cause instanceof Exception) {
-                throw (Exception)cause;
+                throw (Exception) cause;
             }
             throw exc;
         }
@@ -340,8 +335,7 @@ public final class ReflectionUtil {
                 try {
                     result.add(clazz.getDeclaredMethod(methodName, parameterTypes));
                     return;
-                }
-                catch (final Exception e) {
+                } catch (final Exception e) {
                     // do nothing
                 }
 
@@ -385,11 +379,11 @@ public final class ReflectionUtil {
      * reflection.
      * 
      * @param object
-     *        -- target object of invocation
+     *            -- target object of invocation
      * @param methodName
-     *        -- name of method to be invoked
+     *            -- name of method to be invoked
      * @param arguments
-     *        -- arguments for method invocation
+     *            -- arguments for method invocation
      * @return -- method object to which invocation is actually dispatched
      * @throws Exception
      */
@@ -415,14 +409,13 @@ public final class ReflectionUtil {
      * interface with the given string name.
      * 
      * @param className
-     *        the fully qualified name of the desired class.
+     *            the fully qualified name of the desired class.
      * @return <code>Class</code> or null
      */
     public static Class<?> forName(final String className) {
         try {
             return Class.forName(className);
-        }
-        catch (final ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             return null;
         }
     }
@@ -465,8 +458,7 @@ public final class ReflectionUtil {
     private static Field getFieldByName(final Class<?> clazz, final String fieldName) {
         try {
             return clazz.getDeclaredField(fieldName);
-        }
-        catch (final NoSuchFieldException e) {
+        } catch (final NoSuchFieldException e) {
             LOG.warn(e.getMessage(), e);
             return null;
         }
@@ -483,6 +475,21 @@ public final class ReflectionUtil {
         final Constructor<T> constructor = clazz.getConstructor(parameterTypes);
 
         return constructor.newInstance(parameter);
+    }
+
+    /**
+     * 
+     * @param type
+     *            - base class
+     * @param className
+     *            - fully qualified class name
+     * @return class object
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> lookupClass(final Class<T> type, final String className) throws ClassNotFoundException {
+        return (Class<T>) Class.forName(className);
+
     }
 
 }
