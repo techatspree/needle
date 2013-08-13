@@ -7,10 +7,8 @@ import org.junit.rules.MethodRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
-import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public class NeedleRuleBuilder extends AbstractNeedleRuleBuilder<NeedleRuleBuilder, NeedleRule> {
 
@@ -23,20 +21,11 @@ public class NeedleRuleBuilder extends AbstractNeedleRuleBuilder<NeedleRuleBuild
         return this;
     }
 
+
     @Override
-    public NeedleRule build() {
-        final NeedleConfiguration needleConfiguration = getNeedleConfiguration();
-        final Class<? extends MockProvider> mockProviderClass = getMockProviderClass(needleConfiguration);
-
-        InjectionConfiguration injectionConfiguration = new InjectionConfiguration(needleConfiguration,
-                mockProviderClass);
-
-        injectionConfiguration.addGlobalInjectionAnnotation(getCustomInjectionAnnotations());
-        InjectionProvider<?>[] providerArray = providers.toArray(new InjectionProvider<?>[providers.size()]);
-        
-        injectionConfiguration.addInjectionProvider(providerArray);
+    protected NeedleRule build(InjectionConfiguration injectionConfiguration, InjectionProvider<?>... injectionProvider) {
         NeedleRule needleRule = new NeedleRule(injectionConfiguration, injectionProvider);
-        
+
         for (MethodRule rule : methodRuleChain) {
             needleRule.withOuter(rule);
         }

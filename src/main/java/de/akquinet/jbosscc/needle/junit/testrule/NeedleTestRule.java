@@ -7,6 +7,7 @@ import org.junit.runners.model.Statement;
 
 import de.akquinet.jbosscc.needle.NeedleTestcase;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
@@ -58,6 +59,12 @@ public class NeedleTestRule extends NeedleTestcase implements TestRule {
      */
     public NeedleTestRule(final Object testInstance, final InjectionProvider<?>... injectionProvider) {
         super(injectionProvider);
+        this.testInstance = testInstance;
+    }
+    
+    NeedleTestRule(final Object testInstance, final InjectionConfiguration configuration,
+            final InjectionProvider<?>... injectionProvider) {
+        super(configuration, injectionProvider);
         this.testInstance = testInstance;
     }
 

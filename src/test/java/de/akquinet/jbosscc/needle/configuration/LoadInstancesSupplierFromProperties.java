@@ -1,6 +1,6 @@
 package de.akquinet.jbosscc.needle.configuration;
 
-import static de.akquinet.jbosscc.needle.NeedleBuilders.needleRule;
+import static de.akquinet.jbosscc.needle.junit.NeedleBuilders.needleRule;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -22,7 +22,7 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 public class LoadInstancesSupplierFromProperties {
 
     @Rule
-    public final NeedleRule needle = needleRule("needle-mockito").build();
+    public final NeedleRule needle = needleRule().with("needle-mockito").build();
 
     @Inject
     private MyComponent component;

@@ -4,6 +4,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.db.DatabaseTestcase;
 import de.akquinet.jbosscc.needle.db.operation.DBOperation;
 
@@ -37,6 +38,11 @@ public class DatabaseTestRule extends DatabaseTestcase implements TestRule {
     public DatabaseTestRule(final String persistenceUnitName) {
         super(persistenceUnitName);
     }
+    
+    DatabaseTestRule(final NeedleConfiguration configuration) {
+        super(configuration);
+    }
+    
 
     @Override
     public Statement apply(final Statement base, final Description description) {
