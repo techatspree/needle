@@ -9,16 +9,18 @@ abstract class DerivedClassIterator {
         this.clazz = clazz;
     }
 
-    void iterate() {
+    boolean iterate() {
         Class<?> superClazz = clazz;
 
+        boolean success = false;
         while (superClazz != null) {
 
-            handleClass(superClazz);
+            success |= handleClass(superClazz);
 
             superClazz = superClazz.getSuperclass();
         }
+        return success;
     }
 
-    protected abstract void handleClass(Class<?> clazz);
+    protected abstract boolean handleClass(Class<?> clazz);
 }
