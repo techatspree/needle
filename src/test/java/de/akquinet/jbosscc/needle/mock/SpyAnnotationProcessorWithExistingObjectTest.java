@@ -1,5 +1,6 @@
 package de.akquinet.jbosscc.needle.mock;
 
+import static de.akquinet.jbosscc.needle.junit.NeedleBuilders.needleRule;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -12,15 +13,13 @@ import org.mockito.Spy;
 import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
-import de.akquinet.jbosscc.needle.junit.NeedleRuleBuilder;
 import de.akquinet.jbosscc.needle.mock.SpyAnnotationProcessorTest.A;
 import de.akquinet.jbosscc.needle.mock.SpyAnnotationProcessorTest.B;
 
 public class SpyAnnotationProcessorWithExistingObjectTest {
 
-
     @Rule
-    public final NeedleRule needle = new NeedleRuleBuilder().with(MockitoProvider.class).build();
+    public final NeedleRule needle = needleRule().with(MockitoProvider.class).build();
 
     @ObjectUnderTest
     @Spy
@@ -30,7 +29,7 @@ public class SpyAnnotationProcessorWithExistingObjectTest {
     @ObjectUnderTest
     @InjectInto(targetComponentId = "a")
     @Spy
-    private B b = new B() {
+    private final B b = new B() {
 
         @Override
         public String getName() {
