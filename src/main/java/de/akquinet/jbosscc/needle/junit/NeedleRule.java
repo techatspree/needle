@@ -49,12 +49,12 @@ public class NeedleRule extends NeedleTestcase implements MethodRule {
     /**
      * @see NeedleTestcase#NeedleTestcase(InjectionProvider...)
      */
-    public NeedleRule(final InjectionProvider<?>... injectionProvider) {
-        super(injectionProvider);
+    public NeedleRule(final InjectionProvider<?>... injectionProviders) {
+        super(injectionProviders);
     }
     
-    NeedleRule(final InjectionConfiguration configuration, final InjectionProvider<?>... injectionProvider){
-        super(configuration, injectionProvider);
+    NeedleRule(final InjectionConfiguration configuration, final InjectionProvider<?>... injectionProviders) {
+        super(configuration, injectionProviders);
     } 
 
     /**

@@ -20,7 +20,7 @@ public final class NeedleBuilders {
     }
     
     /**
-     * @return a new builder for {@link NeedleRule}.
+     * @return a new builder for {@link NeedleTestRule}.
      */
     public static NeedleTestRuleBuilder needleTestRule(final Object testInstance) {
         return new NeedleTestRuleBuilder(testInstance);
@@ -31,6 +31,13 @@ public final class NeedleBuilders {
      */
     public static DatabaseTestRuleBuilder databaseTestRule() {
         return new DatabaseTestRuleBuilder();
+    }
+
+    /**
+     * @return a new builder for {@link DatabaseTestRule}.
+     */
+    public static DatabaseRuleBuilder databaseRule() {
+        return new DatabaseRuleBuilder();
     }
 
     /**

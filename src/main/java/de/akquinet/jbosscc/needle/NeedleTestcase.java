@@ -63,17 +63,18 @@ public abstract class NeedleTestcase {
      * Create an instance of {@link NeedleTestcase} with optional additional
      * injection provider.
      * 
-     * @param injectionProvider
+     * @param injectionProviders
      *            optional additional injection provider
      * @see InjectionProvider
      */
-    protected NeedleTestcase(final InjectionProvider<?>... injectionProvider) {
-        this(new InjectionConfiguration(), injectionProvider);
+    protected NeedleTestcase(final InjectionProvider<?>... injectionProviders) {
+        this(new InjectionConfiguration(), injectionProviders);
     }
     
-    protected NeedleTestcase(final InjectionConfiguration configuration, final InjectionProvider<?>... injectionProvider) {
+    protected NeedleTestcase(final InjectionConfiguration configuration,
+            final InjectionProvider<?>... injectionProviders) {
         this.configuration = configuration;
-        addInjectionProvider(injectionProvider);
+        addInjectionProvider(injectionProviders);
     }
 
     protected final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {

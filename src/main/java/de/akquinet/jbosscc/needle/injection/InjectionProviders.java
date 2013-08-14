@@ -4,6 +4,7 @@ import static de.akquinet.jbosscc.needle.common.Annotations.assertIsQualifier;
 import static de.akquinet.jbosscc.needle.common.Preconditions.checkArgument;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -153,6 +154,18 @@ public final class InjectionProviders {
             }
         };
 
+    }
+
+    /**
+     * Create array of InjectionProviders for given collection.
+     * 
+     * @param providers
+     *            providers to be contained
+     * @return array of given providers
+     */
+    public static InjectionProvider<?>[] providersToArray(final Collection<InjectionProvider<?>> providers) {
+        return providers == null ? new InjectionProvider<?>[0] : providers
+                .toArray(new InjectionProvider<?>[providers.size()]);
     }
 
 

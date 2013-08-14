@@ -53,18 +53,17 @@ public class NeedleTestRule extends NeedleTestcase implements TestRule {
     /**
      * @param testInstance
      *            - target of injection
-     * @param injectionProvider
+     * @param injectionProviders
      *            - optional custom injection provider
      * @see NeedleTestcase#NeedleTestcase(InjectionProvider...)
      */
-    public NeedleTestRule(final Object testInstance, final InjectionProvider<?>... injectionProvider) {
-        super(injectionProvider);
-        this.testInstance = testInstance;
+    public NeedleTestRule(final Object testInstance, final InjectionProvider<?>... injectionProviders) {
+        this(testInstance, new InjectionConfiguration(), injectionProviders);
     }
     
     NeedleTestRule(final Object testInstance, final InjectionConfiguration configuration,
-            final InjectionProvider<?>... injectionProvider) {
-        super(configuration, injectionProvider);
+            final InjectionProvider<?>... injectionProviders) {
+        super(configuration, injectionProviders);
         this.testInstance = testInstance;
     }
 

@@ -1,6 +1,8 @@
 package de.akquinet.jbosscc.needle.junit;
 
+
 import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providersForInstancesSuppliers;
+import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providersToArray;
 import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providersToSet;
 
 import java.lang.annotation.Annotation;
@@ -31,7 +33,7 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
     private final Logger logger = LoggerFactory.getLogger(AbstractNeedleRuleBuilder.class);
 
     private Class<? extends MockProvider> mockProviderClass;
-    private InjectionProvider<?>[] injectionProvider = {};
+    private InjectionProvider<?>[] injectionProviders = {};
     private Class<?>[] withAnnotations = {};
     private final Set<InjectionProvider<?>> providers = new HashSet<InjectionProvider<?>>();
 
@@ -40,8 +42,8 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
         return (B) this;
     }
 
-    public B add(final InjectionProvider<?>... injectionProvider) {
-        this.injectionProvider = injectionProvider;
+    public B add(final InjectionProvider<?>... injectionProviders) {
+        this.injectionProviders = injectionProviders;
         return (B) this;
     }
 
@@ -72,18 +74,18 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
         return annotations;
     }
 
+    @Override
     protected final R build(final NeedleConfiguration needleConfiguration) {
         final Class<? extends MockProvider> mockProviderClass = getMockProviderClass(needleConfiguration);
 
-        InjectionConfiguration injectionConfiguration = new InjectionConfiguration(needleConfiguration,
+        final InjectionConfiguration injectionConfiguration = new InjectionConfiguration(needleConfiguration,
                 mockProviderClass);
 
         injectionConfiguration.addGlobalInjectionAnnotation(getCustomInjectionAnnotations());
-        InjectionProvider<?>[] providerArray = providers.toArray(new InjectionProvider<?>[providers.size()]);
 
-        injectionConfiguration.addInjectionProvider(providerArray);
+        injectionConfiguration.addInjectionProvider(providersToArray(providers));
 
-        return build(injectionConfiguration, injectionProvider);
+        return build(injectionConfiguration, injectionProviders);
     }
 
     protected abstract R build(final InjectionConfiguration injectionConfiguration,

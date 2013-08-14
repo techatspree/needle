@@ -15,6 +15,7 @@ public abstract class AbstractDatabaseRuleBuilder<B, R extends DatabaseTestcase>
     private String jdbcPassword;
     private String hibernateCfgFilename;
 
+    @Override
     public B with(final String configFile) {
         this.configFile = configFile;
         return (B) this;
