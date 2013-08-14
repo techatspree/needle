@@ -163,14 +163,13 @@ public class DatabaseTestcase implements InjectionProvider<Object> {
      */
     protected void before() throws Exception {
         final DBOperation operation = getDBOperation();
-
         if (operation != null) {
             operation.setUpOperation();
         }
     }
 
     private DBOperation getDBOperation() {
-        return dbOperation != null ? dbOperation : configuration.getDBOperation();
+        return dbOperation !=  null ? dbOperation : configuration.getDBOperation();
     }
 
     /**

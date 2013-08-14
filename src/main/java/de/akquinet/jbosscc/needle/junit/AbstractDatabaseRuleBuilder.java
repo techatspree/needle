@@ -58,8 +58,8 @@ public abstract class AbstractDatabaseRuleBuilder<B, R extends DatabaseTestcase>
 
     @Override
     protected final R build(final NeedleConfiguration needleConfiguration) {
-        needleConfiguration.setDBOperationClass(dbOperationClass != null ? dbOperationClass : needleConfiguration
-                .getDBOperationClass());
+        needleConfiguration.setDBOperationClassName(dbOperationClass != null ? dbOperationClass.getName() : needleConfiguration
+                .getDBOperationClassName());
         needleConfiguration.setJdbcDriver(jdbcDriver != null ? jdbcDriver : needleConfiguration.getJdbcDriver());
         needleConfiguration.setJdbcUser(jdbcUser != null ? jdbcUser : needleConfiguration.getJdbcUser());
         needleConfiguration

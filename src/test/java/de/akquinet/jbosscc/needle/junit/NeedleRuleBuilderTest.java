@@ -1,7 +1,5 @@
 package de.akquinet.jbosscc.needle.junit;
 
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
 import org.junit.Test;
 

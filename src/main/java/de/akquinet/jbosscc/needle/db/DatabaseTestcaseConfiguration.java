@@ -39,7 +39,7 @@ final class DatabaseTestcaseConfiguration {
      */
     private static final String JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password";
 
-    private final AbstractDBOperation dbOperation;
+    private final DBOperation dbOperation;
 
     private final PersistenceConfigurationFactory configuration;
 
@@ -49,7 +49,7 @@ final class DatabaseTestcaseConfiguration {
             final PersistenceConfigurationFactory configuratiorn) {
         this.needleConfiguration = needleConfiguration;
         this.configuration = configuratiorn;
-        this.dbOperation = createDBOperation(needleConfiguration.getDBOperationClass());
+        this.dbOperation = createDBOperation(lookupDBOperationClass(needleConfiguration.getDBOperationClassName()));
     }
 
     @Deprecated
@@ -115,6 +115,18 @@ final class DatabaseTestcaseConfiguration {
         } catch (final Exception e) {
             throw new Exception("error while loading jdbc configuration properties form EntityManagerFactory", e);
         }
+    }
+    
+    static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
+        try {
+
+            return ReflectionUtil.lookupClass(AbstractDBOperation.class, dbOperation);
+
+        } catch (final Exception e) {
+            LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
+        }
+
+        return null;
     }
 
 }

@@ -7,10 +7,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionProviderInstancesSupplier;
-import de.akquinet.jbosscc.needle.mock.MockProvider;
 
 public class PropertyBasedConfigurationFactory {
     private static final Logger LOG = LoggerFactory.getLogger(NeedleConfiguration.class);
@@ -67,12 +65,9 @@ public class PropertyBasedConfigurationFactory {
         configuration.setPersistenceunitName(configurationProperties
                 .get(ConfigurationProperties.PERSISTENCEUNIT_NAME_KEY));
 
-        Class<? extends MockProvider> mockProviderClass = lookupMockProviderClass(configurationProperties
-                .get(ConfigurationProperties.MOCK_PROVIDER_KEY));
-        configuration.setMockProviderClass(mockProviderClass);
+        configuration.setMockProviderClassName(configurationProperties.get(ConfigurationProperties.MOCK_PROVIDER_KEY));
 
-        configuration.setDBOperationClass(lookupDBOperationClass(configurationProperties
-                .get(ConfigurationProperties.DB_OPERATION_KEY)));
+        configuration.setDBOperationClassName(configurationProperties.get(ConfigurationProperties.DB_OPERATION_KEY));
         configuration.setJdbcUrl(configurationProperties.get(ConfigurationProperties.JDBC_URL_KEY));
         configuration.setJdbcDriver(configurationProperties.get(ConfigurationProperties.JDBC_DRIVER_KEY));
         configuration.setJdbcUser(configurationProperties.get(ConfigurationProperties.JDBC_USER_KEY));
@@ -82,36 +77,4 @@ public class PropertyBasedConfigurationFactory {
 
         return configuration;
     }
-
-    static Class<? extends MockProvider> lookupMockProviderClass(final String mockProviderClassName) {
-
-        try {
-            if (mockProviderClassName != null) {
-                return lookupClass(MockProvider.class, mockProviderClassName);
-            }
-        } catch (final Exception e) {
-            throw new RuntimeException("could not load mock provider class: '" + mockProviderClassName + "'", e);
-        }
-
-        throw new RuntimeException("no mock provider configured");
-    }
-
-    static Class<? extends AbstractDBOperation> lookupDBOperationClass(final String dbOperation) {
-        try {
-
-            return lookupClass(AbstractDBOperation.class, dbOperation);
-
-        } catch (final Exception e) {
-            LOG.warn("error while loading db operation class {}, {}", dbOperation, e.getMessage());
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> Class<T> lookupClass(final Class<T> type, final String className) throws ClassNotFoundException {
-        return (Class<T>) Class.forName(className);
-
-    }
-
 }
