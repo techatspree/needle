@@ -1,6 +1,9 @@
 package de.akquinet.jbosscc.needle.mock;
 
+import static de.akquinet.jbosscc.needle.common.Preconditions.checkArgument;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import org.mockito.Mockito;
@@ -38,11 +41,10 @@ public class MockitoProvider implements MockProvider, SpyProvider {
      */
     @Override
     public <T> T createSpyComponent(final T instance) {
-        if (instance == null) {
-            throw new IllegalArgumentException("instance must not be null!");
-        }
+        checkArgument(instance != null, "instance must not be null!");
         if (isFinalOrPrimitive(instance.getClass())) {
-            LOG.warn("Skipping creation of a spy : {} as it is final or primitive type.", instance.getClass().getSimpleName());
+            LOG.warn("Skipping creation of a spy : {} as it is final or primitive type.", instance.getClass()
+                    .getSimpleName());
             return null;
         }
         return Mockito.spy(instance);
@@ -50,7 +52,8 @@ public class MockitoProvider implements MockProvider, SpyProvider {
 
     /**
      * @param type
-     * @return <code>true</code> if type is final or primitive, <code>false</code> else.
+     * @return <code>true</code> if type is final or primitive,
+     *         <code>false</code> else.
      */
     private boolean isFinalOrPrimitive(final Class<?> type) {
         return Modifier.isFinal(type.getModifiers()) || type.isPrimitive();
@@ -59,5 +62,12 @@ public class MockitoProvider implements MockProvider, SpyProvider {
     @Override
     public Class<? extends Annotation> getSpyAnnotation() {
         return Spy.class;
+    }
+
+    @Override
+    public boolean isSpyRequested(final Field field) {
+        checkArgument(field != null, "field must not be null!");
+
+        return getSpyAnnotation() != null && field.isAnnotationPresent(getSpyAnnotation());
     }
 }

@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.NeedleContext;
 import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
+import de.akquinet.jbosscc.needle.processor.NeedleProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-public class InjectionAnnotationProcessor {
+public class InjectionAnnotationProcessor implements NeedleProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InjectionAnnotationProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(InjectionAnnotationProcessor.class);
 
+    @Override
     public void process(final NeedleContext context) {
         proccessInjectIntoMany(context);
         proccessInjectInto(context);
@@ -68,7 +70,7 @@ public class InjectionAnnotationProcessor {
             }
 
         } else {
-            LOG.warn("could not inject component {} -  unknown object under test with id {}", sourceObject,
+            logger.warn("could not inject component {} -  unknown object under test with id {}", sourceObject,
                     injectInto.targetComponentId());
         }
     }
@@ -80,7 +82,7 @@ public class InjectionAnnotationProcessor {
             try {
                 ReflectionUtil.setField(field, objectUnderTest, sourceObject);
             } catch (Exception e) {
-                LOG.warn("could not inject into component " + objectUnderTest, e);
+                logger.warn("could not inject into component " + objectUnderTest, e);
             }
         }
 
@@ -90,7 +92,7 @@ public class InjectionAnnotationProcessor {
         try {
             ReflectionUtil.setField(fieldName, objectUnderTest, sourceObject);
         } catch (Exception e) {
-            LOG.warn("could not inject into component " + objectUnderTest, e);
+            logger.warn("could not inject into component " + objectUnderTest, e);
         }
     }
 

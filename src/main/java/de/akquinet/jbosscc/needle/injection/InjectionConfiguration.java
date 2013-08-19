@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.common.MapEntry;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
-import de.akquinet.jbosscc.needle.db.operation.AbstractDBOperation;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
+import de.akquinet.jbosscc.needle.mock.SpyProvider;
 import de.akquinet.jbosscc.needle.postconstruct.PostConstructProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
@@ -52,6 +52,7 @@ public final class InjectionConfiguration {
     private final Set<Class<? extends Annotation>> injectionAnnotationClasses = new HashSet<Class<? extends Annotation>>();
 
     private final MockProvider mockProvider;
+    private final SpyProvider spyProvider;
 
     private final PostConstructProcessor postConstructProcessor;
 
@@ -61,11 +62,12 @@ public final class InjectionConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public InjectionConfiguration(NeedleConfiguration needleConfiguration,
+    public InjectionConfiguration(final NeedleConfiguration needleConfiguration,
             final Class<? extends MockProvider> mockProviderClass) {
 
         this.needleConfiguration = needleConfiguration;
-        mockProvider = createMockProvider(mockProviderClass);
+        this.mockProvider = createMockProvider(mockProviderClass);
+        this.spyProvider = (this.mockProvider instanceof SpyProvider) ? (SpyProvider) mockProvider : SpyProvider.FAKE;
 
         postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
 
@@ -118,6 +120,10 @@ public final class InjectionConfiguration {
     @SuppressWarnings("unchecked")
     public <T extends MockProvider> T getMockProvider() {
         return (T) mockProvider;
+    }
+
+    public SpyProvider getSpyProvider() {
+        return spyProvider;
     }
 
     public PostConstructProcessor getPostConstructProcessor() {

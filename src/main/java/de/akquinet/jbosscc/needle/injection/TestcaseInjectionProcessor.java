@@ -11,13 +11,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.akquinet.jbosscc.needle.NeedleContext;
+import de.akquinet.jbosscc.needle.processor.AbstractNeedleProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
-public class TestcaseInjectionProcessor {
+public class TestcaseInjectionProcessor extends AbstractNeedleProcessor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TestcaseInjectionProcessor.class);
 
-    public void process(final NeedleContext context, final InjectionConfiguration configuration) {
+    private final Logger logger = LoggerFactory.getLogger(TestcaseInjectionProcessor.class);
+
+    public TestcaseInjectionProcessor(final InjectionConfiguration configuration) {
+        super(configuration);
+    }
+
+    @Override
+    public void process(final NeedleContext context) {
         final Set<Class<? extends Annotation>> supportedAnnotations = configuration.getSupportedAnnotations();
 
         for (Class<? extends Annotation> supportedAnnotation : supportedAnnotations) {
@@ -52,9 +59,10 @@ public class TestcaseInjectionProcessor {
                     return;
 
                 } catch (Exception e) {
-                    LOG.error(e.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
     }
+
 }

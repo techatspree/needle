@@ -22,7 +22,7 @@ import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
 import de.akquinet.jbosscc.needle.injection.TestcaseInjectionProcessor;
 import de.akquinet.jbosscc.needle.mock.MockAnnotationProcessor;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
-import de.akquinet.jbosscc.needle.mock.SpyAnnotationProcessor;
+import de.akquinet.jbosscc.needle.mock.SpyProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
@@ -49,15 +49,12 @@ public abstract class NeedleTestcase {
     private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
     private final InjectionAnnotationProcessor injectionIntoAnnotationProcessor = new InjectionAnnotationProcessor();
-    private final TestcaseInjectionProcessor testcaseInjectionProcessor = new TestcaseInjectionProcessor();
-
-    private final MockAnnotationProcessor mockAnnotationProcessor = new MockAnnotationProcessor();
+    private final TestcaseInjectionProcessor testcaseInjectionProcessor;
+    private final MockAnnotationProcessor mockAnnotationProcessor;
 
     private NeedleContext context;
 
-    private final InjectionConfiguration configuration; 
-
-    private SpyAnnotationProcessor spyAnnotationProcessor;
+    private final InjectionConfiguration configuration;
 
     /**
      * Create an instance of {@link NeedleTestcase} with optional additional
@@ -70,10 +67,13 @@ public abstract class NeedleTestcase {
     protected NeedleTestcase(final InjectionProvider<?>... injectionProviders) {
         this(new InjectionConfiguration(), injectionProviders);
     }
-    
+
     protected NeedleTestcase(final InjectionConfiguration configuration,
             final InjectionProvider<?>... injectionProviders) {
         this.configuration = configuration;
+        this.testcaseInjectionProcessor = new TestcaseInjectionProcessor(configuration);
+        this.mockAnnotationProcessor = new MockAnnotationProcessor(configuration);
+
         addInjectionProvider(injectionProviders);
     }
 
@@ -98,8 +98,6 @@ public abstract class NeedleTestcase {
 
         context = new NeedleContext(test);
 
-        spyAnnotationProcessor = new SpyAnnotationProcessor(configuration.getMockProvider());
-
         final List<Field> fields = context.getAnnotatedTestcaseFields(ObjectUnderTest.class);
 
         LOG.debug("found fields {}", fields);
@@ -116,9 +114,9 @@ public abstract class NeedleTestcase {
             }
         }
 
-        mockAnnotationProcessor.process(context, configuration);
+        mockAnnotationProcessor.process(context);
         injectionIntoAnnotationProcessor.process(context);
-        testcaseInjectionProcessor.process(context, configuration);
+        testcaseInjectionProcessor.process(context);
         beforePostConstruct();
         configuration.getPostConstructProcessor().process(context);
 
@@ -164,7 +162,8 @@ public abstract class NeedleTestcase {
                 public InjectionTargetInformation create(final Class<?> parameterType, final int parameterIndex) {
 
                     return new InjectionTargetInformation(parameterType, method,
-                            method.getGenericParameterTypes()[parameterIndex], method.getParameterAnnotations()[parameterIndex]);
+                            method.getGenericParameterTypes()[parameterIndex],
+                            method.getParameterAnnotations()[parameterIndex]);
                 }
             };
             final Object[] arguments = createArguments(parameterTypes, injectionTargetInformationFactory);
@@ -221,6 +220,8 @@ public abstract class NeedleTestcase {
     private Object setInstanceIfNotNull(final Field field, final ObjectUnderTest objectUnderTestAnnotation,
             final Object test) throws Exception {
 
+        final SpyProvider spyProvider = configuration.getSpyProvider();
+
         final String id = objectUnderTestAnnotation.id().equals("") ? field.getName() : objectUnderTestAnnotation.id();
         Object instance = ReflectionUtil.getFieldValue(test, field);
 
@@ -241,13 +242,15 @@ public abstract class NeedleTestcase {
             }
 
             // create spy if required, else just return unmodified instance
-            instance = spyAnnotationProcessor.process(instance, field);
+            if (spyProvider.isSpyRequested(field)) {
+                instance = spyProvider.createSpyComponent(instance);
+            }
             setField(field, test, instance);
         }
         // field value was already set in test
         else {
-            if (spyAnnotationProcessor.isSpyRequested(field)) {
-                setField(field, test, spyAnnotationProcessor.process(instance, field));
+            if (spyProvider.isSpyRequested(field)) {
+                setField(field, test, spyProvider.createSpyComponent(instance));
             }
         }
 
@@ -303,7 +306,8 @@ public abstract class NeedleTestcase {
                 @Override
                 public InjectionTargetInformation create(final Class<?> parameterType, final int parameterIndex) {
                     return new InjectionTargetInformation(parameterType, constructor,
-                            constructor.getGenericParameterTypes()[parameterIndex], constructor.getParameterAnnotations()[parameterIndex]);
+                            constructor.getGenericParameterTypes()[parameterIndex],
+                            constructor.getParameterAnnotations()[parameterIndex]);
                 }
             };
 

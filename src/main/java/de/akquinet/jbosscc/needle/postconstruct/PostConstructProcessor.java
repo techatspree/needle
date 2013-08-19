@@ -9,6 +9,7 @@ import java.util.Set;
 import de.akquinet.jbosscc.needle.NeedleContext;
 import de.akquinet.jbosscc.needle.ObjectUnderTestInstantiationException;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.processor.NeedleProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 /**
@@ -22,7 +23,7 @@ import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
  * @author Jan Galinski, Holisticon AG (jan.galinski@holisticon.de)
  * @author Heinz Wilming, akquinet AG (heinz.wilming@akquinet.de)
  */
-public class PostConstructProcessor {
+public class PostConstructProcessor implements NeedleProcessor {
 
     /**
      * internal Container of all Annotations that trigger invocation
@@ -45,15 +46,18 @@ public class PostConstructProcessor {
      *            - the NeedleContext
      * @throws ObjectUnderTestInstantiationException
      */
-
-    public void process(final NeedleContext context) throws ObjectUnderTestInstantiationException {
+    @Override
+    public void process(final NeedleContext context) {
         Set<String> objectsUnderTestIds = context.getObjectsUnderTestIds();
         for (String objectUnderTestId : objectsUnderTestIds) {
             ObjectUnderTest objectUnderTestAnnotation = context.getObjectUnderTestAnnotation(objectUnderTestId);
             if (objectUnderTestAnnotation != null && objectUnderTestAnnotation.postConstruct()) {
-                process(context.getObjectUnderTest(objectUnderTestId));
+                try {
+                    process(context.getObjectUnderTest(objectUnderTestId));
+                } catch (ObjectUnderTestInstantiationException e) {
+                    throw new RuntimeException(e);
+                }
             }
-
         }
     }
 

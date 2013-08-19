@@ -1,9 +1,13 @@
 package de.akquinet.jbosscc.needle.injection.cdi.instance;
 
+import static de.akquinet.jbosscc.needle.junit.NeedleBuilders.needleRule;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -13,7 +17,7 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 public class InstanceFieldInjectionTest {
     
     @Rule
-    public NeedleRule needleRule = new NeedleRule();
+    public NeedleRule needleRule = needleRule().with("needle-mockito").build();
     
     @ObjectUnderTest
     private InstanceFieldInjectionBean component;
@@ -26,12 +30,11 @@ public class InstanceFieldInjectionTest {
     
     @Test
     public void testInstanceFieldInjection() throws Exception {
+        assertNotNull(instance);
+        assertNotNull(runnableInstances);
         
-        Assert.assertNotNull(instance);
-        Assert.assertNotNull(runnableInstances);
-        
-        Assert.assertNotSame(instance, runnableInstances);
-        Assert.assertSame(instance, component.getInstance());
+        assertNotSame(instance, runnableInstances);
+        assertSame(instance, component.getInstance());
     }
 
 }

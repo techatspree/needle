@@ -13,8 +13,8 @@ import org.mockito.Spy;
 import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
-import de.akquinet.jbosscc.needle.mock.SpyAnnotationProcessorTest.A;
-import de.akquinet.jbosscc.needle.mock.SpyAnnotationProcessorTest.B;
+import de.akquinet.jbosscc.needle.mock.SpyProviderTest.A;
+import de.akquinet.jbosscc.needle.mock.SpyProviderTest.B;
 
 public class SpyAnnotationProcessorWithExistingObjectTest {
 
