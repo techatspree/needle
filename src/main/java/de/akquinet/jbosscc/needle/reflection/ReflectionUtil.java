@@ -1,5 +1,7 @@
 package de.akquinet.jbosscc.needle.reflection;
 
+import static java.lang.String.format;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -468,7 +470,7 @@ public final class ReflectionUtil {
         try {
             return clazz.getDeclaredField(fieldName);
         } catch (final NoSuchFieldException e) {
-            LOG.warn(e.getMessage(), e);
+            LOG.warn(format("No such field: '%s#%s'", clazz.getCanonicalName(), fieldName));
             return null;
         }
     }
