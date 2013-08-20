@@ -1,7 +1,7 @@
 package de.akquinet.jbosscc.needle.injection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 
@@ -9,7 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.MyConcreteComponent;
-import de.akquinet.jbosscc.needle.injection.InjectionProviders;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 /**

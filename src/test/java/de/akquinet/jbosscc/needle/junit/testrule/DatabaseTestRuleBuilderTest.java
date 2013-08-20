@@ -1,7 +1,6 @@
 package de.akquinet.jbosscc.needle.junit.testrule;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.junit.runners.model.Statement;
 

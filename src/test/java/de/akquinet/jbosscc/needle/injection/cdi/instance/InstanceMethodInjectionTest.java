@@ -11,8 +11,9 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class InstanceMethodInjectionTest {
+
     @Rule
-    public NeedleRule needleRule = new NeedleRule();
+    public final NeedleRule needleRule = new NeedleRule();
     
     @ObjectUnderTest
     private InstanceMethodInjectionBean component;

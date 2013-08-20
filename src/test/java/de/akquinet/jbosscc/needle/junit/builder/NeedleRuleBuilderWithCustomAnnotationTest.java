@@ -1,7 +1,6 @@
 package de.akquinet.jbosscc.needle.junit.builder;
 
 import org.junit.Assert;
-
 import org.junit.Rule;
 import org.junit.Test;
 

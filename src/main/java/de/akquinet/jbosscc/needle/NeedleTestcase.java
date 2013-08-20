@@ -15,12 +15,9 @@ import de.akquinet.jbosscc.needle.annotation.InjectInto;
 import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.common.MapEntry;
-import de.akquinet.jbosscc.needle.injection.InjectionAnnotationProcessor;
 import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 import de.akquinet.jbosscc.needle.injection.InjectionProvider;
 import de.akquinet.jbosscc.needle.injection.InjectionTargetInformation;
-import de.akquinet.jbosscc.needle.injection.TestcaseInjectionProcessor;
-import de.akquinet.jbosscc.needle.mock.MockAnnotationProcessor;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.mock.SpyProvider;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
@@ -48,9 +45,6 @@ public abstract class NeedleTestcase {
 
     private static final Logger LOG = LoggerFactory.getLogger(NeedleTestcase.class);
 
-    private final InjectionAnnotationProcessor injectionIntoAnnotationProcessor = new InjectionAnnotationProcessor();
-    private final TestcaseInjectionProcessor testcaseInjectionProcessor;
-    private final MockAnnotationProcessor mockAnnotationProcessor;
 
     private NeedleContext context;
 
@@ -71,8 +65,6 @@ public abstract class NeedleTestcase {
     protected NeedleTestcase(final InjectionConfiguration configuration,
             final InjectionProvider<?>... injectionProviders) {
         this.configuration = configuration;
-        this.testcaseInjectionProcessor = new TestcaseInjectionProcessor(configuration);
-        this.mockAnnotationProcessor = new MockAnnotationProcessor(configuration);
 
         addInjectionProvider(injectionProviders);
     }
@@ -114,12 +106,10 @@ public abstract class NeedleTestcase {
             }
         }
 
-        mockAnnotationProcessor.process(context);
-        injectionIntoAnnotationProcessor.process(context);
-        testcaseInjectionProcessor.process(context);
+        configuration.getChainedNeedleProcessor().process(context);
+        // TODO find way to include postconstruct processor in chain
         beforePostConstruct();
         configuration.getPostConstructProcessor().process(context);
-
     }
 
     /**

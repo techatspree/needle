@@ -1,5 +1,7 @@
 package de.akquinet.jbosscc.needle.injection;
 
+import static de.akquinet.jbosscc.needle.reflection.ReflectionUtil.forName;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +18,11 @@ import org.slf4j.LoggerFactory;
 import de.akquinet.jbosscc.needle.common.MapEntry;
 import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
+import de.akquinet.jbosscc.needle.mock.MockAnnotationProcessor;
 import de.akquinet.jbosscc.needle.mock.MockProvider;
 import de.akquinet.jbosscc.needle.mock.SpyProvider;
 import de.akquinet.jbosscc.needle.postconstruct.PostConstructProcessor;
+import de.akquinet.jbosscc.needle.processor.ChainedNeedleProcessor;
 import de.akquinet.jbosscc.needle.reflection.ReflectionUtil;
 
 public final class InjectionConfiguration {
@@ -28,12 +32,12 @@ public final class InjectionConfiguration {
     private static final Set<Class<?>> POSTCONSTRUCT_CLASSES = ReflectionUtil
             .getClasses("javax.annotation.PostConstruct");
 
-    private static final Class<?> RESOURCE_CLASS = getClass("javax.annotation.Resource");
-    private static final Class<?> INJECT_CLASS = getClass("javax.inject.Inject");
-    private static final Class<?> CDI_INSTANCE_CLASS = getClass("javax.enterprise.inject.Instance");
-    private static final Class<?> EJB_CLASS = getClass("javax.ejb.EJB");
-    private static final Class<?> PERSISTENCE_CONTEXT_CLASS = getClass("javax.persistence.PersistenceContext");
-    private static final Class<?> PERSISTENCE_UNIT_CLASS = getClass("javax.persistence.PersistenceUnit");
+    private static final Class<?> RESOURCE_CLASS = forName("javax.annotation.Resource");
+    private static final Class<?> INJECT_CLASS = forName("javax.inject.Inject");
+    private static final Class<?> CDI_INSTANCE_CLASS = forName("javax.enterprise.inject.Instance");
+    private static final Class<?> EJB_CLASS = forName("javax.ejb.EJB");
+    private static final Class<?> PERSISTENCE_CONTEXT_CLASS = forName("javax.persistence.PersistenceContext");
+    private static final Class<?> PERSISTENCE_UNIT_CLASS = forName("javax.persistence.PersistenceUnit");
 
     private final NeedleConfiguration needleConfiguration;
 
@@ -55,7 +59,14 @@ public final class InjectionConfiguration {
     private final SpyProvider spyProvider;
 
     private final PostConstructProcessor postConstructProcessor;
+    private final InjectionAnnotationProcessor injectionIntoAnnotationProcessor;
+    private final TestcaseInjectionProcessor testcaseInjectionProcessor;
+    private final MockAnnotationProcessor mockAnnotationProcessor;
+    private final ChainedNeedleProcessor chainedNeedleProcessor;
 
+    /**
+     * @see #InjectionConfiguration(NeedleConfiguration, Class)
+     */
     public InjectionConfiguration() {
         this(PropertyBasedConfigurationFactory.get(), lookupMockProviderClass(PropertyBasedConfigurationFactory.get()
                 .getMockProviderClassName()));
@@ -67,9 +78,19 @@ public final class InjectionConfiguration {
 
         this.needleConfiguration = needleConfiguration;
         this.mockProvider = createMockProvider(mockProviderClass);
+
+        // use mockprovider if mockprovider supports spies, otherwise Fake
+        // implementation
         this.spyProvider = (this.mockProvider instanceof SpyProvider) ? (SpyProvider) mockProvider : SpyProvider.FAKE;
 
-        postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
+        this.postConstructProcessor = new PostConstructProcessor(POSTCONSTRUCT_CLASSES);
+
+        this.injectionIntoAnnotationProcessor = new InjectionAnnotationProcessor();
+        this.testcaseInjectionProcessor = new TestcaseInjectionProcessor(this);
+        this.mockAnnotationProcessor = new MockAnnotationProcessor(this);
+
+        this.chainedNeedleProcessor = new ChainedNeedleProcessor(mockAnnotationProcessor,
+                injectionIntoAnnotationProcessor, testcaseInjectionProcessor);
 
         addCdiInstance();
         add(INJECT_CLASS);
@@ -91,7 +112,7 @@ public final class InjectionConfiguration {
 
         if (RESOURCE_CLASS != null) {
             addInjectionAnnotation(RESOURCE_CLASS);
-            injectionProviderList.add(new ResourceMockInjectionProvider(mockProvider));
+            injectionProviderList.add(new ResourceMockInjectionProvider(this));
         }
     }
 
@@ -99,7 +120,7 @@ public final class InjectionConfiguration {
 
         if (CDI_INSTANCE_CLASS != null) {
             // addInjectionAnnotation(RESOURCE_CLASS);
-            injectionProviderList.add(new CDIInstanceInjectionProvider(CDI_INSTANCE_CLASS, mockProvider));
+            injectionProviderList.add(new CDIInstanceInjectionProvider(CDI_INSTANCE_CLASS, this));
         }
     }
 
@@ -107,15 +128,12 @@ public final class InjectionConfiguration {
 
         if (clazz != null) {
             LOG.debug("register injection handler for class {}", clazz);
-            injectionProviderList.add(new DefaultMockInjectionProvider(clazz, mockProvider));
+            injectionProviderList.add(new DefaultMockInjectionProvider(clazz, this));
             addInjectionAnnotation(clazz);
         }
 
     }
 
-    private static Class<?> getClass(final String className) {
-        return ReflectionUtil.forName(className);
-    }
 
     @SuppressWarnings("unchecked")
     public <T extends MockProvider> T getMockProvider() {
@@ -128,6 +146,22 @@ public final class InjectionConfiguration {
 
     public PostConstructProcessor getPostConstructProcessor() {
         return postConstructProcessor;
+    }
+
+    public InjectionAnnotationProcessor getInjectionIntoAnnotationProcessor() {
+        return injectionIntoAnnotationProcessor;
+    }
+
+    public TestcaseInjectionProcessor getTestcaseInjectionProcessor() {
+        return testcaseInjectionProcessor;
+    }
+
+    public MockAnnotationProcessor getMockAnnotationProcessor() {
+        return mockAnnotationProcessor;
+    }
+
+    public ChainedNeedleProcessor getChainedNeedleProcessor() {
+        return chainedNeedleProcessor;
     }
 
     public final void addInjectionProvider(final InjectionProvider<?>... injectionProvider) {
@@ -148,7 +182,7 @@ public final class InjectionConfiguration {
     public void addGlobalInjectionAnnotation(final Set<Class<Annotation>> customInjectionAnnotations) {
         for (final Class<? extends Annotation> annotation : customInjectionAnnotations) {
             addInjectionAnnotation(annotation);
-            globalInjectionProviderList.add(0, new DefaultMockInjectionProvider(annotation, getMockProvider()));
+            globalInjectionProviderList.add(0, new DefaultMockInjectionProvider(annotation, this));
         }
     }
 

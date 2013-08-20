@@ -5,11 +5,10 @@ import javax.inject.Inject;
 
 public class InstanceConstructorInjectionBean {
 
-    private Instance<InstanceTestBean> instance;
+    private final Instance<InstanceTestBean> instance;
 
     @Inject
-    public InstanceConstructorInjectionBean(Instance<InstanceTestBean> instance) {
-        super();
+    public InstanceConstructorInjectionBean(final Instance<InstanceTestBean> instance) {
         this.instance = instance;
     }
 

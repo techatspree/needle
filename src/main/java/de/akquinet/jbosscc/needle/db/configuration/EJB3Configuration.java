@@ -5,7 +5,6 @@ import javax.persistence.EntityManagerFactory;
 
 import org.hibernate.ejb.Ejb3Configuration;
 
-import de.akquinet.jbosscc.needle.configuration.NeedleConfiguration;
 import de.akquinet.jbosscc.needle.configuration.PropertyBasedConfigurationFactory;
 
 /**

@@ -16,7 +16,7 @@ import de.akquinet.jbosscc.needle.junit.NeedleRule;
 import de.akquinet.jbosscc.needle.mock.SpyProviderTest.A;
 import de.akquinet.jbosscc.needle.mock.SpyProviderTest.B;
 
-public class SpyAnnotationProcessorWithExistingObjectTest {
+public class SpyProviderWithExistingObjectTest {
 
     @Rule
     public final NeedleRule needle = needleRule().with(MockitoProvider.class).build();

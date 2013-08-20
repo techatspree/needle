@@ -1,21 +1,20 @@
 package de.akquinet.jbosscc.needle.processor;
 
 import static de.akquinet.jbosscc.needle.common.Preconditions.checkArgument;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import de.akquinet.jbosscc.needle.NeedleContext;
-import de.akquinet.jbosscc.needle.injection.InjectionConfiguration;
 
-public class ChainedNeedleProcessor extends AbstractNeedleProcessor {
+/**
+ * {@link NeedleProcessor} that calls chain of processors.
+ */
+public class ChainedNeedleProcessor implements NeedleProcessor {
 
-    private List<NeedleProcessor> processors;
+    private final List<NeedleProcessor> processors = new ArrayList<NeedleProcessor>();
 
-    public ChainedNeedleProcessor(final InjectionConfiguration configuration) {
-        this(configuration, new NeedleProcessor[0]);
-    }
-
-    public ChainedNeedleProcessor(final InjectionConfiguration configuration, final NeedleProcessor... processors) {
-        super(configuration);
+    public ChainedNeedleProcessor(final NeedleProcessor... processors) {
         addProcessor(processors);
     }
 

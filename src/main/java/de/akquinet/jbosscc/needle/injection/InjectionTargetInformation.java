@@ -21,11 +21,11 @@ public class InjectionTargetInformation {
     private final Type genericTypeParameter;
 
     private InjectionTargetInformation(final Class<?> type, final AccessibleObject accessibleObject,
-            final Type genericTypeParamerter, final Annotation... parameterAnnotations) {
+            final Type genericTypeParameter, final Annotation... parameterAnnotations) {
         this.type = type;
         this.accessibleObject = accessibleObject;
         this.parameterAnnotations = parameterAnnotations;
-        this.genericTypeParameter = genericTypeParamerter;
+        this.genericTypeParameter = genericTypeParameter;
 
     }
 
@@ -166,15 +166,6 @@ public class InjectionTargetInformation {
 
     public Type getGenericTypeParameter() {
         return genericTypeParameter;
-    }
-
-    /**
-     * @deprecated typo, use {@link #getGenericTypeParameter()}
-     * @return type
-     */
-    @Deprecated
-    public Type getGenericTypeParamerter() {
-        return getGenericTypeParameter();
     }
 
 }

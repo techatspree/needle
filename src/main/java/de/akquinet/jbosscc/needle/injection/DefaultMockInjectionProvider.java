@@ -2,42 +2,49 @@ package de.akquinet.jbosscc.needle.injection;
 
 import java.lang.annotation.Annotation;
 
-import de.akquinet.jbosscc.needle.mock.MockProvider;
-
 public class DefaultMockInjectionProvider implements InjectionProvider<Object> {
 
-    private final Class<?> type;
+    private final Class<?> annotationClass;
 
-    private final MockProvider mockProvider;
+    private final InjectionConfiguration injectionConfiguration;
 
-    public DefaultMockInjectionProvider(final Class<?> type, final MockProvider mockProvider) {
-        this.type = type;
-        this.mockProvider = mockProvider;
+    /**
+     * 
+     * @param annotationClass
+     *            injection annotation like Resource, EJB, Inject, ...
+     * @param mockProvider
+     */
+    public DefaultMockInjectionProvider(final Class<?> annotationClass,
+            final InjectionConfiguration injectionConfiguration) {
+        this.annotationClass = annotationClass;
+        this.injectionConfiguration = injectionConfiguration;
     }
 
     @Override
     public Object getInjectedObject(final Class<?> type) {
-        return mockProvider.createMockComponent(type);
+        return injectionConfiguration.getMockProvider().createMockComponent(type);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean verify(final InjectionTargetInformation injectionTargetInformation) {
 
-        if (injectionTargetInformation.getType() == type
-                || (type.isAnnotation() && injectionTargetInformation
-                        .isAnnotationPresent((Class<? extends Annotation>) type))) {
-            return true;
-        }
-        return false;
+        return (injectionTargetInformation.getType() == annotationClass
+                || (annotationClass.isAnnotation() && injectionTargetInformation
+                .isAnnotationPresent((Class<? extends Annotation>) annotationClass)));
     }
 
     protected Class<?> getType() {
-        return type;
+        return annotationClass;
     }
 
     @Override
     public Object getKey(final InjectionTargetInformation injectionTargetInformation) {
         return injectionTargetInformation.getType();
     }
+
+    protected InjectionConfiguration getInjectionConfiguration() {
+        return injectionConfiguration;
+    }
+
 }

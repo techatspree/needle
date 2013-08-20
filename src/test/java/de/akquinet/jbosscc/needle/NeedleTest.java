@@ -1,7 +1,8 @@
 package de.akquinet.jbosscc.needle;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import javax.ejb.SessionContext;
 import javax.persistence.EntityManagerFactory;
 

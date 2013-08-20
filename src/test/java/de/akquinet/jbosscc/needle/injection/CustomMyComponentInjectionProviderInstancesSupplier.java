@@ -2,7 +2,7 @@ package de.akquinet.jbosscc.needle.injection;
 
 import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providerForInstance;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashSet;
 import java.util.Set;

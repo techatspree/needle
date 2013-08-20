@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.easymock.EasyMock;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

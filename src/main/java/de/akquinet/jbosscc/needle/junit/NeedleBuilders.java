@@ -5,6 +5,7 @@ import org.junit.rules.TestRule;
 
 import de.akquinet.jbosscc.needle.junit.testrule.DatabaseTestRule;
 import de.akquinet.jbosscc.needle.junit.testrule.DatabaseTestRuleBuilder;
+import de.akquinet.jbosscc.needle.junit.testrule.NeedleTestRule;
 import de.akquinet.jbosscc.needle.junit.testrule.NeedleTestRuleBuilder;
 
 /**

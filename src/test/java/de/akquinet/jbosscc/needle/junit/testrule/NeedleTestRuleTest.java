@@ -9,7 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
-import de.akquinet.jbosscc.needle.junit.testrule.NeedleTestRule;
 
 public class NeedleTestRuleTest {
 
