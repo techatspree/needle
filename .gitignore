@@ -5,3 +5,4 @@ target
 .idea
 *.iml
 /test-output
+.DS_Store

@@ -22,10 +22,10 @@ public class NeedleRuleBuilder extends AbstractNeedleRuleBuilder<NeedleRuleBuild
     }
 
     @Override
-    protected NeedleRule build(InjectionConfiguration injectionConfiguration, InjectionProvider<?>... injectionProvider) {
-        NeedleRule needleRule = new NeedleRule(injectionConfiguration, injectionProvider);
+    protected NeedleRule build(final InjectionConfiguration injectionConfiguration, final InjectionProvider<?>... injectionProvider) {
+        final NeedleRule needleRule = new NeedleRule(injectionConfiguration, injectionProvider);
 
-        for (MethodRule rule : methodRuleChain) {
+        for (final MethodRule rule : methodRuleChain) {
             needleRule.withOuter(rule);
         }
         return needleRule;

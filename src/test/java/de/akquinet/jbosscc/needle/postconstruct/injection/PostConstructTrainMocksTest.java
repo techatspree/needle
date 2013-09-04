@@ -11,10 +11,12 @@ import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 import de.akquinet.jbosscc.needle.mock.EasyMockProvider;
 
+@SuppressWarnings("unused")
 public class PostConstructTrainMocksTest {
 
     @Rule
     public NeedleRule needleRule = new NeedleRule() {
+        @Override
         protected void beforePostConstruct() {
             dependentComponent.count();
             EasyMock.expectLastCall().once();
@@ -30,16 +32,15 @@ public class PostConstructTrainMocksTest {
 
     @Inject
     private EasyMockProvider mockProvider;
-    
+
     @Before
-    public void setup(){
+    public void setup() {
         mockProvider.verifyAll();
         mockProvider.resetAll();
     }
 
     @Test
     public void testPostConstruct_InjectIntoMany() throws Exception {
-         
 
     }
 }

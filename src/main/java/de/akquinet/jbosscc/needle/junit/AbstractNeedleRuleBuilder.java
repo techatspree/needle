@@ -1,6 +1,5 @@
 package de.akquinet.jbosscc.needle.junit;
 
-
 import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providersForInstancesSuppliers;
 import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providersToArray;
 import static de.akquinet.jbosscc.needle.injection.InjectionProviders.providersToSet;
@@ -33,7 +32,6 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
     private final Logger logger = LoggerFactory.getLogger(AbstractNeedleRuleBuilder.class);
 
     private Class<? extends MockProvider> mockProviderClass;
-    private InjectionProvider<?>[] injectionProviders = {};
     private Class<?>[] withAnnotations = {};
     private final Set<InjectionProvider<?>> providers = new HashSet<InjectionProvider<?>>();
 
@@ -43,7 +41,7 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
     }
 
     public B add(final InjectionProvider<?>... injectionProviders) {
-        this.injectionProviders = injectionProviders;
+        providers.addAll(providersToSet(injectionProviders));
         return (B) this;
     }
 
@@ -58,12 +56,13 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
     }
 
     private Class<? extends MockProvider> getMockProviderClass(final NeedleConfiguration needleConfiguration) {
-        return mockProviderClass != null ? mockProviderClass : InjectionConfiguration.lookupMockProviderClass(needleConfiguration.getMockProviderClassName());
+        return mockProviderClass != null ? mockProviderClass : InjectionConfiguration
+                .lookupMockProviderClass(needleConfiguration.getMockProviderClassName());
     }
 
     private Set<Class<Annotation>> getCustomInjectionAnnotations() {
-        Set<Class<Annotation>> annotations = new HashSet<Class<Annotation>>();
-        for (Class<?> annotationClass : withAnnotations) {
+        final Set<Class<Annotation>> annotations = new HashSet<Class<Annotation>>();
+        for (final Class<?> annotationClass : withAnnotations) {
             if (annotationClass.isAnnotation()) {
                 annotations.add((Class<Annotation>) annotationClass);
             } else {
@@ -83,9 +82,7 @@ public abstract class AbstractNeedleRuleBuilder<B, R extends NeedleTestcase> ext
 
         injectionConfiguration.addGlobalInjectionAnnotation(getCustomInjectionAnnotations());
 
-        injectionConfiguration.addInjectionProvider(providersToArray(providers));
-
-        return build(injectionConfiguration, injectionProviders);
+        return build(injectionConfiguration, providersToArray(providers));
     }
 
     protected abstract R build(final InjectionConfiguration injectionConfiguration,

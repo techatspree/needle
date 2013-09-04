@@ -8,6 +8,7 @@ import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
+@SuppressWarnings("unused")
 public class PostConstructInjectIntoTest {
 
     @Rule
@@ -22,7 +23,7 @@ public class PostConstructInjectIntoTest {
 
     @Test
     public void testPostConstruct_InjectIntoMany() throws Exception {
-        int counter = dependentComponent.getCounter();
+        final int counter = dependentComponent.getCounter();
         Assert.assertEquals(1, counter);
     }
 }
