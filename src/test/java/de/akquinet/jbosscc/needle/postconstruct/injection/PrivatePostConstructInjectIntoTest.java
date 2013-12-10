@@ -1,6 +1,8 @@
 package de.akquinet.jbosscc.needle.postconstruct.injection;
 
-import org.junit.Assert;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -8,22 +10,24 @@ import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
 import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
 import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
-@SuppressWarnings("unused")
-public class PostConstructInjectIntoTest {
+public class PrivatePostConstructInjectIntoTest {
 
     @Rule
-    public NeedleRule needleRule = new NeedleRule();
+    public final NeedleRule needleRule = new NeedleRule();
 
+    @SuppressWarnings("unused")
     @ObjectUnderTest(postConstruct = true)
-    private ComponentWithPostConstruct componentWithPostConstruct;
+    private ComponentWithPrivatePostConstruct componentWithPostConstruct;
 
-    @ObjectUnderTest
     @InjectIntoMany
+    @ObjectUnderTest
     private DependentComponent dependentComponent;
 
     @Test
     public void testPostConstruct_InjectIntoMany() throws Exception {
-        final int counter = dependentComponent.getCounter();
-        Assert.assertEquals(1, counter);
+        dependentComponent.count();
+
+        // expect one call in postConstruct, one call in here
+        assertThat(dependentComponent.getCounter(), is(2));
     }
 }

@@ -25,7 +25,7 @@ public class PostConstructTrainMocksTest {
     };
 
     @ObjectUnderTest(postConstruct = true)
-    private ComponentWithPostConstruct componentWithPostConstruct;
+    private ComponentWithPrivatePostConstruct componentWithPostConstruct;
 
     @Inject
     private DependentComponent dependentComponent;
@@ -41,6 +41,6 @@ public class PostConstructTrainMocksTest {
 
     @Test
     public void testPostConstruct_InjectIntoMany() throws Exception {
-
+        //
     }
 }
