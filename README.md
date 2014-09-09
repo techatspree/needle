@@ -4,6 +4,9 @@ Need(le) for Speed - Effective Unit Testing for Java EE
 ================================
 [@NeedleProject](https://twitter.com/NeedleProject)
 
+Moved to https://github.com/needle4j
+
+
 **Needle is a lightweight framework for testing Java EE components outside of the
 container in isolation. It reduces the test setup code by analysing dependencies and
 automatic injection of mock objects. It will thus maximize the speed of development
